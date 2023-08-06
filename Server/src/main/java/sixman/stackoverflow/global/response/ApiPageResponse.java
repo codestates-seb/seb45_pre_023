@@ -20,15 +20,15 @@ public class ApiPageResponse<T> {
     private String status;
     private String message;
 
-    public static <S, T extends Page<S>> ApiPageResponse<S> ok(T data) {
+    public static <T, P extends Page<T>> ApiPageResponse<T> ok(P data) {
         return ApiPageResponse.of(data, HttpStatus.OK);
     }
 
-    public static <S, T extends Page<S>> ApiPageResponse<S> of(T data, HttpStatus httpStatus) {
+    public static <T, P extends Page<T>> ApiPageResponse<T> of(P data, HttpStatus httpStatus) {
         return ApiPageResponse.of(data, httpStatus, httpStatus.getReasonPhrase());
     }
 
-    public static <S, T extends Page<S>> ApiPageResponse<S> of(T data, HttpStatus httpStatus, String message) {
+    public static <T, P extends Page<T>> ApiPageResponse<T> of(P data, HttpStatus httpStatus, String message) {
         return new ApiPageResponse<>(
                 data.getContent(),
                 PageInfo.of(data),
