@@ -6,7 +6,6 @@ SEB_45_Team_023_pre_project
 ## Features
 
 
-
 ## Contributors
 
 -FE: 이인우, 이종범, 정회엽  
