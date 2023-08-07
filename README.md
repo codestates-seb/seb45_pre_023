@@ -49,19 +49,32 @@ SEB_45_Team_023_pre_project!
 
 ## 타입 및 Emonji 
 
-● feat ✨ :sparkles: - 새로운 기능 추가 <br>
-● fix 🐛 :bug: - 버그 수정 <br>
-● design 📱 :iphone: - 사용자 UI 디자인 변경 <br>
-● style 🎨 :art: - 코드 포맷 변경, 세미 콜론 누락, 코드 수정 없음 <br>
-● refactor ♻️ :recycle: - 프로덕션 코드 리팩토링 <br>
-● comment 💡 :bulb: - 주석 추가 및 변경 <br>
-● docs 📝 :memo: - 문서 수정 <br>
-● test ✅ :white_check_mark: - 테스트 추가 또는 리팩토링 <br>
-● chore 🏗️ :truck: - 파일이나 폴더명 변경, 이동 작업만 <br>
-● rename 🚚 :truck: - 파일이나 폴더명 변경, 이동 작업만 <br>
-● remove ➖ :heavy_minus_sign: - 파일 삭제 작업만 <br>
-● !BREAKING CHANGE 👽️ :alien: - 커다란 API 변경 <br>
-● !HOTFIX 🔥 :fire: - 급하게 치명적인 버그 수정 <br>
+● feat ✨ :sparkles: - 새로운 기능 추가 
+
+● fix 🐛 :bug: - 버그 수정 
+
+● design 📱 :iphone: - 사용자 UI 디자인 변경 
+
+● style 🎨 :art: - 코드 포맷 변경, 세미 콜론 누락, 코드 수정 없음 
+
+● refactor ♻️ :recycle: - 프로덕션 코드 리팩토링 
+
+● comment 💡 :bulb: - 주석 추가 및 변경 
+
+● docs 📝 :memo: - 문서 수정
+
+● test ✅ :white_check_mark: - 테스트 추가 또는 리팩토링 
+
+● chore 🏗️ :truck: - 파일이나 폴더명 변경, 이동 작업만 
+
+● rename 🚚 :truck: - 파일이나 폴더명 변경, 이동 작업만 
+
+● remove ➖ :heavy_minus_sign: - 파일 삭제 작업만 
+
+● !BREAKING CHANGE 👽️ :alien: - 커다란 API 변경 
+
+● !HOTFIX 🔥 :fire: - 급하게 치명적인 버그 수정 
+
 
 ## 커밋 예시
 
