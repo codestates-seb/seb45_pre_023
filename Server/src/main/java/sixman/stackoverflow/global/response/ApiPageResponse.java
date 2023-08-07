@@ -1,10 +1,8 @@
 package sixman.stackoverflow.global.response;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -22,6 +20,10 @@ public class ApiPageResponse<T> {
 
     public static <T, P extends Page<T>> ApiPageResponse<T> ok(P data) {
         return ApiPageResponse.of(data, HttpStatus.OK);
+    }
+
+    public static <T, P extends Page<T>> ApiPageResponse<T> ok(P data, String message) {
+        return ApiPageResponse.of(data, HttpStatus.OK, message);
     }
 
     public static <T, P extends Page<T>> ApiPageResponse<T> of(P data, HttpStatus httpStatus) {

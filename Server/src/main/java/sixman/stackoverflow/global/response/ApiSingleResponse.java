@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -31,6 +32,10 @@ public class ApiSingleResponse<T> {
 
     public static <T> ApiSingleResponse<T> ok(T data) {
         return ApiSingleResponse.of(data, HttpStatus.OK);
+    }
+
+    public static <T> ApiSingleResponse<T> ok(T data, String message) {
+        return ApiSingleResponse.of(data, HttpStatus.OK, message);
     }
 
     public static <T> ApiSingleResponse<T> of(T data, HttpStatus httpStatus) {
@@ -80,7 +85,7 @@ public class ApiSingleResponse<T> {
         );
     }
 
-    public static ApiSingleResponse<BindingResult> fail(Exception exception) {
+    public static ApiSingleResponse<Void> fail(Exception exception) {
         return new ApiSingleResponse<>(
                 null,
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
