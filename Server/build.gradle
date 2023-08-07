@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.14'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 group = 'sixman'
@@ -12,6 +13,7 @@ java {
 }
 
 configurations {
+    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -22,17 +24,66 @@ repositories {
 }
 
 dependencies {
+    //Jpa
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    //spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    //spring web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    //롬복
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    //테스트에서 lombok 사용
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    //H2 데이터베이스 추가
+    runtimeOnly 'com.h2database:h2'
+    //mysql
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    //테스트 라이브러리
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    //asciidoctor
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+test {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+asciidoctor {
+    configurations 'asciidoctorExt'
+    baseDirFollowsSourceFile()
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+task createDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc/")
+    into file("src/main/resources/static")
+}
+
+bootJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn createDocument
+    from("${asciidoctor.outputDir}") {
+        into 'static/docs'
+    }
 }
