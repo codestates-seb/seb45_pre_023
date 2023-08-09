@@ -5,16 +5,16 @@ spring:
         registration:
           google:
             scope: email
-            redirect-uri: http://ec2-3-34-138-44.ap-northeast-2.compute.amazonaws.com
+            redirect-uri: http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com
           github:
             scope: user:email, read:user
-            redirect-uri: http://ec2-3-34-138-44.ap-northeast-2.compute.amazonaws.com
+            redirect-uri: http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com
           kakao:
             client-authentication-method: POST
             authorization-grant-type: authorization_code
             scope: profile_nickname, account_email
             client-name: Kakao
-            redirect-uri: http://ec2-3-34-138-44.ap-northeast-2.compute.amazonaws.com
+            redirect-uri: http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
