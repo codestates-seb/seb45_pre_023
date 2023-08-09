@@ -29,5 +29,17 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Authority authority;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "my_info_id")
+    private MyInfo myInfo;
 
+    public static Member createMember(String email, String nickname, String password) {
+        return Member.builder()
+                .email(email)
+                .nickname(nickname)
+                .password(password)
+                .authority(Authority.ROLE_USER)
+                .myInfo(MyInfo.builder().build())
+                .build();
+    }
 }

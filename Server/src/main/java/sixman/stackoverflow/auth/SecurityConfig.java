@@ -39,8 +39,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf().disable()
+                .httpBasic().disable()
+                .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .cors(getCorsConfigurerCustomizer());
@@ -51,8 +52,6 @@ public class SecurityConfig {
         http.oauth2Login();
 
         http.authorizeRequests()
-                .antMatchers("/userInfo").authenticated()
-                .antMatchers("/auth").authenticated()
                 .anyRequest().permitAll();
 
 
