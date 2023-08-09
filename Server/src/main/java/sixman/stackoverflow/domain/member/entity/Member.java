@@ -1,11 +1,14 @@
 package sixman.stackoverflow.domain.member.entity;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -24,4 +27,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Authority authority;
+
+
 }

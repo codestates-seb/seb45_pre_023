@@ -29,6 +29,8 @@ dependencies {
     //spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
+    //oauth
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     //spring web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     //롬복
