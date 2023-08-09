@@ -1,7 +1,7 @@
-package todolist.domain.member.entity;
+package sixman.stackoverflow.domain.member.entity;
 
 import lombok.RequiredArgsConstructor;
-import todolist.global.entity.BaseEnum;
+import sixman.stackoverflow.global.entity.BaseEnum;
 
 @RequiredArgsConstructor
 public enum Authority implements BaseEnum {

@@ -1,4 +1,4 @@
-package todolist.global.entity;
+package sixman.stackoverflow.global.entity;
 
 public interface BaseEnum {
     String getName();
