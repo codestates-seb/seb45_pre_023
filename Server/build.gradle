@@ -29,6 +29,8 @@ dependencies {
     //spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
+    //oauth
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     //spring web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     //롬복
@@ -48,6 +50,11 @@ dependencies {
     //asciidoctor
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    //jwt
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 }
 
 tasks.named('test') {
