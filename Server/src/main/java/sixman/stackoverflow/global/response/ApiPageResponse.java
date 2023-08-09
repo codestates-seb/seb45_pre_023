@@ -7,9 +7,8 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-@Getter(value = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@AllArgsConstructor
 public class ApiPageResponse<T> {
 
     private List<T> data;

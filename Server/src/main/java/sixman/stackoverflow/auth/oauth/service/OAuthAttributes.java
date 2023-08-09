@@ -1,4 +1,6 @@
-package sixman.stackoverflow.auth.oauth;
+package sixman.stackoverflow.auth.oauth.service;
+
+import sixman.stackoverflow.auth.oauth.service.MemberProfile;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -8,14 +10,12 @@ public enum OAuthAttributes {
 
     GOOGLE("google", (attributes) -> {
         MemberProfile memberProfile = new MemberProfile();
-        memberProfile.setName((String) attributes.get("name"));
         memberProfile.setEmail((String) attributes.get("email"));
         return memberProfile;
     }),
 
     GITHUB("github", (attributes) -> {
         MemberProfile memberProfile = new MemberProfile();
-        memberProfile.setName((String) attributes.get("name"));
         memberProfile.setEmail(((String) attributes.get("email")));
         return memberProfile;
     }),
@@ -27,7 +27,6 @@ public enum OAuthAttributes {
         Map<String, Object> kakaoProfile = (Map<String, Object>)kakaoAccount.get("profile");
 
         MemberProfile memberProfile = new MemberProfile();
-        memberProfile.setName((String) kakaoProfile.get("nickname"));
         memberProfile.setEmail((String) kakaoAccount.get("email"));
         return memberProfile;
     });

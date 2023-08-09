@@ -4,15 +4,17 @@ spring:
       client:
         registration:
           google:
-            scope: profile, email
+            scope: email
+            redirect-uri: http://ec2-3-34-138-44.ap-northeast-2.compute.amazonaws.com
           github:
             scope: user:email, read:user
+            redirect-uri: http://ec2-3-34-138-44.ap-northeast-2.compute.amazonaws.com
           kakao:
-            redirect-uri: http://ec2-3-34-138-44.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/kakao
             client-authentication-method: POST
             authorization-grant-type: authorization_code
             scope: profile_nickname, account_email
             client-name: Kakao
+            redirect-uri: http://ec2-3-34-138-44.ap-northeast-2.compute.amazonaws.com
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -60,7 +62,11 @@ spring:
     oauth2:
       client:
         registration:
+            google:
+                redirect-uri: http://localhost:3000
+            github:
+                redirect-uri: http://localhost:3000
             kakao:
-                redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+                redirect-uri: http://localhost:3000
 url:
   frontend: http://localhost:3000

@@ -1,4 +1,4 @@
-package sixman.stackoverflow.auth.oauth;
+package sixman.stackoverflow.auth.oauth.service;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,6 @@ import sixman.stackoverflow.domain.member.entity.Member;
 @Getter @Setter
 public class MemberProfile {
 
-    private String name;
     private String email;
 
     public Member toMember() {

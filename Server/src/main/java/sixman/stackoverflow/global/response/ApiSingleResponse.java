@@ -20,9 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Getter(value = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@AllArgsConstructor
 public class ApiSingleResponse<T> {
 
     private T data;
@@ -94,9 +93,8 @@ public class ApiSingleResponse<T> {
         );
     }
 
-    @Getter(value = AccessLevel.PROTECTED)
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    @AllArgsConstructor
     public static class ErrorResponse {
 
         private String field;
