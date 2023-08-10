@@ -17,7 +17,7 @@ public class MyInfo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long myInfoId;
+    private Long MyInfoId;
 
     private String myIntro;
 
