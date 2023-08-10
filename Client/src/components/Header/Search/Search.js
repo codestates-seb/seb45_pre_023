@@ -6,7 +6,7 @@ import SearchBox from './SearchBox';
 
 export default function Search() {
 
-  const [isOpen, setisOpen] = useState(false)
+  const [isOpen, setisOpen] = useState(true)
   
   return (
     <div className='relative flex felx-row items-center px-2 mx-1 w-168 h-8 rounded-md border-2 border-solid border-gray'>
