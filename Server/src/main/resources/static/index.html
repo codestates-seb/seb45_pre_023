@@ -658,13 +658,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
   "data" : [ {
-    "field" : "password",
-    "value" : "",
-    "reason" : "비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."
-  }, {
     "field" : "email",
     "value" : "",
     "reason" : "이메일을 정확히 입력해주세요."
+  }, {
+    "field" : "password",
+    "value" : "",
+    "reason" : "비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."
   } ],
   "code" : 400,
   "status" : "BAD_REQUEST",
@@ -891,8 +891,8 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJpZCI6MywiZXhwIjoxNjkxNzYwNzEwfQ.oqm1j-0t21o9wVwDlVyHKaUVtEzANAiWsRSZ_HfPp6B4UkKuslWYj2U91ruRN3Oc7ShlTRtykdoD494oYpuejA
-Refresh: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImlkIjozLCJleHAiOjE2OTIyOTM1MTB9.9GZzypjf-5qsmbEv0ESfhQ1E108s67_U6UnQlz7USJ9g9A2DjPmOImqp187P2p8mo90n744VxnSsYUp9oHjV4A
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJpZCI6MywiZXhwIjoxNjkxNzYxMTUzfQ.KaFO46FWx5R6mXPcu6RB81Y5jSR5mz6HnEkwqOS7YM5xysdN9IvBDOJfG5Y5N1Fp9BmZKe4Acs2v9yiUOIOMMA
+Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImlkIjozLCJleHAiOjE2OTIyOTM5NTN9.0czs9KBWSiSkJznNZcqOJzVBrvEodkFFBr59CJ-b6NyD07ZFxDnQbaZDGUwXCG75KmawpIz_6ZtOd5ys8we0TA
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1039,7 +1039,7 @@ X-Frame-Options: DENY</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /auth/refresh HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaWQiOjIsImV4cCI6MTY5MTY4ODcxOX0.O1znzydit7gEX47h0Q-YqeRGzHlTSYNQKi_Q4NcVywsfOAsvl1JU4xlfet66UVzZvacoEy6S1W6FnXpk2Bfaow
+Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaWQiOjIsImV4cCI6MTY5MTY4OTE2Mn0.mn41c71jzk6GQInm5frE17F6TElxba80r7xp6KwH95BFIT8uTnr5WdDiSNF1sZ9MsiVo-WJLz04Z741ekXe7Aw
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1073,7 +1073,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsImlkIjoyLCJleHAiOjE2OTE3NjA3MDl9.Pzo4QFFr-33zbUs4sjdzFQKJ53Pw6GVhssaLjneMkOyBwq02K92-EfXp_HWuQFe0PHZ8pxcmKfQ5kLr_5Ck3xg
+authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsImlkIjoyLCJleHAiOjE2OTE3NjExNTJ9.P5iUdQgeCvExCyC1DzZqg3F3gR_gZnV86coX2AVwJHeNDm6htub7LzunROEJH3SZmXS0ZAoGKlZQRXze0rIbcw
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1256,7 +1256,7 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 3634
+Content-Length: 3652
 
 {
   "data" : {
@@ -1272,36 +1272,36 @@ Content-Length: 3634
         "title" : "title 1",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.0565263",
-        "updatedDate" : "2023-08-11T02:31:52.0565263"
+        "createdDate" : "2023-08-10T02:39:15.0857098",
+        "updatedDate" : "2023-08-11T02:39:15.0857098"
       }, {
         "questionId" : 2,
         "title" : "title 2",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "questionId" : 3,
         "title" : "title 3",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "questionId" : 4,
         "title" : "title 4",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "questionId" : 5,
         "title" : "title 5",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1321,40 +1321,40 @@ Content-Length: 3634
         "questionTitle" : "title 1",
         "content" : "content 1",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 2,
         "questionId" : 2,
         "questionTitle" : "title 2",
         "content" : "content 2",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 3,
         "questionId" : 3,
         "questionTitle" : "title 3",
         "content" : "content 3",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 4,
         "questionId" : 4,
         "questionTitle" : "title 4",
         "content" : "content 4",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 5,
         "questionId" : 5,
         "questionTitle" : "title 5",
         "content" : "content 5",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1408,36 +1408,36 @@ Content-Length: 3634
         "title" : "title 1",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.0565263",
-        "updatedDate" : "2023-08-11T02:31:52.0565263"
+        "createdDate" : "2023-08-10T02:39:15.0857098",
+        "updatedDate" : "2023-08-11T02:39:15.0857098"
       }, {
         "questionId" : 2,
         "title" : "title 2",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "questionId" : 3,
         "title" : "title 3",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "questionId" : 4,
         "title" : "title 4",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "questionId" : 5,
         "title" : "title 5",
         "views" : 100,
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1457,40 +1457,40 @@ Content-Length: 3634
         "questionTitle" : "title 1",
         "content" : "content 1",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 2,
         "questionId" : 2,
         "questionTitle" : "title 2",
         "content" : "content 2",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 3,
         "questionId" : 3,
         "questionTitle" : "title 3",
         "content" : "content 3",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 4,
         "questionId" : 4,
         "questionTitle" : "title 4",
         "content" : "content 4",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       }, {
         "answerId" : 5,
         "questionId" : 5,
         "questionTitle" : "title 5",
         "content" : "content 5",
         "recommend" : 10,
-        "createdDate" : "2023-08-10T02:31:52.059481",
-        "updatedDate" : "2023-08-11T02:31:52.059481"
+        "createdDate" : "2023-08-10T02:39:15.0907123",
+        "updatedDate" : "2023-08-11T02:39:15.0907123"
       } ],
       "pageInfo" : {
         "page" : 1,
