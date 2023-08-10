@@ -1,14 +1,12 @@
 package sixman.stackoverflow.domain.member.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.global.testhelper.RepositoryTest;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberRepositoryTest extends RepositoryTest {
 
@@ -26,7 +24,7 @@ class MemberRepositoryTest extends RepositoryTest {
         Member findMember = memberRepository.findByEmail(member.getEmail()).orElseThrow();
 
         //then
-        assertThat(findMember.getId()).isEqualTo(member.getId());
+        assertThat(findMember.getMemberId()).isEqualTo(member.getMemberId());
         assertThat(findMember.getEmail()).isEqualTo(member.getEmail());
     }
 }

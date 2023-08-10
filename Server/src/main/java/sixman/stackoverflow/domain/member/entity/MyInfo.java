@@ -21,5 +21,5 @@ public class MyInfo extends BaseEntity {
 
     private String myIntro;
 
-    private String imageUrl;
+    private String image;
 }

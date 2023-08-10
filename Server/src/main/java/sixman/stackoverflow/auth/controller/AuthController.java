@@ -1,4 +1,4 @@
-package sixman.stackoverflow.auth.oauth.controller;
+package sixman.stackoverflow.auth.controller;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

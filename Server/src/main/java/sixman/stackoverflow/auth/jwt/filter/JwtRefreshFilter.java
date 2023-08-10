@@ -55,6 +55,6 @@ public class JwtRefreshFilter extends OncePerRequestFilter {
 
     private String getRefreshToken(HttpServletRequest request) {
 
-        return request.getHeader("Refresh");
+        return request.getHeader("Refresh").replace("Bearer ", "");
     }
 }
