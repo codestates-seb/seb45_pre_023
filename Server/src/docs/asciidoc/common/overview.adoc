@@ -53,18 +53,18 @@
 | 서버 에러 / 서버에서 처리하지 못한 오류
 |===
 
-// [[overview-response]]
-// == HTTP Response
-// === HTTP Response - Success
-// include::{snippets}/common/basicapi/response-body.adoc[]
-// include::{snippets}/common/basicapi/response-fields.adoc[]
-//
-// === HTTP Response - Error(Validation 오류)
-// include::{snippets}/common/exceptionvalidapi/response-body.adoc[]
-// include::{snippets}/common/exceptionvalidapi/response-fields.adoc[]
-//
-// === HTTP Response - Error(기타 오류)
-// include::{snippets}/common/exceptionapi/response-body.adoc[]
-// include::{snippets}/common/exceptionapi/response-fields.adoc[]
+[[overview-response]]
+== HTTP Response
+=== HTTP Response - Success
+include::{snippets}/common/basicapi/response-body.adoc[]
+include::{snippets}/common/basicapi/response-fields.adoc[]
+
+=== HTTP Response - Error(Validation 오류)
+include::{snippets}/common/exceptionvalidapi/response-body.adoc[]
+include::{snippets}/common/exceptionvalidapi/response-fields.adoc[]
+
+=== HTTP Response - Error(기타 오류)
+include::{snippets}/common/exceptionapi/response-body.adoc[]
+include::{snippets}/common/exceptionapi/response-fields.adoc[]
 
 

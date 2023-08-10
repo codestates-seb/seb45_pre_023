@@ -161,7 +161,7 @@ class AuthControllerTest {
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/refresh")
-                .header("Refresh", refreshToken)
+                .header("Refresh", "Bearer " + refreshToken)
                 .contentType(APPLICATION_JSON));
 
         //then

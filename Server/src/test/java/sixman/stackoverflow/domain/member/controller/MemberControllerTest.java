@@ -61,11 +61,13 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(header().string("Location", "/members/" + memberId));
 
         //restdocs
+        setConstraintClass(MemberCreateApiRequest.class);
+
         actions.andDo(documentHandler.document(
                 requestFields(
-                        fieldWithPath("email").description("회원 email"),
-                        fieldWithPath("nickname").description("회원 nickname"),
-                        fieldWithPath("password").description("회원 password")
+                        fieldWithPath("email").description("회원 email").attributes(getConstraint("email")),
+                        fieldWithPath("nickname").description("회원 nickname").attributes(getConstraint("nickname")),
+                        fieldWithPath("password").description("회원 password").attributes(getConstraint("password"))
                 ),
                 responseHeaders(
                         headerWithName("Location").description("생성된 회원의 URI")
@@ -100,7 +102,7 @@ class MemberControllerTest extends ControllerTest {
                         fieldWithPath("data.nickname").description("회원 nickname"),
                         fieldWithPath("data.image").description("회원 이미지 url"),
                         fieldWithPath("data.myIntro").description("회원 소개글"),
-                        fieldWithPath("data.authority").description("회원 권한"),
+                        fieldWithPath("data.authority").description(generateLinkCode(Authority.class)),
                         fieldWithPath("data.question").description("회원 질문"),
                         fieldWithPath("data.question.questions[]").description("회원이 작성한 질문 리스트"),
                         fieldWithPath("data.question.questions[].questionId").description("작성한 질문 ID"),
@@ -169,6 +171,8 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isNoContent());
 
         //restdocs
+        setConstraintClass(MemberUpdateApiRequest.class);
+
         actions.andDo(documentHandler.document(
                 pathParameters(
                         parameterWithName("memberId").description("수정할 회원의 ID")
@@ -177,8 +181,8 @@ class MemberControllerTest extends ControllerTest {
                         headerWithName("Authorization").description("JWT Token")
                 ),
                 requestFields(
-                        fieldWithPath("nickname").description("수정할 회원의 nickname"),
-                        fieldWithPath("myIntro").description("수정할 회원의 소개글")
+                        fieldWithPath("nickname").description("수정할 회원의 nickname").optional().attributes(getConstraint("nickname")),
+                        fieldWithPath("myIntro").description("수정할 회원의 소개글").optional().attributes(getConstraint("myIntro"))
                 )
         ));
     }
@@ -228,8 +232,8 @@ class MemberControllerTest extends ControllerTest {
         //given
         Long memberId = 1L;
         MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
-                .password("prev password")
-                .newPassword("new password")
+                .password("prevPassword123!!")
+                .newPassword("newPassword123!!")
                 .build();
 
         //when
@@ -245,6 +249,8 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isNoContent());
 
         //restdocs
+        setConstraintClass(MemberPasswordUpdateAPiRequest.class);
+
         actions.andDo(documentHandler.document(
                 pathParameters(
                         parameterWithName("member-id").description("비밀번호를 수정할 회원의 ID")
@@ -253,8 +259,8 @@ class MemberControllerTest extends ControllerTest {
                         headerWithName("Authorization").description("JWT Token")
                 ),
                 requestFields(
-                        fieldWithPath("password").description("이전 비밀번호"),
-                        fieldWithPath("newPassword").description("새로운 비밀번호")
+                        fieldWithPath("password").description("이전 비밀번호").attributes(getConstraint("password")),
+                        fieldWithPath("newPassword").description("새로운 비밀번호").attributes(getConstraint("newPassword"))
                 )
         ));
     }
@@ -281,15 +287,17 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isNoContent());
 
         //restdocs
+        setConstraintClass(MemberDeleteApiRequest.class);
+
         actions.andDo(documentHandler.document(
                 pathParameters(
                         parameterWithName("member-id").description("탈퇴할 회원의 ID")
                 ),
                 requestHeaders(
-                        headerWithName("Authorization").description("JWT Token")
+                        headerWithName("Authorization").description("accessToken")
                 ),
                 requestFields(
-                        fieldWithPath("password").description("회원의 비밀번호")
+                        fieldWithPath("password").description("회원의 비밀번호").attributes(getConstraint("password"))
                 )
         ));
     }

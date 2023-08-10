@@ -1,4 +1,4 @@
-package todolist.global.restdocs.util;
+package sixman.stackoverflow.global.restdocs.utils;
 
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.operation.Operation;
@@ -19,11 +19,6 @@ public class CustomResponseFieldsSnippet extends AbstractFieldsSnippet {
         super(type, descriptors, attributes, ignoreUndocumentedFields, subsectionExtractor);
     }
 
-    public CustomResponseFieldsSnippet(String type, List<FieldDescriptor> descriptors, Map<String, Object> attributes,
-                                       boolean ignoreUndocumentedFields) {
-
-        super(type, descriptors, attributes, ignoreUndocumentedFields);
-    }
     @Override
     protected MediaType getContentType(Operation operation) {
         return operation.getResponse().getHeaders().getContentType();
@@ -41,12 +36,5 @@ public class CustomResponseFieldsSnippet extends AbstractFieldsSnippet {
             Map<String, Object> attributes,
             FieldDescriptor... descriptors) {
         return new CustomResponseFieldsSnippet(type, subsectionExtractor, Arrays.asList(descriptors), attributes, true);
-    }
-
-    public static CustomResponseFieldsSnippet customResponseFields(
-            String type,
-            Map<String, Object> attributes,
-            FieldDescriptor... descriptors) {
-        return new CustomResponseFieldsSnippet(type, Arrays.asList(descriptors), attributes, true);
     }
 }

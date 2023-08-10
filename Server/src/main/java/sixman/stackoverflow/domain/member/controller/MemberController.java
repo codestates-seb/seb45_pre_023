@@ -15,6 +15,7 @@ import sixman.stackoverflow.domain.member.service.MemberService;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.global.response.PageInfo;
+import sixman.stackoverflow.module.aws.s3service.S3Service;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -26,9 +27,11 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final S3Service s3Service;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, S3Service s3Service) {
         this.memberService = memberService;
+        this.s3Service = s3Service;
     }
 
     @GetMapping("/{member-id}")
@@ -127,13 +130,14 @@ public class MemberController {
                 .memberId(memberId)
                 .email("test@test.com")
                 .nickname("nickname")
-                .image("test_url.com")
+                .image(s3Service.getPreSignedUrl("https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png"))
                 .myIntro("hi! im test")
                 .authority(Authority.ROLE_USER)
                 .question(question)
                 .answer(answer)
                 .tags(tags)
                 .build();
+
         return memberResponse;
     }
 
