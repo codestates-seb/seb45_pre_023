@@ -2,6 +2,14 @@
 
 IMPORTANT: 로그아웃은 브라우저에서 토큰 삭제로 구현합니다.
 
+== stub 로그인 데이터
+아래 id, pw 로 로그인하면 토큰이 발급됩니다.
+|===
+| id | pw
+| `test@google.com`
+| `1q2w3e4r!`
+|===
+
 == 일반 login
 === HTTP Request
 include::{snippets}/auth/login/http-request.adoc[]
