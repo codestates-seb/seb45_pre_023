@@ -15,16 +15,16 @@ import sixman.stackoverflow.auth.oauth.service.OAuthService;
 import java.util.Collections;
 
 @RestController
-@RequestMapping("/auth/oauth")
-public class OAuthController {
+@RequestMapping("/auth")
+public class AuthController {
 
     private final OAuthService oAuthService;
 
-    public OAuthController(OAuthService oAuthService) {
+    public AuthController(OAuthService oAuthService) {
         this.oAuthService = oAuthService;
     }
 
-    @GetMapping("/{provider}")
+    @GetMapping("/oauth/{provider}")
     public ResponseEntity<Void> login(@PathVariable String provider, String code) {
         Token token = oAuthService.login(provider, code);
 

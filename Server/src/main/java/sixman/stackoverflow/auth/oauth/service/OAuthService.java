@@ -38,13 +38,11 @@ public class OAuthService {
     private final InMemoryClientRegistrationRepository inMemoryRepository;
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
-    private final OAuth2AuthorizedClientService authorizedClientService;
 
-    public OAuthService(InMemoryClientRegistrationRepository inMemoryRepository, MemberRepository memberRepository, TokenProvider tokenProvider, OAuth2AuthorizedClientService authorizedClientService) {
+    public OAuthService(InMemoryClientRegistrationRepository inMemoryRepository, MemberRepository memberRepository, TokenProvider tokenProvider) {
         this.inMemoryRepository = inMemoryRepository;
         this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
-        this.authorizedClientService = authorizedClientService;
     }
 
 
