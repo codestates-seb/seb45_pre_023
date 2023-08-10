@@ -1,0 +1,40 @@
+= Auth API
+
+IMPORTANT: 로그아웃은 브라우저에서 토큰 삭제로 구현합니다.
+
+== 일반 login
+=== HTTP Request
+include::{snippets}/auth/login/http-request.adoc[]
+==== Request Body
+include::{snippets}/auth/login/request-body.adoc[]
+==== Request Fields
+include::{snippets}/auth/login/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/auth/login/http-response.adoc[]
+==== Response Header
+include::{snippets}/auth/login/response-headers.adoc[]
+
+== OAuth login
+=== HTTP Request
+include::{snippets}/auth/oauth/http-request.adoc[]
+==== Request Path Parameter
+include::{snippets}/auth/oauth/path-parameters.adoc[]
+==== Request Query Parameter
+include::{snippets}/auth/oauth/request-parameters.adoc[]
+
+=== HTTP Response
+include::{snippets}/auth/oauth/http-response.adoc[]
+==== Response Header
+include::{snippets}/auth/oauth/response-headers.adoc[]
+
+== refresh 으로 token 발급
+=== HTTP Request
+include::{snippets}/auth/refresh/http-request.adoc[]
+==== Request Header
+include::{snippets}/auth/refresh/request-headers.adoc[]
+=== HTTP Response
+include::{snippets}/auth/refresh/http-response.adoc[]
+==== Response Header
+include::{snippets}/auth/refresh/response-headers.adoc[]
+
+

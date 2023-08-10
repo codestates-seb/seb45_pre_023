@@ -1,0 +1,16 @@
+= Rest Docs Practice Application API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+include::common/overview.adoc[]
+
+include::snippets/auth.adoc[]
+
+include::snippets/member.adoc[]
+
+

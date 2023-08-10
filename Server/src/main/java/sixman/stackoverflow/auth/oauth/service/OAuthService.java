@@ -78,7 +78,7 @@ public class OAuthService {
         }
 
         CustomUserDetails userDetails = new CustomUserDetails(
-                member.getId(),
+                member.getMemberId(),
                 member.getEmail(),
                 member.getPassword(),
                 Collections.singleton(new SimpleGrantedAuthority(member.getAuthority().toString())));
