@@ -8,6 +8,7 @@ import UserMain from './pages/User/UserMain';
 import UserProfile from './pages/User/Profile';
 import UserEdit from './pages/User/Settings/Edit';
 import UserDelete from './pages/User/Settings/Delete';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path={RouteConst.UserEdit} element={<UserEdit />} />
         <Route path={RouteConst.UserDelete} element={<UserDelete />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }
