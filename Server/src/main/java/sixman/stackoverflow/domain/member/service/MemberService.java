@@ -27,7 +27,7 @@ public class MemberService {
 
         Member member = createMember(request);
 
-        return memberRepository.save(member).getId();
+        return memberRepository.save(member).getMemberId();
     }
 
     private void checkDuplicateMember(String email) {
