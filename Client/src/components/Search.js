@@ -5,7 +5,7 @@ export default function Search() {
   return (
     <div className='flex felx-row items-center px-2 mx-1 w-168 h-8 rounded-md border-2 border-solid border-gray'>
       <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#c7c7c7"}} />
-      <input className='ml-2 w-132 h-6 text-sm' placeholder="Search..."></input>
+      <input className='ml-2 w-152 h-6 text-sm' placeholder="Search..."></input>
     </div>
   );
 }
