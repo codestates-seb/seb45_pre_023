@@ -6,7 +6,25 @@ import { Link } from 'react-router-dom';
 import { RouteConst } from '../Interface/RouteConst';
 import Search from './Search';
 
+import DropdownProducts from './Dropdown/DropdownProducts';
+import DropdownInbox  from './Dropdown/DropdownInbox'
+import DropdownAchievements from './Dropdown/DropdownAchievements'
+import DropdownQuestion from './Dropdown/DropdownQuestion';
+import DropdownMenu from './Dropdown/DropdownMenu'
+import { useState } from 'react';
+
 export default function HeaderAfter() {
+    
+    const [isClick, setClick] = useState(3);
+
+    const handleDropdown = (el) => {
+        if (isClick === el) {
+            setClick(false)
+        } else {
+            setClick(el)
+        }
+    }
+
     return (
         <header className="flex flex-row justify-center items-center h-12 border-t-2 border-orange-400 border-b-1 border-b-gray-300">
           <Link to={RouteConst.Login} className="flex flex-row justify-center items-center w-42 h-12 hover:bg-gray-200 text-lg">
@@ -30,8 +48,9 @@ export default function HeaderAfter() {
           <button className="w-10 h-12 hover:bg-gray-200">
             <FontAwesomeIcon icon={faMedal} className="w-4 h-4"/>
           </button>
-          <button className="w-10 h-12 hover:bg-gray-200">
+          <button className="relative w-10 h-12 hover:bg-gray-200 " onClick={() => {handleDropdown(3)}}>
             <FontAwesomeIcon icon={faCircleQuestion} className="w-4 h-4"/>
+            {isClick === 3 ? <DropdownQuestion/> : null}
           </button>
           <button className="w-10 h-12 hover:bg-gray-200">
             <FontAwesomeIcon icon={faBars} className="w-4 h-4"/>
