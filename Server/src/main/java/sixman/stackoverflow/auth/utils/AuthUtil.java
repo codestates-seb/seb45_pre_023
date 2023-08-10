@@ -1,4 +1,4 @@
-package sixman.stackoverflow.auth.jwt.utils;
+package sixman.stackoverflow.auth.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;

@@ -9,7 +9,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;
@@ -18,13 +18,5 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody @Valid MemberCreateApiRequest request) {
 
-        Long memberId = memberService.signup(request.toResponseRequest());
-
-        URI uri = URI.create("/members/" + memberId);
-
-        return ResponseEntity.created(uri).build();
-    }
 }

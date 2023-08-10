@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import sixman.stackoverflow.auth.jwt.utils.AuthUtil;
+import sixman.stackoverflow.auth.utils.AuthUtil;
 import sixman.stackoverflow.global.exception.businessexception.BusinessException;
 import sixman.stackoverflow.global.exception.businessexception.authexception.JwtExpiredAuthException;
 import sixman.stackoverflow.global.exception.businessexception.commonexception.UnknownException;

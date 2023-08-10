@@ -10,7 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sixman.stackoverflow.auth.jwt.dto.LoginDto;
 import sixman.stackoverflow.auth.jwt.service.TokenProvider;
-import sixman.stackoverflow.auth.jwt.utils.AuthConstant;
+import sixman.stackoverflow.auth.utils.AuthConstant;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

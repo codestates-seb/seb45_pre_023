@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import sixman.stackoverflow.auth.jwt.utils.AuthUtil;
+import sixman.stackoverflow.auth.utils.AuthUtil;
 import sixman.stackoverflow.global.exception.businessexception.commonexception.UnknownException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
 

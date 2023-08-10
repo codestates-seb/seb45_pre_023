@@ -1,4 +1,4 @@
-package sixman.stackoverflow.auth.jwt.utils;
+package sixman.stackoverflow.auth.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

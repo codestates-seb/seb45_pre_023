@@ -6,7 +6,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -22,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import sixman.stackoverflow.auth.jwt.dto.Token;
 import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
 import sixman.stackoverflow.auth.jwt.service.TokenProvider;
-import sixman.stackoverflow.auth.jwt.utils.AuthConstant;
+import sixman.stackoverflow.auth.utils.AuthConstant;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 

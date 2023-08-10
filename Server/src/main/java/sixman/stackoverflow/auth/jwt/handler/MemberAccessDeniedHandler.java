@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import sixman.stackoverflow.auth.jwt.utils.AuthUtil;
+import sixman.stackoverflow.auth.utils.AuthUtil;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 
 import javax.servlet.ServletException;
