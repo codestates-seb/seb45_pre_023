@@ -1,7 +1,7 @@
 package sixman.stackoverflow.auth.jwt.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import sixman.stackoverflow.auth.jwt.utils.AuthUtil;
+import sixman.stackoverflow.auth.utils.AuthUtil;
 import sixman.stackoverflow.global.exception.businessexception.BusinessException;
 import sixman.stackoverflow.global.exception.businessexception.authexception.AuthException;
 import sixman.stackoverflow.global.exception.businessexception.commonexception.UnknownException;

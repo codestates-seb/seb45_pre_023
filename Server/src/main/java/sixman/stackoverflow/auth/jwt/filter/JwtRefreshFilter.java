@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static sixman.stackoverflow.auth.jwt.utils.AuthConstant.ACCESS_TOKEN_EXPIRE_TIME;
+import static sixman.stackoverflow.auth.utils.AuthConstant.ACCESS_TOKEN_EXPIRE_TIME;
 
 @RequiredArgsConstructor
 public class JwtRefreshFilter extends OncePerRequestFilter {
