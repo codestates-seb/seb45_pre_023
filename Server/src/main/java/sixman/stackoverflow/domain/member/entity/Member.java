@@ -33,6 +33,8 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "my_info_id")
     private MyInfo myInfo;
 
+    private boolean enabled;
+
     public static Member createMember(String email, String nickname, String password) {
         return Member.builder()
                 .email(email)
@@ -40,6 +42,7 @@ public class Member extends BaseEntity {
                 .password(password)
                 .authority(Authority.ROLE_USER)
                 .myInfo(MyInfo.builder().build())
+                .enabled(true)
                 .build();
     }
 }

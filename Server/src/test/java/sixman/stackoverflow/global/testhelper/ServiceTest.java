@@ -24,6 +24,7 @@ public abstract class ServiceTest {
                 .password(passwordEncoder.encode("1234abcd!"))
                 .authority(Authority.ROLE_USER)
                 .myInfo(MyInfo.builder().build())
+                .enabled(true)
                 .build();
     }
 }
