@@ -1,24 +1,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { faStackOverflow } from '@fortawesome/free-brands-svg-icons';
-import {
-  faCircleQuestion,
-  faMedal,
-  faWindowRestore,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion, faMedal, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import { RouteConst } from '../Interface/RouteConst';
-import Search from './Header/Search/Search';
+import { RouteConst } from '../../Interface/RouteConst';
+import Search from './Search/Search';
 
-import DropdownProducts from './Dropdown/DropdownProducts';
-import DropdownInbox from './Dropdown/DropdownInbox';
-import DropdownAchievements from './Dropdown/DropdownAchievements';
-import DropdownQuestion from './Dropdown/DropdownQuestion';
-import DropdownMenu from './Dropdown/DropdownMenu';
+import DropdownProducts from '../Dropdown/DropdownProducts';
+import DropdownInbox from '../Dropdown/DropdownInbox';
+import DropdownAchievements from '../Dropdown/DropdownAchievements';
+import DropdownQuestion from '../Dropdown/DropdownQuestion';
+import DropdownMenu from '../Dropdown/DropdownMenu';
 import { useState } from 'react';
 
 export default function HeaderAfter() {
-  const [isClick, setClick] = useState(0);
+  const [isClick, setClick] = useState(false);
 
   const handleDropdown = (el) => {
     if (isClick === el) {
@@ -47,6 +43,9 @@ export default function HeaderAfter() {
         onClick={() => {
           handleDropdown(0);
         }}
+        onBlur={() => {
+          setClick(false)
+        }}
       >
         Products
         {isClick === 0 ? <DropdownProducts /> : null}
@@ -70,6 +69,9 @@ export default function HeaderAfter() {
         onClick={() => {
           handleDropdown(1);
         }}
+        onBlur={() => {
+          setClick(false)
+        }}
       >
         <FontAwesomeIcon icon={faWindowRestore} className="w-4 h-4" />
         {isClick === 1 ? <DropdownInbox /> : null}
@@ -78,6 +80,9 @@ export default function HeaderAfter() {
         className="relative w-10 h-11 hover:bg-gray-200 hover:h-11"
         onClick={() => {
           handleDropdown(2);
+        }}
+        onBlur={() => {
+          setClick(false)
         }}
       >
         <FontAwesomeIcon icon={faMedal} className="w-4 h-4" />
@@ -88,6 +93,9 @@ export default function HeaderAfter() {
         onClick={() => {
           handleDropdown(3);
         }}
+        onBlur={() => {
+          setClick(false)
+        }}
       >
         <FontAwesomeIcon icon={faCircleQuestion} className="w-4 h-4" />
         {isClick === 3 ? <DropdownQuestion /> : null}
@@ -96,6 +104,9 @@ export default function HeaderAfter() {
         className="relative w-10 h-11 hover:bg-gray-200 hover:h-11"
         onClick={() => {
           handleDropdown(4);
+        }}
+        onBlur={() => {
+          setClick(false)
         }}
       >
         <FontAwesomeIcon icon={faBars} className="w-4 h-4" />

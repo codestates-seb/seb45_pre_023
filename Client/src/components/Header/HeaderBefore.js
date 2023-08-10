@@ -2,12 +2,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { faStackOverflow } from '@fortawesome/free-brands-svg-icons';
 import { Link } from 'react-router-dom';
-import { RouteConst } from '../Interface/RouteConst';
-import Search from './Search';
+import { RouteConst } from '../../Interface/RouteConst';
+import Search from './Search/Search';
 
 export default function HeaderBefore() {
     return (
-        <header className="flex flex-row justify-center items-center h-12 border-t-2 border-orange-400 border-b-1 border-b-gray-300">
+        <header className="flex flex-row justify-center items-center h-12 border-t-4 border-orange-400 border-b-1 border-b-gray-300">
           <button className="w-12 h-12 hover:bg-gray-200">
             <FontAwesomeIcon icon={faBars} className="w-4 h-4"/>
           </button>
