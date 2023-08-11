@@ -22,6 +22,7 @@ function App() {
         <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
         <Route path={RouteConst.memberDelete} element={<MemberDelete />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }
