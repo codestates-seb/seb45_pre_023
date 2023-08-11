@@ -17,7 +17,7 @@ export default function LoginForm() {
           <FontAwesomeIcon icon={faGithub} className="w-4 h-4 mr-2" />
           <span className="text-sm">Sign up with GitHub</span>
         </li>
-        <li className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-yellow-200 hover:bg-yellow-300 border border-solid border-gray rounded-md cursor-pointer">
+        <li className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg"
             className="w-5 h-5 mr-2"
