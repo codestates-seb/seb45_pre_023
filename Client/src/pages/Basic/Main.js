@@ -1,3 +1,19 @@
+import FilteringButton from '../../components/Main/FilteringButton';
+import QuestionList from '../../components/Main/QuestionLists';
+import LeftSidebar from '../../components/SideBar/LeftSidebar';
+import RightSidebar from '../../components/SideBar/RightSidebar';
+
 export default function Main() {
-    return <>기본 질문나열 페이지</>
+  return (
+    <>
+      <div className="flex">
+        <LeftSidebar />
+        <RightSidebar />
+        <div>
+          <FilteringButton />
+          <QuestionList />
+        </div>
+      </div>
+    </>
+  );
 }
