@@ -1,7 +1,7 @@
 export default function DropdownMenu() {
   return (
-    <ul className="absolute flex flex-col items-center w-88 h-18 top-11 right-0 border border-solid border-gray-200">
-      <li className="flex flex-row justify-between w-88 h-8 px-3 py-2 bg-gray-100">
+    <ul className="absolute flex flex-col items-center w-88 h-18 top-11 right-0 bg-white border border-solid border-gray-200">
+      <li className="flex flex-row justify-between w-88 h-8 px-3 py-2 bg-gray-200">
         <span className="font-bold text-sky-600 text-xs">
           Currnet Community
         </span>

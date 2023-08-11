@@ -1,6 +1,6 @@
 export default function DropdownProducts () {
     return (
-        <ul className="flex flex-col justify-center items-center top-8 -left-20 z-10 w-56 rounded-md bg-white absolute border border-solid border-gray">
+        <ul className="flex flex-col justify-center items-center top-8 -left-20 z-10 w-56 rounded-md bg-white bg-white absolute border border-solid border-gray">
           <li className="w-52 py-1 px-2 my-2 rounded-md text-left hover:bg-gray-300">
             <div className="text-sm">Stack Overflow</div>
             <span className="text-gray-400 text-xs">Public questions & answers</span>
