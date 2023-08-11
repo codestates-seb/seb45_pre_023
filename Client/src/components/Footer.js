@@ -1,4 +1,4 @@
-import logo from '../images/logo.png';
+import logo from '../images/logo1.png';
 
 export default function Footer() {
   return (
@@ -7,7 +7,7 @@ export default function Footer() {
       <img src={logo} alt="logo" className="w-[50px] h-[50px] mt-2" />
       {/* STACK OVERFLOW */}
       <div className="w-[300px] h-[400px] text-[#B0BEC5]" >
-        <h3 className="mt-4 text-xl text-[#9E9E9E] ">STACK OVERFLOW</h3>
+        <h3 className="mt-4 text-xl text-[#9E9E9E] ">STACK OVERFLOW.</h3>
         <p className="mt-4">Questions</p>
         <p className="mt-4">Help</p>
       </div>
