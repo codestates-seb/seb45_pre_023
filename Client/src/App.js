@@ -4,6 +4,8 @@ import Main from './pages/Basic/Main';
 import Login from './pages/Basic/Login';
 import SignUp from './pages/Basic/SignUp';
 import Question from './pages/Basic/Question';
+import Footer from './components/Footer';
+import Header from './components/Header';
 import MemberProfile from './pages/Member/Profile';
 import MemberEdit from './pages/Member/Settings/Edit';
 import MemberDelete from './pages/Member/Settings/Delete';
@@ -12,6 +14,7 @@ import MemberMain from './pages/Member/memberMain';
 function App() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path={RouteConst.Login} element={<Login />} />
         <Route path={RouteConst.Main} element={<Main />} />
@@ -22,6 +25,7 @@ function App() {
         <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
         <Route path={RouteConst.memberDelete} element={<MemberDelete />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }
