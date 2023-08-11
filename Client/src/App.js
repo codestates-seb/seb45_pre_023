@@ -4,11 +4,10 @@ import Main from './pages/Basic/Main';
 import Login from './pages/Basic/Login';
 import SignUp from './pages/Basic/SignUp';
 import Question from './pages/Basic/Question';
-import UserMain from './pages/User/UserMain';
-import UserProfile from './pages/User/Profile';
-import UserEdit from './pages/User/Settings/Edit';
-import UserDelete from './pages/User/Settings/Delete';
-import Footer from './components/Footer';
+import MemberProfile from './pages/Member/Profile';
+import MemberEdit from './pages/Member/Settings/Edit';
+import MemberDelete from './pages/Member/Settings/Delete';
+import MemberMain from './pages/Member/memberMain';
 
 function App() {
   return (
@@ -18,10 +17,10 @@ function App() {
         <Route path={RouteConst.Main} element={<Main />} />
         <Route path={RouteConst.SignUp} element={<SignUp />} />
         <Route path={RouteConst.Question} element={<Question />} />
-        <Route path={RouteConst.UserMain} element={<UserMain />} />
-        <Route path={RouteConst.UserProfile} element={<UserProfile />} />
-        <Route path={RouteConst.UserEdit} element={<UserEdit />} />
-        <Route path={RouteConst.UserDelete} element={<UserDelete />} />
+        <Route path={RouteConst.memberMain} element={<MemberMain />} />
+        <Route path={RouteConst.memberProfile} element={<MemberProfile />} />
+        <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
+        <Route path={RouteConst.memberDelete} element={<MemberDelete />} />
       </Routes>
       <Footer />
     </BrowserRouter>
