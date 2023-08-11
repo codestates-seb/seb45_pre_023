@@ -359,6 +359,9 @@ class MemberControllerTest extends ControllerTest {
                 ),
                 requestParts(
                         partWithName("file").description("수정할 이미지 파일")
+                ),
+                responseHeaders(
+                        headerWithName("Location").description("수정된 이미지 URL")
                 )
         ));
     }
