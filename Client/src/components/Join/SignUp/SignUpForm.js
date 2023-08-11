@@ -5,7 +5,7 @@ export default function SignUpForm() {
   return (
     <div className="flex flex-col items-center">
       <ul className="flex flex-col items-center mt-8">
-        <li className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-100 border border-solid border-gray rounded-md cursor-pointer">
+        <li className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
             className="w-4 h-4 mr-2"
