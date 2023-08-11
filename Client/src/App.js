@@ -9,10 +9,12 @@ import UserProfile from './pages/User/Profile';
 import UserEdit from './pages/User/Settings/Edit';
 import UserDelete from './pages/User/Settings/Delete';
 import Footer from './components/Footer';
+import Header from './components/Header';
 
 function App() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path={RouteConst.Login} element={<Login />} />
         <Route path={RouteConst.Main} element={<Main />} />
@@ -23,7 +25,7 @@ function App() {
         <Route path={RouteConst.UserEdit} element={<UserEdit />} />
         <Route path={RouteConst.UserDelete} element={<UserDelete />} />
       </Routes>
-      <Footer />
+      <Footer />.
     </BrowserRouter>
   );
 }
