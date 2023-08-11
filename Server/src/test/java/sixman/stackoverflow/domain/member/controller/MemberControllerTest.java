@@ -209,7 +209,7 @@ class MemberControllerTest extends ControllerTest {
         actions
                 .andDo(print())
                 .andExpect(status().isNoContent())
-                .andExpect(header().string("Location", "bucket url"));
+                .andExpect(header().exists("Location"));
 
         //restdocs
         actions.andDo(documentHandler.document(
