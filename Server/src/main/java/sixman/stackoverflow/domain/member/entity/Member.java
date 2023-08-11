@@ -1,7 +1,9 @@
 package sixman.stackoverflow.domain.member.entity;
 
 import lombok.*;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answerrecommend.entity.AnswerRecommend;
+import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.questionrecommend.entity.QuestionRecommend;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.global.entity.BaseEntity;
@@ -47,6 +49,12 @@ public class Member extends BaseEntity {
     private List<AnswerRecommend> answerRecommends = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
+    private List<Question> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Answer> answers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
     private List<Reply> replies = new ArrayList<>();
 
     @Builder
@@ -80,5 +88,9 @@ public class Member extends BaseEntity {
     public void updatePassword(String newPassword) {
 
         this.password = newPassword;
+    }
+
+    public void disable() {
+        this.enabled = false;
     }
 }

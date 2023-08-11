@@ -8,7 +8,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.auth.jwt.dto.Token;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
-import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
 import sixman.stackoverflow.domain.member.service.MemberService;
 
@@ -44,7 +43,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody @Valid MemberCreateApiRequest request) {
 
-        Long memberId = memberService.signup(request.toResponseRequest());
+        Long memberId = memberService.signup(request.toServiceRequest());
 
         URI uri = URI.create("/members/" + memberId);
 

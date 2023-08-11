@@ -9,6 +9,7 @@ import lombok.Getter;
 @Builder
 public class MemberUpdateServiceRequest {
 
+    private Long updateMemberId;
     private String nickname;
     private String myIntro;
 }

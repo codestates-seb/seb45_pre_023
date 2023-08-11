@@ -20,7 +20,7 @@ public class PageInfo {
 
     public static PageInfo of(Page<?> page){
         return new PageInfo(
-                page.getNumber(),
+                page.getNumber() + 1,
                 page.getSize(),
                 page.getTotalPages(),
                 (int) page.getTotalElements(),

@@ -10,12 +10,15 @@ import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
 
+import javax.persistence.EntityManager;
+
 @Transactional
 @SpringBootTest
 @ActiveProfiles("local")
 public abstract class ServiceTest {
 
     @Autowired protected PasswordEncoder passwordEncoder;
+    @Autowired protected EntityManager em;
 
     protected Member createMember() {
         return Member.builder()
