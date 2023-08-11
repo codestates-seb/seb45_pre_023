@@ -11,6 +11,8 @@ import MemberEdit from './pages/Member/Settings/Edit';
 import MemberDelete from './pages/Member/Settings/Delete';
 import MemberMain from './pages/Member/memberMain';
 
+import Header from './components/Header/Header';
+
 function App() {
   return (
     <BrowserRouter>

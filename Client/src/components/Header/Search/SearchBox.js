@@ -1,6 +1,6 @@
 export default function SearchBox() {
   return (
-    <div className="absolute top-9 right-0 w-168 rounded-md border-2 border-solid border-gray">
+    <div className="absolute top-9 right-0 w-168 bg-white border-2 border-solid border-gray rounded-md">
       <ul className="grid grid-cols-2 py-2">
         <li className="w-80 pl-2 py-1">
           <span className="mx-2 text-sm font-semibold">[tag]</span>
