@@ -18,7 +18,7 @@ export default function LeftSidebar() {
         <ul className="py-1 text-xs pl-4 decoration-gray-500">
           <li>Create free Team</li>
         </ul>
-        <div className=" text-xs p-1 pt-4 decoration-gray-500">Looking for your Teams?</div>
+        <div className=" text-xs p-1 pt-4 decoration-gray-500">Looking for your Teams??</div>
       </nav>
     </div>
   );
