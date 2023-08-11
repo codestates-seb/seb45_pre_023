@@ -62,7 +62,7 @@ public class MemberController {
                                              ) {
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "bucket url");
+        headers.add("Location", "https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png");
 
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
@@ -130,7 +130,7 @@ public class MemberController {
                 .memberId(memberId)
                 .email("test@test.com")
                 .nickname("nickname")
-                .image(s3Service.getPreSignedUrl("https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png"))
+                .image("https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png")
                 .myIntro("hi! im test")
                 .authority(Authority.ROLE_USER)
                 .question(question)
