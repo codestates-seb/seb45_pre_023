@@ -9,9 +9,12 @@ import UserProfile from './pages/User/Profile';
 import UserEdit from './pages/User/Settings/Edit';
 import UserDelete from './pages/User/Settings/Delete';
 
+import Header from './components/Header/Header';
+
 function App() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path={RouteConst.Login} element={<Login />} />
         <Route path={RouteConst.Main} element={<Main />} />

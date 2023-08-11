@@ -1,6 +1,6 @@
 export default function DropdownQuestion() {
   return (
-    <ul className="flex flex-col justify-center items-center w-56 top-11 right-0 absolute border border-solid border-gray">
+    <ul className="absolute flex flex-col justify-center items-center w-56 top-11 right-0 bg-white border border-solid border-gray">
       <li className="py-1 px-2 text-left hover:bg-gray-200">
         <div className="font-semibold text-sky-600 text-sm">Tour</div>
         <div className="leading-4 py-1 text-xs">Start here for a quick overview of the site</div>

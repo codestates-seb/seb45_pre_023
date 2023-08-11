@@ -25,7 +25,7 @@ export default function HeaderAfter() {
   };
 
   return (
-    <header className="flex flex-row justify-center items-center h-12 border-t-4 border-orange-400 border-b-1 border-b-gray-300">
+    <header className="sticky top-0 flex flex-row justify-center items-center h-12 z-10 bg-white border-t-4 border-orange-400 border-b-1 border-b-gray-300">
       <Link
         to={RouteConst.Login}
         className="flex flex-row justify-center items-center w-42 h-11 hover:bg-gray-200 hover:h-11 text-lg"
