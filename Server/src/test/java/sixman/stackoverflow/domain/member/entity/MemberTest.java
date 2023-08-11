@@ -3,6 +3,7 @@ package sixman.stackoverflow.domain.member.entity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,5 +27,57 @@ class MemberTest {
         assertThat(member.getPassword()).isEqualTo(password);
         assertThat(member.getAuthority()).isEqualTo(Authority.ROLE_USER);
         assertThat(member.getMyInfo()).isNotNull();
+    }
+    
+    @Test
+    @DisplayName("nickname, myIntro 를 받아서 Member 객체를 수정한다.")
+    void updateMember() {
+        //given
+        Member member = createMemberDefault();
+    
+        //when
+        member.updateMember("new nickname", "new myIntro");
+
+        //then
+        assertThat(member.getNickname()).isEqualTo("new nickname");
+        assertThat(member.getMyInfo().getMyIntro()).isEqualTo("new myIntro");
+    }
+
+    @Test
+    @DisplayName("member 객체 수정 시 nickname 이 null 이면 수정하지 않는다.")
+    void updateMemberNickname() {
+        //given
+        Member member = createMemberDefault();
+
+        //when
+        member.updateMember(null, "new myIntro");
+
+        //then
+        assertThat(member.getNickname()).isEqualTo("test");
+    }
+
+    @Test
+    @DisplayName("member 의 새 비밀번호로 비밀번호를 수정할 수 있다.")
+    void updatePassword() {
+        //given
+        Member member = createMemberDefault();
+        String newPassword = "newPassword!@#";
+
+        //when
+        member.updatePassword(newPassword);
+
+        //then
+        assertThat(member.getPassword()).isEqualTo(newPassword);
+    }
+
+    private Member createMemberDefault() {
+        return Member.builder()
+                .email("test@test.com")
+                .nickname("test")
+                .password("1234abcd!")
+                .authority(Authority.ROLE_USER)
+                .myInfo(MyInfo.builder().build())
+                .enabled(true)
+                .build();
     }
 }

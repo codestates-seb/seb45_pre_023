@@ -6,7 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.MemberPasswordUpdateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberDuplicateException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +34,32 @@ public class MemberService {
         return memberRepository.save(member).getMemberId();
     }
 
+    @Transactional
+    public void updateMember(Long memberId, MemberUpdateServiceRequest request){
+
+        Member member = verifyMember(memberId);
+
+        member.updateMember(request.getNickname(), request.getMyIntro());
+    }
+
+    @Transactional
+    public void updatePassword(Long memberId, MemberPasswordUpdateServiceRequest request){
+
+        Member member = verifyMember(memberId);
+
+        checkPassword(request.getPassword(), member.getPassword());
+
+        member.updatePassword(
+                passwordEncoder.encode(request.getNewPassword())
+        );
+    }
+
+    private void checkPassword(String password, String newPassword) {
+        if (!passwordEncoder.matches(password, newPassword)) {
+            throw new MemberPasswordException();
+        }
+    }
+
     private void checkDuplicateMember(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new MemberDuplicateException();
@@ -42,5 +72,9 @@ public class MemberService {
                 request.getNickname(),
                 passwordEncoder.encode(request.getPassword())
         );
+    }
+
+    private Member verifyMember(Long memberId){
+        return memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     }
 }

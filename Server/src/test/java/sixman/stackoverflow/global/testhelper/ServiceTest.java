@@ -27,4 +27,15 @@ public abstract class ServiceTest {
                 .enabled(true)
                 .build();
     }
+
+    protected Member createMember(String password) {
+        return Member.builder()
+                .email("test@test.com")
+                .nickname("test")
+                .password(password)
+                .authority(Authority.ROLE_USER)
+                .myInfo(MyInfo.builder().build())
+                .enabled(true)
+                .build();
+    }
 }
