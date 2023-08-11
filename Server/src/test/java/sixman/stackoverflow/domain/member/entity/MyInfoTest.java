@@ -37,16 +37,16 @@ class MyInfoTest {
     }
 
     @Test
-    @DisplayName("image 를 받아 MyInfo 객체를 수정한다.")
+    @DisplayName("image.html 를 받아 MyInfo 객체를 수정한다.")
     void updateImage() {
         //given
         MyInfo myInfo = createMyInfoDefault();
 
         //when
-        myInfo.updateImage("new image");
+        myInfo.updateImage("new image.html");
 
         //then
-        assertThat(myInfo.getImage()).isEqualTo("new image");
+        assertThat(myInfo.getImage()).isEqualTo("new image.html");
 
     }
 

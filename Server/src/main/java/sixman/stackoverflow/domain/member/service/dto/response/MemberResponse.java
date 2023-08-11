@@ -31,6 +31,7 @@ public class MemberResponse {
     private List<MemberTag> tags;
 
     public static MemberResponse of(Member member,
+                                    String imageUrl,
                                     MemberQuestionPageResponse question,
                                     MemberAnswerPageResponse answer,
                                     List<MemberTag> tags) {
@@ -38,7 +39,7 @@ public class MemberResponse {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .image(member.getMyInfo().getImage())
+                .image(imageUrl)
                 .myIntro(member.getMyInfo().getMyIntro())
                 .authority(member.getAuthority())
                 .question(question)

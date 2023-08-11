@@ -30,11 +30,9 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-    private final S3Service s3Service;
 
-    public MemberController(MemberService memberService, S3Service s3Service) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.s3Service = s3Service;
     }
 
     @GetMapping("/{member-id}")
@@ -103,12 +101,16 @@ public class MemberController {
     }
 
     @PatchMapping("/{member-id}/image")
-    public ResponseEntity<Void> updateImage(@PathVariable("member-id") Long memberId,
+    public ResponseEntity<Void> updateImage(@PathVariable("member-id") Long updateMemberId,
                                             @RequestParam MultipartFile file
                                              ) {
 
+        Long loginMemberId = SecurityUtil.getCurrentId();
+
+        String presignedUrl = memberService.updateImage(loginMemberId, updateMemberId, file);
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png");
+        headers.add("Location", presignedUrl);
 
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }

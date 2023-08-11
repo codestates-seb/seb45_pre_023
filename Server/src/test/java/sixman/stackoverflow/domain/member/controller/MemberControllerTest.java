@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberDeleteApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberPasswordUpdateAPiRequest;
@@ -325,6 +326,11 @@ class MemberControllerTest extends ControllerTest {
         Long memberId = 1L;
         MockMultipartFile file = new MockMultipartFile("file", "filename.txt", MediaType.TEXT_PLAIN_VALUE, "file content".getBytes());
 
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        given(memberService.updateImage(anyLong(), anyLong(), any(MultipartFile.class))).willReturn("https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png");
+
         //when
         ResultActions actions = mockMvc.perform(
                 multipart("http://localhost:8080/members/{member-id}/image", memberId)
@@ -348,8 +354,8 @@ class MemberControllerTest extends ControllerTest {
                         parameterWithName("member-id").description("이미지를 수정할 회원의 ID")
                 ),
                 requestHeaders(
-                        headerWithName("Content-Type").description(" multipart/form-data"),
-                        headerWithName("Authorization").description("JWT Token")
+                        headerWithName("Content-Type").description("multipart/form-data"),
+                        headerWithName("Authorization").description("accessToken")
                 ),
                 requestParts(
                         partWithName("file").description("수정할 이미지 파일")

@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.member.repository.dto.MemberAnswerData;
@@ -16,6 +17,7 @@ import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServic
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.*;
+import sixman.stackoverflow.module.aws.s3service.S3Service;
 
 import java.util.List;
 
@@ -24,10 +26,12 @@ import java.util.List;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final S3Service s3Service;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+    public MemberService(MemberRepository memberRepository, S3Service s3Service, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.s3Service = s3Service;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -47,6 +51,7 @@ public class MemberService {
 
         return MemberResponse.of(
                 member,
+                getPreSignedUrl(member),
                 getMemberQuestionPageResponse(memberId, 0, 5),
                 getMemberAnswerPageResponse(memberId, 0, 5),
                 getMemberTag(memberId)
@@ -91,6 +96,21 @@ public class MemberService {
         member.updatePassword(
                 passwordEncoder.encode(request.getNewPassword())
         );
+    }
+
+    @Transactional
+    public String updateImage(Long loginMemberId, Long updateMemberId, MultipartFile file){
+
+        checkAccessAuthority(loginMemberId, updateMemberId);
+
+        Member member = verifiedMember(updateMemberId);
+
+        if(member.getMyInfo().getImage() == null) {
+            String type = file.getContentType().split("/")[1];
+            member.getMyInfo().updateImage(String.format("images/%s.%s", member.getEmail(), type));
+        }
+
+        return s3Service.uploadImage(member.getMyInfo().getImage(), file);
     }
 
     @Transactional
@@ -156,5 +176,12 @@ public class MemberService {
 
     private void checkAccessAuthority(Long loginMemberId, Long requestMemberId) {
         if(!loginMemberId.equals(requestMemberId)) throw new MemberAccessDeniedException();
+    }
+
+    private String getPreSignedUrl(Member member) {
+
+        if(member.getMyInfo().getImage() == null) return null;
+
+        return s3Service.getPreSignedUrl(member.getMyInfo().getImage());
     }
 }
