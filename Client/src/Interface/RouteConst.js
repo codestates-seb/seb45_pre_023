@@ -3,8 +3,8 @@ export const RouteConst ={
     Main:'/questions',
     Question:'questions/:question.id',
     SignUp:'/auth/signup',
-    UserMain:'/users/:id',
-    UserProfile:'/users/:id/profile',
-    UserEdit:'/users/edit/:id',
-    UserDelete:'/users/delete/:id'
+    memberMain:'/members/:id',
+    memberProfile:'/members/profile/:id',
+    memberEdit:'/members/edit/:id',
+    memberDelete:'/members/delete/:id'
 }
