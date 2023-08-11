@@ -22,7 +22,7 @@ public class MemberCreateApiRequest {
     @Size(min = 9, max = 20, message = "{validation.size}")
     private String password;
 
-    public MemberCreateServiceRequest toResponseRequest() {
+    public MemberCreateServiceRequest toServiceRequest() {
         return MemberCreateServiceRequest.builder()
                 .email(email)
                 .nickname(nickname)

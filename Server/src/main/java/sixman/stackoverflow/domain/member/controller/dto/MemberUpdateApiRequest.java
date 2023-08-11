@@ -3,6 +3,7 @@ package sixman.stackoverflow.domain.member.controller.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
 
 import javax.validation.constraints.Size;
 
@@ -15,4 +16,11 @@ public class MemberUpdateApiRequest {
     private String nickname;
     private String myIntro;
 
+    public MemberUpdateServiceRequest toServiceRequest(Long updateMemberId) {
+        return MemberUpdateServiceRequest.builder()
+                .updateMemberId(updateMemberId)
+                .nickname(nickname)
+                .myIntro(myIntro)
+                .build();
+    }
 }

@@ -14,14 +14,24 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.snippet.Attributes;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import sixman.stackoverflow.auth.controller.AuthController;
+import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
 import sixman.stackoverflow.domain.member.controller.MemberController;
+import sixman.stackoverflow.domain.member.entity.Authority;
+import sixman.stackoverflow.domain.member.entity.Member;
+import sixman.stackoverflow.domain.member.entity.MyInfo;
 import sixman.stackoverflow.domain.member.service.MemberService;
 import sixman.stackoverflow.global.common.CommonController;
 import sixman.stackoverflow.module.aws.s3service.S3Service;
@@ -33,6 +43,7 @@ import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
@@ -141,6 +152,38 @@ public abstract class ControllerTest {
         }
 
         return message.replace("{min}", min.toString()).replace("{max}", max.toString());
+    }
+
+    protected Member createMember() {
+        return Member.builder()
+                .email("test@test.com")
+                .nickname("test")
+                .password("1234abcd!")
+                .authority(Authority.ROLE_USER)
+                .myInfo(MyInfo.builder().build())
+                .enabled(true)
+                .build();
+    }
+
+    protected void setDefaultAuthentication(Long id){
+        UserDetails userDetails = createUserDetails(id, createMember());
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+
+        SecurityContextImpl securityContext = new SecurityContextImpl(authenticationToken);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
+    private UserDetails createUserDetails(Long id, Member notSavedmember) {
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(notSavedmember.getAuthority().toString());
+
+        return new CustomUserDetails(
+                id,
+                String.valueOf(notSavedmember.getEmail()),
+                notSavedmember.getPassword(),
+                Collections.singleton(grantedAuthority)
+        );
     }
 
 }

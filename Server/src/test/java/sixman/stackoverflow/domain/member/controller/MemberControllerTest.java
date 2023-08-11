@@ -7,13 +7,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberDeleteApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberPasswordUpdateAPiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberUpdateApiRequest;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.MemberPasswordUpdateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
+import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.global.response.PageInfo;
 import sixman.stackoverflow.global.testhelper.ControllerTest;
 
@@ -21,8 +26,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -81,6 +87,11 @@ class MemberControllerTest extends ControllerTest {
         //given
         Long memberId = 1L;
 
+        MemberResponse response = getMemberResponse(memberId);
+        String apiResponse = objectMapper.writeValueAsString(ApiSingleResponse.ok(response));
+
+        given(memberService.getMember(anyLong())).willReturn(response);
+
         //when
         ResultActions actions = mockMvc.perform(
                 get("/members/{memberId}", memberId)
@@ -89,7 +100,8 @@ class MemberControllerTest extends ControllerTest {
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(apiResponse));
 
         //restdocs
         actions.andDo(documentHandler.document(
@@ -149,6 +161,119 @@ class MemberControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("회원의 질문 조회 API")
+    void getMemberQuestion() throws Exception {
+        //given
+        Long memberId = 1L;
+        MemberResponse.MemberQuestionPageResponse response = memberQuestionPageResponse();
+
+        given(memberService.getMemberQuestion(anyLong(), anyInt(), anyInt())).willReturn(response);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/members/{memberId}/questions", memberId)
+                        .param("page", "1")
+                        .accept(APPLICATION_JSON));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.pageInfo.page").value("1"))
+                .andExpect(jsonPath("$.pageInfo.size").value("5"));
+
+        //restdocs
+        actions
+                .andDo(documentHandler.document(
+                        pathParameters(
+                                parameterWithName("memberId").description("회원 ID")
+                        ),
+                        requestParameters(
+                                parameterWithName("page").description("요청 페이지")
+                        ),
+                        responseFields(
+                                fieldWithPath("data[]").description("회원이 작성한 질문 리스트"),
+                                fieldWithPath("data[].questionId").description("질문 ID"),
+                                fieldWithPath("data[].title").description("질문 제목"),
+                                fieldWithPath("data[].views").description("질문 조회수"),
+                                fieldWithPath("data[].recommend").description("질문 추천수"),
+                                fieldWithPath("data[].createdDate").description("질문 생성일"),
+                                fieldWithPath("data[].updatedDate").description("질문 수정일"),
+                                fieldWithPath("pageInfo").description("질문 페이징 정보"),
+                                fieldWithPath("pageInfo.page").description("질문 현재 페이지"),
+                                fieldWithPath("pageInfo.size").description("질문 페이지 사이즈"),
+                                fieldWithPath("pageInfo.totalPage").description("질문 전체 페이지 수"),
+                                fieldWithPath("pageInfo.totalSize").description("질문 전체 개수"),
+                                fieldWithPath("pageInfo.first").description("질문 첫 페이지 여부"),
+                                fieldWithPath("pageInfo.last").description("질문 마지막 페이지 여부"),
+                                fieldWithPath("pageInfo.hasNext").description("다음 페이지가 있는지"),
+                                fieldWithPath("pageInfo.hasPrevious").description("이전 페이지가 있는지"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("status").description("응답 상태"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("회원의 답변 조회 API")
+    void getMemberAnswer() throws Exception {
+        //given
+        Long memberId = 1L;
+        MemberResponse.MemberAnswerPageResponse response = memberAnswerPageResponse();
+
+        given(memberService.getMemberAnswer(anyLong(), anyInt(), anyInt())).willReturn(response);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/members/{memberId}/answers", memberId)
+                        .param("page", "1")
+                        .accept(APPLICATION_JSON));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.pageInfo.page").value("1"))
+                .andExpect(jsonPath("$.pageInfo.size").value("5"));
+
+        //restdocs
+        actions
+                .andDo(documentHandler.document(
+                        pathParameters(
+                                parameterWithName("memberId").description("회원 ID")
+                        ),
+                        requestParameters(
+                                parameterWithName("page").description("요청 페이지")
+                        ),
+                        responseFields(
+                                fieldWithPath("data[]").description("회원이 작성한 답변 리스트"),
+                                fieldWithPath("data[].answerId").description("답변 ID"),
+                                fieldWithPath("data[].questionId").description("답변의 질문 ID"),
+                                fieldWithPath("data[].questionTitle").description("답변의 질문 제목"),
+                                fieldWithPath("data[].content").description("답변 내용"),
+                                fieldWithPath("data[].recommend").description("답변 추천수"),
+                                fieldWithPath("data[].createdDate").description("답변 생성일"),
+                                fieldWithPath("data[].updatedDate").description("답변 수정일"),
+                                fieldWithPath("pageInfo").description("답변 페이징 정보"),
+                                fieldWithPath("pageInfo.page").description("답변 현재 페이지"),
+                                fieldWithPath("pageInfo.size").description("답변 페이지 사이즈"),
+                                fieldWithPath("pageInfo.totalPage").description("답변 전체 페이지 수"),
+                                fieldWithPath("pageInfo.totalSize").description("답변 전체 개수"),
+                                fieldWithPath("pageInfo.first").description("답변 첫 페이지 여부"),
+                                fieldWithPath("pageInfo.last").description("답변 마지막 페이지 여부"),
+                                fieldWithPath("pageInfo.hasNext").description("다음 페이지가 있는지"),
+                                fieldWithPath("pageInfo.hasPrevious").description("이전 페이지가 있는지"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("status").description("응답 상태"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("회원 수정 API")
     void updateMember() throws Exception {
         //given
@@ -157,6 +282,13 @@ class MemberControllerTest extends ControllerTest {
                 .nickname("update nickname")
                 .myIntro("update myIntro")
                 .build();
+
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        willDoNothing()
+                .given(memberService)
+                .updateMember(anyLong(), any(MemberUpdateServiceRequest.class));
 
         //when
         ResultActions actions = mockMvc.perform(
@@ -194,6 +326,11 @@ class MemberControllerTest extends ControllerTest {
         Long memberId = 1L;
         MockMultipartFile file = new MockMultipartFile("file", "filename.txt", MediaType.TEXT_PLAIN_VALUE, "file content".getBytes());
 
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        given(memberService.updateImage(anyLong(), anyLong(), any(MultipartFile.class))).willReturn("https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png");
+
         //when
         ResultActions actions = mockMvc.perform(
                 multipart("http://localhost:8080/members/{member-id}/image", memberId)
@@ -217,11 +354,14 @@ class MemberControllerTest extends ControllerTest {
                         parameterWithName("member-id").description("이미지를 수정할 회원의 ID")
                 ),
                 requestHeaders(
-                        headerWithName("Content-Type").description(" multipart/form-data"),
-                        headerWithName("Authorization").description("JWT Token")
+                        headerWithName("Content-Type").description("multipart/form-data"),
+                        headerWithName("Authorization").description("accessToken")
                 ),
                 requestParts(
                         partWithName("file").description("수정할 이미지 파일")
+                ),
+                responseHeaders(
+                        headerWithName("Location").description("수정된 이미지 URL")
                 )
         ));
     }
@@ -235,6 +375,13 @@ class MemberControllerTest extends ControllerTest {
                 .password("prevPassword123!!")
                 .newPassword("newPassword123!!")
                 .build();
+
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        willDoNothing()
+                .given(memberService)
+                .updatePassword(anyLong(), any(MemberPasswordUpdateServiceRequest.class));
 
         //when
         ResultActions actions = mockMvc.perform(
@@ -274,6 +421,13 @@ class MemberControllerTest extends ControllerTest {
                 .password("1234abcd!!")
                 .build();
 
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        willDoNothing()
+                .given(memberService)
+                .deleteMember(anyLong(), any(MemberDeleteServiceRequest.class));
+
         //when
         ResultActions actions = mockMvc.perform(
                 delete("/members/{member-id}", memberId)
@@ -303,43 +457,6 @@ class MemberControllerTest extends ControllerTest {
     }
 
     private MemberResponse getMemberResponse(Long memberId) {
-        List<MemberResponse.MemberQuestion> questions = new ArrayList<>();
-        List<MemberResponse.MemberAnswer> answers = new ArrayList<>();
-
-        for(long i = 1; i <= 5; i++){
-
-            MemberResponse.MemberQuestion question = MemberResponse.MemberQuestion.builder()
-                    .questionId(i)
-                    .title("title " + i)
-                    .views(100)
-                    .recommend(10)
-                    .createdDate(LocalDateTime.now().minusDays(1))
-                    .updatedDate(LocalDateTime.now())
-                    .build();
-
-            questions.add(question);
-
-            MemberResponse.MemberAnswer answer = MemberResponse.MemberAnswer.builder()
-                    .answerId(i)
-                    .questionTitle("title " + i)
-                    .content("content " + i)
-                    .recommend(10)
-                    .createdDate(LocalDateTime.now().minusDays(1))
-                    .updatedDate(LocalDateTime.now())
-                    .build();
-
-            answers.add(answer);
-        }
-
-        MemberResponse.MemberQuestionPageResponse question = MemberResponse.MemberQuestionPageResponse.builder()
-                .questions(questions)
-                .pageInfo(PageInfo.of(new PageImpl(questions, PageRequest.of(1, 10), 100)))
-                .build();
-
-        MemberResponse.MemberAnswerPageResponse answer = MemberResponse.MemberAnswerPageResponse.builder()
-                .answers(answers)
-                .pageInfo(PageInfo.of(new PageImpl(answers, PageRequest.of(1, 10), 100)))
-                .build();
 
         List<MemberResponse.MemberTag> tags = new ArrayList<>();
 
@@ -356,14 +473,68 @@ class MemberControllerTest extends ControllerTest {
                 .memberId(memberId)
                 .email("test@test.com")
                 .nickname("nickname")
-                .image("test_url.com")
+                .image("https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png")
                 .myIntro("hi! im test")
                 .authority(Authority.ROLE_USER)
-                .question(question)
-                .answer(answer)
+                .question(memberQuestionPageResponse())
+                .answer(memberAnswerPageResponse())
                 .tags(tags)
                 .build();
+
         return memberResponse;
     }
+
+    MemberResponse.MemberQuestionPageResponse memberQuestionPageResponse() {
+        List<MemberResponse.MemberQuestion> questions = new ArrayList<>();
+
+        for(long i = 1; i <= 5; i++){
+
+            MemberResponse.MemberQuestion question = MemberResponse.MemberQuestion.builder()
+                    .questionId(i)
+                    .title("title " + i)
+                    .views(100)
+                    .recommend(10)
+                    .createdDate(LocalDateTime.now().minusDays(1))
+                    .updatedDate(LocalDateTime.now())
+                    .build();
+
+            questions.add(question);
+        }
+
+        MemberResponse.MemberQuestionPageResponse question = MemberResponse.MemberQuestionPageResponse.builder()
+                .questions(questions)
+                .pageInfo(PageInfo.of(new PageImpl(questions, PageRequest.of(0, 5), 100)))
+                .build();
+
+        return question;
+    }
+
+    private MemberResponse.MemberAnswerPageResponse memberAnswerPageResponse() {
+        List<MemberResponse.MemberAnswer> answers = new ArrayList<>();
+
+        for(long i = 1; i <= 5; i++){
+
+            MemberResponse.MemberAnswer answer = MemberResponse.MemberAnswer.builder()
+                    .answerId(i)
+                    .questionTitle("title " + i)
+                    .questionId(i)
+                    .content("content " + i)
+                    .recommend(10)
+                    .createdDate(LocalDateTime.now().minusDays(1))
+                    .updatedDate(LocalDateTime.now())
+                    .build();
+
+            answers.add(answer);
+        }
+
+        MemberResponse.MemberAnswerPageResponse answer = MemberResponse.MemberAnswerPageResponse.builder()
+                .answers(answers)
+                .pageInfo(PageInfo.of(new PageImpl(answers, PageRequest.of(0, 5), 100)))
+                .build();
+
+        return answer;
+    }
+
+
 
 }
