@@ -16,6 +16,7 @@ public class MemberCreateApiRequest {
     @NotBlank(message = "{validation.member.email}")
     private String email;
     @Size(min = 1, max = 15, message = "{validation.size}")
+    @NotBlank(message = "{validation.member.nickname}")
     private String nickname;
     @NotNull(message = "{validation.member.password}")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]*$", message = "{validation.member.password}")

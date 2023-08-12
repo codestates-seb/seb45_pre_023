@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -18,7 +19,6 @@ public class MemberMailConfirmApiRequest {
     @Email(message = "{validation.member.email}")
     @NotNull(message = "{validation.member.email}")
     private String email;
-    @Size(min = 6, max = 6, message = "{validation.size}")
-    @NotNull(message = "{validation.member.code}")
+    @NotBlank(message = "{validation.member.code}")
     private String code;
 }

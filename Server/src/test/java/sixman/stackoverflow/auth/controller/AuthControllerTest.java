@@ -1,6 +1,5 @@
 package sixman.stackoverflow.auth.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,11 +24,13 @@ import sixman.stackoverflow.auth.jwt.dto.LoginDto;
 import sixman.stackoverflow.auth.jwt.dto.Token;
 import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
 import sixman.stackoverflow.auth.jwt.service.TokenProvider;
+import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.*;
@@ -43,7 +43,6 @@ import javax.persistence.EntityManager;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -114,15 +113,16 @@ class AuthControllerTest {
     @DisplayName("OAuth 로그인 API")
     void oauthLogin() throws Exception {
         //given
-        String provider = "google";
+        String provider = "GOOGLE";
         String code = "DNIL345AS21GN34";
 
         Token token = new Token("Bearer accessToken", "Bearer refreshToken");
-        given(oAuthService.login(anyString(), anyString())).willReturn(token);
+        given(oAuthService.login(any(Provider.class), anyString())).willReturn(token);
 
         //when
         ResultActions actions = mockMvc.perform(
-                get("/auth/oauth/{provider}", provider)
+                get("/auth/oauth")
+                        .param("provider", provider)
                         .param("code", code));
 
         //then
@@ -137,10 +137,8 @@ class AuthControllerTest {
                 document("auth/oauth",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("provider").description("OAuth 제공자")
-                        ),
                         requestParameters(
+                                parameterWithName("provider").description(generateLinkCode(Provider.class)),
                                 parameterWithName("code").description("OAuth 인증 코드")
                         ),
                         responseHeaders(
@@ -233,6 +231,11 @@ class AuthControllerTest {
     private Attributes.Attribute getFormat(
             final String value){
         return new Attributes.Attribute("format",value);
+    }
+
+    private String generateLinkCode(Class<?> clazz) {
+        return String.format("link:common/%s.html[%s 값 보기,role=\"popup\"]",
+                clazz.getSimpleName().toLowerCase(), clazz.getSimpleName());
     }
 
 }

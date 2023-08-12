@@ -7,6 +7,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.auth.jwt.dto.Token;
+import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
 import sixman.stackoverflow.domain.member.service.MemberService;
@@ -27,8 +28,8 @@ public class AuthController {
         this.memberService = memberService;
     }
 
-    @GetMapping("/oauth/{provider}")
-    public ResponseEntity<Void> login(@PathVariable String provider, String code) {
+    @GetMapping("/oauth")
+    public ResponseEntity<Void> login(Provider provider, String code) {
         
         Token token = oAuthService.login(provider, code);
 

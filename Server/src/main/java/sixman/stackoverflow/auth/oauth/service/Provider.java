@@ -1,12 +1,12 @@
 package sixman.stackoverflow.auth.oauth.service;
 
-import sixman.stackoverflow.auth.oauth.service.MemberProfile;
+import sixman.stackoverflow.global.entity.BaseEnum;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 
-public enum OAuthAttributes {
+public enum Provider implements BaseEnum {
 
     GOOGLE("google", (attributes) -> {
         MemberProfile memberProfile = new MemberProfile();
@@ -34,7 +34,7 @@ public enum OAuthAttributes {
     private final String registrationId;
     private final Function<Map<String, Object>, MemberProfile> of;
 
-    OAuthAttributes(String registrationId, Function<Map<String, Object>, MemberProfile> of) {
+    Provider(String registrationId, Function<Map<String, Object>, MemberProfile> of) {
         this.registrationId = registrationId;
         this.of = of;
     }
@@ -45,5 +45,15 @@ public enum OAuthAttributes {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new)
                 .of.apply(attributes);
+    }
+
+    @Override
+    public String getName() {
+        return name();
+    }
+
+    @Override
+    public String getDescription() {
+        return this.registrationId;
     }
 }

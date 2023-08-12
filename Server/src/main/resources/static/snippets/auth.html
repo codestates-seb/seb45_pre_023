@@ -559,8 +559,8 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJpZCI6MywiZXhwIjoxNjkxODk5ODg3fQ.ETpZk366N6xdyfls5RZsizJbnRC-O-mzqGEfXIKfm0DhGxDaUkipRP3Aq39OfU2yQX0H8vJr44HEqyINslvB5Q
-Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImlkIjozLCJleHAiOjE2OTI0MzI2ODd9.ugaQRzd0f1tYO7FFU3Rar0xonenWnFIQnU8xjrDb8NueADb2EXdQcAa3cOrBSRCJE0i7vbZ0_zwdyvJ8FK6tPw
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJpZCI6MywiZXhwIjoxNjkxOTE1NDExfQ.czH-VEYU80_Hcv9OuelEiCpP7uD4Xoezh_cccsburwhYyRDmmFL2RDcUbtbACEKfxHrchCqIvpnaYpzkMhjsvw
+Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImlkIjozLCJleHAiOjE2OTI0NDgyMTF9.i9u1CaQ55QCjN6UVkBWLfbJR-04yIziQtZf-vMA9klNh-cI3g0Cpez9Mtl2j4teFuORGytIEyxOlJB5Dbb2wjg
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -604,31 +604,9 @@ X-Frame-Options: DENY</code></pre>
 <h3 id="_http_request_2">HTTP Request</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /auth/oauth/google?code=DNIL345AS21GN34 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /auth/oauth?provider=GOOGLE&amp;code=DNIL345AS21GN34 HTTP/1.1
 Host: localhost:8080</code></pre>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_request_path_parameter">Request Path Parameter</h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /auth/oauth/{provider}</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>provider</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 제공자</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 <div class="sect3">
 <h4 id="_request_query_parameter">Request Query Parameter</h4>
@@ -644,6 +622,10 @@ Host: localhost:8080</code></pre>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>provider</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="common/provider.html" class="popup">Provider 값 보기</a></p></td>
+</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 인증 코드</p></td>
@@ -707,7 +689,7 @@ X-Frame-Options: DENY</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /auth/refresh HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaWQiOjIsImV4cCI6MTY5MTgyNzg5N30.EJhbJBxMgJDlY-UDF3w8rWA3BVaYB2pLQTop9P-N0syRoty4X__d4Cj_BbKtpZ9KZGMDh1KiY4DULkPGTeRj7A
+Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaWQiOjIsImV4cCI6MTY5MTg0MzQyMH0.DSr9sTSnHiNMkoq9C1r-18O-I1XjNwQXEdaDGWpxZ6nSQXauEzfC40z-rTWcaiwUXpg0Lf_p6OTst1qw5nuRPg
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -741,7 +723,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsImlkIjoyLCJleHAiOjE2OTE4OTk4ODd9.CvUHnLEj1Kjl7ng7WNz2Qh4WoyGNz31trKZ1dt7hlgJPkSIQcnsrnB60baECvYWyYMRK65cDkKh32L-1FRXWoA
+authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsImlkIjoyLCJleHAiOjE2OTE5MTU0MTB9.YIG6nAqRLLp6oK2xbz6RxZUsUONXzlUnjF6rXww8mI46-P3E82E4jKlFku03G6cd98oL6n9Lsp_cyZEAUSdugQ
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -778,7 +760,7 @@ X-Frame-Options: DENY</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-08-11 09:48:33 +0900
+Last updated 2023-08-12 21:26:45 +0900
 </div>
 </div>
 </body>

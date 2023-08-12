@@ -25,11 +25,8 @@ include::{snippets}/auth/login/response-headers.adoc[]
 == OAuth login
 === HTTP Request
 include::{snippets}/auth/oauth/http-request.adoc[]
-==== Request Path Parameter
-include::{snippets}/auth/oauth/path-parameters.adoc[]
 ==== Request Query Parameter
 include::{snippets}/auth/oauth/request-parameters.adoc[]
-
 === HTTP Response
 include::{snippets}/auth/oauth/http-response.adoc[]
 ==== Response Header
