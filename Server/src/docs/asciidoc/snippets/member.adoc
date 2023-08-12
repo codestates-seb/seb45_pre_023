@@ -12,6 +12,31 @@ include::{snippets}/member/signup/http-response.adoc[]
 ==== Response Header
 include::{snippets}/member/signup/response-headers.adoc[]
 
+== 이메일 인증 요청
+=== HTTP Request
+include::{snippets}/member/sendemail/http-request.adoc[]
+==== Request Body
+include::{snippets}/member/sendemail/request-body.adoc[]
+==== Request Fields
+include::{snippets}/member/sendemail/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/member/sendemail/http-response.adoc[]
+
+== 이메일 인증 확인
+=== HTTP Request
+include::{snippets}/member/confirmemail/http-request.adoc[]
+==== Request Body
+include::{snippets}/member/confirmemail/request-body.adoc[]
+==== Request Fields
+include::{snippets}/member/confirmemail/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/member/confirmemail/http-response.adoc[]
+==== Response Body
+include::{snippets}/member/confirmemail/response-body.adoc[]
+==== Response Fields
+include::{snippets}/member/confirmemail/response-fields.adoc[]
+
+
 == 회원 정보 조회
 === HTTP Request
 include::{snippets}/member/getmembers/http-request.adoc[]
@@ -91,6 +116,16 @@ include::{snippets}/member/updateimage/request-parts.adoc[]
 include::{snippets}/member/updateimage/http-response.adoc[]
 ==== Response Header
 include::{snippets}/member/updateimage/response-headers.adoc[]
+
+== 회원정보(이미지) 삭제
+=== HTTP Request
+include::{snippets}/member/deleteimage/http-request.adoc[]
+==== Request Header
+include::{snippets}/member/deleteimage/request-headers.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/deleteimage/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/member/deleteimage/http-response.adoc[]
 
 == 회원 탈퇴
 === HTTP Request
