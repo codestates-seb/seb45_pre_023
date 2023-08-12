@@ -5,7 +5,7 @@ import sixman.stackoverflow.global.exception.businessexception.commonexception.C
 
 public class EmailAuthNotCompleteException extends CommonException {
 
-    public static final String MESSAGE = "이메일 인증이 완료되지 않았습니다..";
+    public static final String MESSAGE = "이메일 인증이 완료되지 않았습니다.";
     public static final String CODE = "EMAIL-400";
 
     public EmailAuthNotCompleteException() {
