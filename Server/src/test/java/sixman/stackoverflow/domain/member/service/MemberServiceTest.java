@@ -3,6 +3,8 @@ package sixman.stackoverflow.domain.member.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
@@ -18,13 +20,19 @@ import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberDuplicateException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
+import sixman.stackoverflow.global.exception.businessexception.s3exception.S3UploadException;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 
 class MemberServiceTest extends ServiceTest {
 
@@ -44,6 +52,12 @@ class MemberServiceTest extends ServiceTest {
                 .nickname(nickname)
                 .password(password)
                 .build();
+
+        willDoNothing()
+                .given(redisService)
+                .saveValues(anyString(), anyString(), any(Duration.class));
+
+        given(redisService.getValues(anyString())).willReturn("true");
 
         //when
         Long memberId = memberService.signup(request);
@@ -340,6 +354,53 @@ class MemberServiceTest extends ServiceTest {
         assertThat(memberAnswer.getPageInfo().getPage()).isEqualTo(1);
         assertThat(memberAnswer.getPageInfo().getSize()).isEqualTo(5);
         assertThat(memberAnswer.getPageInfo().getTotalSize()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("s3 버킷에 image 를 업로드하고 업로드한 이미지의 presigned url 을 반환한다.")
+    void updateImage() {
+        //given
+        Member member = createMember();
+
+        memberRepository.save(member);
+
+        Long loginMemberId = member.getMemberId();
+        Long updateMemberId = member.getMemberId();
+        MultipartFile image =
+                new MockMultipartFile(
+                        "image",
+                        "image.png",
+                        "image/png",
+                        "image".getBytes());
+
+        given(s3Service.uploadImage(anyString(), any(MultipartFile.class)))
+                .willReturn("https://image.png");
+
+        //when
+        String imageUrl = memberService.updateImage(loginMemberId, updateMemberId, image);
+
+        //then
+        assertThat(imageUrl).isEqualTo("https://image.png");
+    }
+
+    @Test
+    @DisplayName("s3 버킷에서 해당 멤버의 이미지를 삭제하고 Myinfo 의 image 를 null 로 만든다.")
+    void deleteImage() {
+        //given
+        Member member = createMember();
+
+        memberRepository.save(member);
+
+        Long loginMemberId = member.getMemberId();
+        Long updateMemberId = member.getMemberId();
+
+        willDoNothing().given(s3Service).deleteImage(anyString());
+
+        //when
+        memberService.deleteImage(loginMemberId, updateMemberId);
+
+        //then
+        assertThat(member.getMyInfo().getImage()).isNull();
     }
 
     private Question createQuestion(Member member) {

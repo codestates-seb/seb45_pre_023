@@ -60,6 +60,12 @@ dependencies {
     implementation platform('software.amazon.awssdk:bom:2.20.56')
     implementation 'software.amazon.awssdk:s3:'
 
+    //email
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     //querydsl
     implementation "com.querydsl:querydsl-jpa"
     implementation "com.querydsl:querydsl-core"

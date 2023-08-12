@@ -1,17 +1,16 @@
 package sixman.stackoverflow.domain.member.controller;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
-import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberDeleteApiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberPasswordUpdateAPiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberUpdateApiRequest;
+import sixman.stackoverflow.domain.member.controller.dto.*;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
 import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
@@ -24,6 +23,7 @@ import sixman.stackoverflow.global.testhelper.ControllerTest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -367,6 +367,40 @@ class MemberControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("회원 수정 API - 이미지 삭제")
+    void deleteImage() throws Exception {
+        //given
+        Long memberId = 1L;
+
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        willDoNothing()
+                .given(memberService)
+                .deleteImage(anyLong(), anyLong());
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                delete("/members/{member-id}/image", memberId)
+                        .header("Authorization", "Bearer abc.12a.333"));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        //restdocs
+        actions.andDo(documentHandler.document(
+                pathParameters(
+                        parameterWithName("member-id").description("이미지를 삭제할 회원의 ID")
+                ),
+                requestHeaders(
+                        headerWithName("Authorization").description("accessToken")
+                )
+        ));
+    }
+
+    @Test
     @DisplayName("회원 수정 API - 비밀번호 수정")
     void updatePassword() throws Exception {
         //given
@@ -454,6 +488,86 @@ class MemberControllerTest extends ControllerTest {
                         fieldWithPath("password").description("회원의 비밀번호").attributes(getConstraint("password"))
                 )
         ));
+    }
+
+    @Test
+    @DisplayName("이메일 인증 API - 인증 요청")
+    void sendEmail() throws Exception{
+        //given
+        MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                .email("test@google.com")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        willDoNothing()
+                .given(memberService)
+                .sendCodeToEmail(anyString());
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/members/email")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //when
+        actions
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        //restDocs
+        setConstraintClass(MemberMailAuthApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 요청할 이메일").attributes(getConstraint("email"))
+                )
+        ));
+
+    }
+
+    @Test
+    @DisplayName("이메일 인증 API - 인증 확인")
+    void confirmEmail() throws Exception {
+        //given
+        MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                .email("test@google.com")
+                .code("123456")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        given(memberService.checkCode(anyString(), anyString()))
+                .willReturn(true);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/members/email/confirm")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("true"));
+
+        //restDocs
+        setConstraintClass(MemberMailConfirmApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 확인할 이메일").attributes(getConstraint("email")),
+                        fieldWithPath("code").description("인증 코드").attributes(getConstraint("code"))
+                ),
+                responseFields(
+                        fieldWithPath("data").description("인증 결과 (true, false)"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("status").description("응답 상태"),
+                        fieldWithPath("message").description("응답 메시지")
+                )
+        ));
+
     }
 
     private MemberResponse getMemberResponse(Long memberId) {
