@@ -89,6 +89,8 @@ include::{snippets}/member/updateimage/path-parameters.adoc[]
 include::{snippets}/member/updateimage/request-parts.adoc[]
 === HTTP Response
 include::{snippets}/member/updateimage/http-response.adoc[]
+==== Response Header
+include::{snippets}/member/updateimage/response-headers.adoc[]
 
 == 회원 탈퇴
 === HTTP Request

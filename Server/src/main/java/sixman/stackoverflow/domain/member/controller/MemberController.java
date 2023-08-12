@@ -6,27 +6,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
-import sixman.stackoverflow.domain.member.controller.dto.MemberDeleteApiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberPasswordUpdateAPiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberUpdateApiRequest;
-import sixman.stackoverflow.domain.member.entity.Authority;
+import sixman.stackoverflow.domain.member.controller.dto.*;
 import sixman.stackoverflow.domain.member.service.MemberService;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
-import sixman.stackoverflow.global.response.PageInfo;
-import sixman.stackoverflow.module.aws.s3service.S3Service;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.constraints.Email;
 
 @RestController
 @RequestMapping("/members")
+@Validated
 public class MemberController {
 
     private final MemberService memberService;
@@ -115,6 +110,16 @@ public class MemberController {
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/{member-id}/image")
+    public ResponseEntity<Void> deleteImage(@PathVariable("member-id") Long updateMemberId) {
+
+        Long loginMemberId = SecurityUtil.getCurrentId();
+
+        memberService.deleteImage(loginMemberId, updateMemberId);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{member-id}")
     public ResponseEntity<Void> deleteMember(@PathVariable("member-id") Long deleteMemberId,
                                              @RequestBody @Valid MemberDeleteApiRequest request) {
@@ -124,5 +129,17 @@ public class MemberController {
         memberService.deleteMember(loginMemberId, request.toServiceRequest(deleteMemberId));
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/email")
+    public ResponseEntity<Void> sendEmail(@RequestBody @Valid MemberMailAuthApiRequest request) {
+        memberService.sendCodeToEmail(request.getEmail());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/email/confirm")
+    public ResponseEntity<ApiSingleResponse<Boolean>> confirmEmail(@RequestBody @Valid MemberMailConfirmApiRequest request) {
+        boolean result = memberService.checkCode(request.getEmail(), request.getCode());
+        return ResponseEntity.ok(ApiSingleResponse.ok(result));
     }
 }
