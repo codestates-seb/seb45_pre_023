@@ -62,13 +62,18 @@ public class MailService {
         try {
             Random random = SecureRandom.getInstanceStrong();
             StringBuilder builder = new StringBuilder();
+            String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
             for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
+                int randomIndex = random.nextInt(characters.length());
+                builder.append(characters.charAt(randomIndex));
             }
+
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
             log.info("create mail authCode error : " + e.getMessage());
             throw new EmailSendException();
         }
     }
+
 }
