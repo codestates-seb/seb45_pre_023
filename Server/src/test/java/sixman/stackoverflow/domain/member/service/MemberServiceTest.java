@@ -242,14 +242,12 @@ class MemberServiceTest extends ServiceTest {
 
         String email = member.getEmail();
         String password = "1234abcd!!";
-        String code = "abcd12";
 
         given(redisService.getValues(anyString())).willReturn("true");
 
         MemberFindPasswordServiceRequest request = MemberFindPasswordServiceRequest.builder()
                 .email(email)
                 .password(password)
-                .code(code)
                 .build();
 
         //when
@@ -276,7 +274,6 @@ class MemberServiceTest extends ServiceTest {
         MemberFindPasswordServiceRequest request = MemberFindPasswordServiceRequest.builder()
                 .email(email)
                 .password(password)
-                .code(code)
                 .build();
 
         //when & then

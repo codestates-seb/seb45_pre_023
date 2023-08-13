@@ -85,7 +85,6 @@ class MemberControllerTest extends ControllerTest {
         //given
         MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
                 .email("test@google.com")
-                .code("abc1AB")
                 .password("1234abcd!")
                 .build();
 
@@ -109,7 +108,6 @@ class MemberControllerTest extends ControllerTest {
         actions.andDo(documentHandler.document(
                 requestFields(
                         fieldWithPath("email").description("회원 email").attributes(getConstraint("email")),
-                        fieldWithPath("code").description("인증 code").attributes(getConstraint("code")),
                         fieldWithPath("password").description("변경할 password").attributes(getConstraint("password"))
                 )
         ));
@@ -795,7 +793,6 @@ class MemberControllerTest extends ControllerTest {
                 dynamicTest("email 이 Null 이면 검증에 실패한다.", () -> {
                     //given
                     MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
-                            .code("abc1AB")
                             .password("1234abcd!")
                             .build();
 
@@ -817,7 +814,6 @@ class MemberControllerTest extends ControllerTest {
                     //given
                     MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
                             .email("test")
-                            .code("abc1AB")
                             .password("1234abcd!")
                             .build();
 
@@ -835,32 +831,10 @@ class MemberControllerTest extends ControllerTest {
                             .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
 
                 }),
-                dynamicTest("code 가 Null 이면 검증에 실패한다.", () -> {
-                    //given
-                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
-                            .email("test@goole.com")
-                            .password("1234abcd!")
-                            .build();
-
-                    //when
-                    ResultActions actions = mockMvc.perform(
-                            patch("/auth/password")
-                                    .content(objectMapper.writeValueAsString(request))
-                                    .contentType(APPLICATION_JSON));
-
-                    //then
-                    actions.andDo(print())
-                            .andExpect(status().isBadRequest())
-                            .andExpect(jsonPath("$.data[0].field").value("code"))
-                            .andExpect(jsonPath("$.data[0].value").value("null"))
-                            .andExpect(jsonPath("$.data[0].reason").value("코드를 정확히 입력해주세요."));
-
-                }),
                 dynamicTest("새로운 비밀번호가 null 이면 검증에 실패한다.", () -> {
                     //given
                     MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
                             .email("test@goole.com")
-                            .code("abc1AB")
                             .build();
 
                     //when
@@ -880,7 +854,6 @@ class MemberControllerTest extends ControllerTest {
                     //given
                     MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
                             .email("test@goole.com")
-                            .code("abc1AB")
                             .password("1234abc!")
                             .build();
 
@@ -901,7 +874,6 @@ class MemberControllerTest extends ControllerTest {
                     //given
                     MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
                             .email("test@goole.com")
-                            .code("abc1AB")
                             .password("1234abcd1234abcd1234!")
                             .build();
 
@@ -923,7 +895,6 @@ class MemberControllerTest extends ControllerTest {
                     //given
                     MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
                             .email("test@goole.com")
-                            .code("abc1AB")
                             .password("1234abcdab")
                             .build();
 
