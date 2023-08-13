@@ -10,6 +10,5 @@ import lombok.Getter;
 public class MemberFindPasswordServiceRequest {
 
     private String email;
-    private String code;
     private String password;
 }
