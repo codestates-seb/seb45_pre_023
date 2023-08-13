@@ -42,7 +42,15 @@ public class Answer extends BaseEntity {
     @OneToMany(mappedBy = "answer")
     private List<Reply> replies = new ArrayList<>();
 
-    // 생성자 추가
+    public static Answer createAnswer(String content) {
+        return Answer.builder()
+                .content(content)
+                .build();
+    }
+    public void setAnswerContent(String newContent) {
+        this.content = newContent;
+
+    }
 
 
 }
