@@ -12,10 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.domain.member.controller.dto.*;
 import sixman.stackoverflow.domain.member.entity.Authority;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberPasswordUpdateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.*;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.global.response.PageInfo;
@@ -78,6 +75,42 @@ class MemberControllerTest extends ControllerTest {
                 ),
                 responseHeaders(
                         headerWithName("Location").description("생성된 회원의 URI")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 찾기 API")
+    void findPassword() throws Exception {
+        //given
+        MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                .email("test@google.com")
+                .code("abc1AB")
+                .password("1234abcd!")
+                .build();
+
+        willDoNothing()
+                .given(memberService)
+                .findPassword(any(MemberFindPasswordServiceRequest.class));
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/auth/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON));
+
+        //then
+        actions.andDo(print())
+                .andExpect(status().isNoContent());
+
+        //restdocs
+        setConstraintClass(MemberFindPasswordApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("회원 email").attributes(getConstraint("email")),
+                        fieldWithPath("code").description("인증 code").attributes(getConstraint("code")),
+                        fieldWithPath("password").description("변경할 password").attributes(getConstraint("password"))
                 )
         ));
     }
@@ -311,7 +344,7 @@ class MemberControllerTest extends ControllerTest {
                         parameterWithName("memberId").description("수정할 회원의 ID")
                 ),
                 requestHeaders(
-                        headerWithName("Authorization").description("JWT Token")
+                        headerWithName("Authorization").description("accessToken")
                 ),
                 requestFields(
                         fieldWithPath("nickname").description("수정할 회원의 nickname").optional().attributes(getConstraint("nickname")),
@@ -438,7 +471,7 @@ class MemberControllerTest extends ControllerTest {
                         parameterWithName("member-id").description("비밀번호를 수정할 회원의 ID")
                 ),
                 requestHeaders(
-                        headerWithName("Authorization").description("JWT Token")
+                        headerWithName("Authorization").description("accessToken")
                 ),
                 requestFields(
                         fieldWithPath("password").description("이전 비밀번호").attributes(getConstraint("password")),
@@ -747,6 +780,168 @@ class MemberControllerTest extends ControllerTest {
                             .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
                 })
         );
+    }
+
+    @TestFactory
+    @DisplayName("비밀번호를 찾을 때 요청 값 validation 검증")
+    Collection<DynamicTest> findPasswordValidation() throws Exception {
+        //given
+        willDoNothing()
+                .given(memberService)
+                .findPassword(any(MemberFindPasswordServiceRequest.class));
+
+
+        return List.of(
+                dynamicTest("email 이 Null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .code("abc1AB")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+
+                }),
+                dynamicTest("email 이 형식에 맞지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test")
+                            .code("abc1AB")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getEmail()))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+
+                }),
+                dynamicTest("code 가 Null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("code"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("코드를 정확히 입력해주세요."));
+
+                }),
+                dynamicTest("새로운 비밀번호가 null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                }),
+                dynamicTest("새로운 비밀번호가 9자 미만이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .password("1234abc!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+                }),
+                dynamicTest("새로운 비밀번호가 20자 초과면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .password("1234abcd1234abcd1234!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+
+                }),
+                dynamicTest("새로운 비밀번호에 특수문자, 문자, 숫자를 포함하지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .password("1234abcdab")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                })
+        );
+
     }
 
     @TestFactory

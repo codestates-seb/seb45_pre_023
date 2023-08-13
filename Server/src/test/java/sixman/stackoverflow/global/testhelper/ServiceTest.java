@@ -5,6 +5,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,7 @@ public abstract class ServiceTest {
 
     @MockBean protected S3Service s3Service;
     @MockBean protected RedisService redisService;
-    @MockBean protected MailService mailService;
+    @MockBean protected JavaMailSender emailSender;
     @Autowired protected PasswordEncoder passwordEncoder;
     @Autowired protected EntityManager em;
 

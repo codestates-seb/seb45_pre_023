@@ -11,10 +11,7 @@ import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.member.repository.dto.MemberAnswerData;
 import sixman.stackoverflow.domain.member.repository.dto.MemberQuestionData;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberPasswordUpdateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.*;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotCompleteException;
@@ -119,6 +116,18 @@ public class MemberService {
     }
 
     @Transactional
+    public void findPassword(MemberFindPasswordServiceRequest request) {
+
+        Member member = verifiedMember(request.getEmail());
+
+        checkEmailAuthComplete(request.getEmail());
+
+        member.updatePassword(
+                passwordEncoder.encode(request.getPassword())
+        );
+    }
+
+    @Transactional
     public String updateImage(Long loginMemberId, Long updateMemberId, MultipartFile file){
 
         checkAccessAuthority(loginMemberId, updateMemberId);
@@ -147,7 +156,7 @@ public class MemberService {
 
         checkAccessAuthority(memberId, request.getDeleteMemberId());
 
-        Member member = verifiedMember(memberId);
+        Member member = verifiedMember(request.getDeleteMemberId());
 
         checkPassword(request.getPassword(), member.getPassword());
 
@@ -206,6 +215,11 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         if(!member.isEnabled()) throw new MemberDisabledException();
         return member;
+    }
+
+    private Member verifiedMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(MemberNotFoundException::new);
     }
 
     private MemberResponse.MemberQuestionPageResponse getMemberQuestionPageResponse(Long memberId, Integer page, Integer size) {

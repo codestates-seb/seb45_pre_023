@@ -1,41 +1,13 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[Member]]
 = 회원 관리 API
-
-== 회원 가입
-=== HTTP Request
-include::{snippets}/member/signup/http-request.adoc[]
-==== Request Body
-include::{snippets}/member/signup/request-body.adoc[]
-==== Request Fields
-include::{snippets}/member/signup/request-fields.adoc[]
-=== HTTP Response
-include::{snippets}/member/signup/http-response.adoc[]
-==== Response Header
-include::{snippets}/member/signup/response-headers.adoc[]
-
-== 이메일 인증 요청
-=== HTTP Request
-include::{snippets}/member/sendemail/http-request.adoc[]
-==== Request Body
-include::{snippets}/member/sendemail/request-body.adoc[]
-==== Request Fields
-include::{snippets}/member/sendemail/request-fields.adoc[]
-=== HTTP Response
-include::{snippets}/member/sendemail/http-response.adoc[]
-
-== 이메일 인증 확인
-=== HTTP Request
-include::{snippets}/member/confirmemail/http-request.adoc[]
-==== Request Body
-include::{snippets}/member/confirmemail/request-body.adoc[]
-==== Request Fields
-include::{snippets}/member/confirmemail/request-fields.adoc[]
-=== HTTP Response
-include::{snippets}/member/confirmemail/http-response.adoc[]
-==== Response Body
-include::{snippets}/member/confirmemail/response-body.adoc[]
-==== Response Fields
-include::{snippets}/member/confirmemail/response-fields.adoc[]
-
 
 == 회원 정보 조회
 === HTTP Request
