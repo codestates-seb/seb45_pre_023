@@ -3,6 +3,7 @@ import { RouteConst } from './Interface/RouteConst';
 import Main from './pages/Basic/Main';
 import Login from './pages/Basic/Login';
 import SignUp from './pages/Basic/SignUp';
+import Ask from './pages/Basic/Ask';
 import Question from './pages/Basic/Question';
 import Footer from './components/Footer';
 import Header from './components/Header/Header';
@@ -21,6 +22,7 @@ function App() {
         <Route path={RouteConst.Main} element={<Main />} />
         <Route path={RouteConst.SignUp} element={<SignUp />} />
         <Route path={RouteConst.Question} element={<Question />} />
+        <Route path={RouteConst.Ask} element={<Ask />} />
         {/* <Route path={RouteConst.memberMain} element={<MemberMain />} />
         <Route path={RouteConst.memberProfile} element={<MemberProfile />} />
         <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
