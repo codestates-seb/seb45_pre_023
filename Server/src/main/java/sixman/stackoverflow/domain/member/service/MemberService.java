@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.member.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,15 +11,16 @@ import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.member.repository.dto.MemberAnswerData;
 import sixman.stackoverflow.domain.member.repository.dto.MemberQuestionData;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberPasswordUpdateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.*;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.domain.tag.entity.Tag;
+import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotCompleteException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.*;
-import sixman.stackoverflow.module.aws.s3service.S3Service;
+import sixman.stackoverflow.module.aws.service.S3Service;
+import sixman.stackoverflow.module.email.service.MailService;
+import sixman.stackoverflow.module.redis.service.RedisService;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -27,11 +29,24 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final S3Service s3Service;
+    private final MailService mailService;
+    private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
+    private static final String AUTH_CODE_PREFIX = "AuthCode ";
+    @Value("${spring.mail.auth-code-expiration-millis}")
+    private long authCodeExpirationMillis;
+    @Value("${spring.mail.email-complete-expiration-millis}")
+    private long emailCompleteExpirationMillis;
 
-    public MemberService(MemberRepository memberRepository, S3Service s3Service, PasswordEncoder passwordEncoder) {
+    public MemberService(MemberRepository memberRepository,
+                         S3Service s3Service,
+                         MailService mailService,
+                         RedisService redisService,
+                         PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.s3Service = s3Service;
+        this.mailService = mailService;
+        this.redisService = redisService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -39,6 +54,8 @@ public class MemberService {
     public Long signup(MemberCreateServiceRequest request) {
 
         checkDuplicateMember(request.getEmail());
+
+        checkEmailAuthComplete(request.getEmail());
 
         Member member = createMember(request);
 
@@ -99,18 +116,39 @@ public class MemberService {
     }
 
     @Transactional
+    public void findPassword(MemberFindPasswordServiceRequest request) {
+
+        Member member = verifiedMember(request.getEmail());
+
+        checkEmailAuthComplete(request.getEmail());
+
+        member.updatePassword(
+                passwordEncoder.encode(request.getPassword())
+        );
+    }
+
+    @Transactional
     public String updateImage(Long loginMemberId, Long updateMemberId, MultipartFile file){
 
         checkAccessAuthority(loginMemberId, updateMemberId);
 
         Member member = verifiedMember(updateMemberId);
 
-        if(member.getMyInfo().getImage() == null) {
-            String type = file.getContentType().split("/")[1];
-            member.getMyInfo().updateImage(String.format("images/%s.%s", member.getEmail(), type));
-        }
+        updateMemberImagePath(file, member);
 
         return s3Service.uploadImage(member.getMyInfo().getImage(), file);
+    }
+
+    @Transactional
+    public void deleteImage(Long loginMemberId, Long updateMemberId) {
+        checkAccessAuthority(loginMemberId, updateMemberId);
+
+        Member member = verifiedMember(updateMemberId);
+
+        if(member.getMyInfo().getImage() != null) {
+            s3Service.deleteImage(member.getMyInfo().getImage());
+            member.getMyInfo().updateImage(null);
+        }
     }
 
     @Transactional
@@ -118,12 +156,40 @@ public class MemberService {
 
         checkAccessAuthority(memberId, request.getDeleteMemberId());
 
-        Member member = verifiedMember(memberId);
+        Member member = verifiedMember(request.getDeleteMemberId());
 
         checkPassword(request.getPassword(), member.getPassword());
 
         member.disable();
     }
+
+    public void sendCodeToEmail(String toEmail) {
+
+        checkDuplicateMember(toEmail);
+
+        String authCode = mailService.sendAuthEmail(toEmail);
+
+        redisService.saveValues(
+                AUTH_CODE_PREFIX + toEmail,
+                authCode,
+                Duration.ofMillis(authCodeExpirationMillis));
+    }
+
+    public boolean checkCode(String toEmail, String code) {
+
+        String authCode = redisService.getValues(AUTH_CODE_PREFIX + toEmail);
+
+        boolean isValid = authCode.equals(code);
+
+        if(isValid) redisService.saveValues(
+                AUTH_CODE_PREFIX + toEmail,
+                "true",
+                Duration.ofMillis(emailCompleteExpirationMillis));
+
+        return isValid;
+    }
+
+
 
     private void checkPassword(String password, String savedPassword) {
         if (!passwordEncoder.matches(password, savedPassword)) {
@@ -149,6 +215,11 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         if(!member.isEnabled()) throw new MemberDisabledException();
         return member;
+    }
+
+    private Member verifiedMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(MemberNotFoundException::new);
     }
 
     private MemberResponse.MemberQuestionPageResponse getMemberQuestionPageResponse(Long memberId, Integer page, Integer size) {
@@ -178,10 +249,25 @@ public class MemberService {
         if(!loginMemberId.equals(requestMemberId)) throw new MemberAccessDeniedException();
     }
 
+    private void updateMemberImagePath(MultipartFile file, Member member) {
+        if(member.getMyInfo().getImage() == null) {
+            String type = file.getContentType().split("/")[1];
+            member.getMyInfo().updateImage(String.format("images/%s.%s", member.getEmail(), type));
+        }
+    }
+
     private String getPreSignedUrl(Member member) {
 
         if(member.getMyInfo().getImage() == null) return null;
 
         return s3Service.getPreSignedUrl(member.getMyInfo().getImage());
+    }
+
+    private void checkEmailAuthComplete(String email) {
+        if(!redisService.getValues(AUTH_CODE_PREFIX + email).equals("true")){
+            throw new EmailAuthNotCompleteException();
+        }
+
+        redisService.deleteValues(AUTH_CODE_PREFIX + email);
     }
 }

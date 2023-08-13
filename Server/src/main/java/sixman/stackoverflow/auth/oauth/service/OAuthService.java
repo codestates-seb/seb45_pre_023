@@ -46,18 +46,18 @@ public class OAuthService {
 
 
     @Transactional
-    public Token login(String providerName, String code) {
+    public Token login(Provider provider, String code) {
 
-        ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
+        ClientRegistration clientRegistration = inMemoryRepository.findByRegistrationId(provider.getName());
 
-        String token = getToken(code, provider);
+        String token = getToken(code, clientRegistration);
 
         OAuth2AccessTokenResponse tokenResponse = OAuth2AccessTokenResponse.withToken(token)
                 .tokenType(OAuth2AccessToken.TokenType.BEARER)
                 .expiresIn(3600L)
                 .build();
 
-        OAuth2UserRequest userRequest = new OAuth2UserRequest(provider, tokenResponse.getAccessToken());
+        OAuth2UserRequest userRequest = new OAuth2UserRequest(clientRegistration, tokenResponse.getAccessToken());
 
         DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
@@ -70,7 +70,7 @@ public class OAuthService {
             attributes.put("email", getEmail(userRequest.getAccessToken().getTokenValue()));
         }
 
-        MemberProfile memberProfile = OAuthAttributes.extract(registrationId, attributes); // registrationId에 따라 유저 정보를 통해 공통된 UserProfile 객체로 만들어 줌
+        MemberProfile memberProfile = Provider.extract(registrationId, attributes); // registrationId에 따라 유저 정보를 통해 공통된 UserProfile 객체로 만들어 줌
 
         Member member = getMember(memberProfile);
         if (member == null) {
@@ -102,17 +102,17 @@ public class OAuthService {
         return memberRepository.save(member);
     }
 
-    private String getToken(String code, ClientRegistration provider) {
+    private String getToken(String code, ClientRegistration clientRegistration) {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        String uri = provider.getProviderDetails().getTokenUri();
+        String uri = clientRegistration.getProviderDetails().getTokenUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
 
-        HttpEntity entity = new HttpEntity<>(tokenRequest(code, provider), headers);
+        HttpEntity entity = new HttpEntity<>(tokenRequest(code, clientRegistration), headers);
 
         ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(
                 uri,

@@ -2,15 +2,15 @@ package sixman.stackoverflow.global.restdocs;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.web.servlet.ResultActions;
+import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.global.common.CommonController;
 import sixman.stackoverflow.global.entity.BaseEnum;
+import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.testhelper.ControllerTest;
 
 import java.util.ArrayList;
@@ -143,11 +143,13 @@ public class CommonControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("restdocs 용 enum 조회 api")
+    @DisplayName("restdocs 용 enum 조회 API")
     void enums() throws Exception {
         //given
         List<String> enumValues = creatEnumRequest(
-                Authority.class
+                Authority.class,
+                TypeEnum.class,
+                Provider.class
         );
 
         String content = objectMapper.writeValueAsString(enumValues);

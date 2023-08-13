@@ -1,22 +1,18 @@
 package sixman.stackoverflow.domain.member.controller;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
-import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberDeleteApiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberPasswordUpdateAPiRequest;
-import sixman.stackoverflow.domain.member.controller.dto.MemberUpdateApiRequest;
+import sixman.stackoverflow.domain.member.controller.dto.*;
 import sixman.stackoverflow.domain.member.entity.Authority;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberPasswordUpdateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.*;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.global.response.PageInfo;
@@ -24,8 +20,10 @@ import sixman.stackoverflow.global.testhelper.ControllerTest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import static org.junit.jupiter.api.DynamicTest.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -77,6 +75,42 @@ class MemberControllerTest extends ControllerTest {
                 ),
                 responseHeaders(
                         headerWithName("Location").description("생성된 회원의 URI")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 찾기 API")
+    void findPassword() throws Exception {
+        //given
+        MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                .email("test@google.com")
+                .code("abc1AB")
+                .password("1234abcd!")
+                .build();
+
+        willDoNothing()
+                .given(memberService)
+                .findPassword(any(MemberFindPasswordServiceRequest.class));
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/auth/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON));
+
+        //then
+        actions.andDo(print())
+                .andExpect(status().isNoContent());
+
+        //restdocs
+        setConstraintClass(MemberFindPasswordApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("회원 email").attributes(getConstraint("email")),
+                        fieldWithPath("code").description("인증 code").attributes(getConstraint("code")),
+                        fieldWithPath("password").description("변경할 password").attributes(getConstraint("password"))
                 )
         ));
     }
@@ -310,7 +344,7 @@ class MemberControllerTest extends ControllerTest {
                         parameterWithName("memberId").description("수정할 회원의 ID")
                 ),
                 requestHeaders(
-                        headerWithName("Authorization").description("JWT Token")
+                        headerWithName("Authorization").description("accessToken")
                 ),
                 requestFields(
                         fieldWithPath("nickname").description("수정할 회원의 nickname").optional().attributes(getConstraint("nickname")),
@@ -367,6 +401,40 @@ class MemberControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("회원 수정 API - 이미지 삭제")
+    void deleteImage() throws Exception {
+        //given
+        Long memberId = 1L;
+
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        willDoNothing()
+                .given(memberService)
+                .deleteImage(anyLong(), anyLong());
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                delete("/members/{member-id}/image", memberId)
+                        .header("Authorization", "Bearer abc.12a.333"));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        //restdocs
+        actions.andDo(documentHandler.document(
+                pathParameters(
+                        parameterWithName("member-id").description("이미지를 삭제할 회원의 ID")
+                ),
+                requestHeaders(
+                        headerWithName("Authorization").description("accessToken")
+                )
+        ));
+    }
+
+    @Test
     @DisplayName("회원 수정 API - 비밀번호 수정")
     void updatePassword() throws Exception {
         //given
@@ -403,7 +471,7 @@ class MemberControllerTest extends ControllerTest {
                         parameterWithName("member-id").description("비밀번호를 수정할 회원의 ID")
                 ),
                 requestHeaders(
-                        headerWithName("Authorization").description("JWT Token")
+                        headerWithName("Authorization").description("accessToken")
                 ),
                 requestFields(
                         fieldWithPath("password").description("이전 비밀번호").attributes(getConstraint("password")),
@@ -454,6 +522,774 @@ class MemberControllerTest extends ControllerTest {
                         fieldWithPath("password").description("회원의 비밀번호").attributes(getConstraint("password"))
                 )
         ));
+    }
+
+    @Test
+    @DisplayName("이메일 인증 API - 인증 요청")
+    void sendEmail() throws Exception{
+        //given
+        MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                .email("test@google.com")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        willDoNothing()
+                .given(memberService)
+                .sendCodeToEmail(anyString());
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/members/email")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //when
+        actions
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        //restDocs
+        setConstraintClass(MemberMailAuthApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 요청할 이메일").attributes(getConstraint("email"))
+                )
+        ));
+
+    }
+
+    @Test
+    @DisplayName("이메일 인증 API - 인증 확인")
+    void confirmEmail() throws Exception {
+        //given
+        MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                .email("test@google.com")
+                .code("123456")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        given(memberService.checkCode(anyString(), anyString()))
+                .willReturn(true);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/members/email/confirm")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("true"));
+
+        //restDocs
+        setConstraintClass(MemberMailConfirmApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 확인할 이메일").attributes(getConstraint("email")),
+                        fieldWithPath("code").description("인증 코드").attributes(getConstraint("code"))
+                ),
+                responseFields(
+                        fieldWithPath("data").description("인증 결과 (true, false)"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("status").description("응답 상태"),
+                        fieldWithPath("message").description("응답 메시지")
+                )
+        ));
+
+    }
+
+    @TestFactory
+    @DisplayName("회원 가입 시 요청 값 validation 검증")
+    Collection<DynamicTest> signupValidation() {
+        //given
+        Long memberId = 1L;
+
+        given(memberService.signup(any(MemberCreateServiceRequest.class))).willReturn(memberId);
+
+
+        return List.of(
+                dynamicTest("이메일이 Null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .nickname("test")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                }),
+                dynamicTest("이메일이 형식에 맞지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .email("test")
+                            .nickname("test")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getEmail()))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                }),
+                dynamicTest("닉네임의 길이가 15글자 이상이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .email("test@google.com")
+                            .nickname("testtesttesttest")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("nickname"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getNickname()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 1 ~ 15자 입니다."));
+                }),
+                dynamicTest("닉네임이 Null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .email("test@google.com")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("nickname"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("닉네임을 정확히 입력해주세요."));
+                }),
+                dynamicTest("password 가 null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .email("test@google.com")
+                            .nickname("test")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                }),
+                dynamicTest("password 길이가 8자 이하이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .email("test@google.com")
+                            .nickname("test")
+                            .password("1234abc!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+                }),
+                dynamicTest("password 길이가 20자 이상이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .email("test@google.com")
+                            .nickname("test")
+                            .password("1234abcd1234abcd1234!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+                }),
+                dynamicTest("password 가 영문, 숫자, 특수문자로 구성되어 있지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberCreateApiRequest request = MemberCreateApiRequest.builder()
+                            .email("test@google.com")
+                            .nickname("test")
+                            .password("1234abcdd")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/signup")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("비밀번호를 찾을 때 요청 값 validation 검증")
+    Collection<DynamicTest> findPasswordValidation() throws Exception {
+        //given
+        willDoNothing()
+                .given(memberService)
+                .findPassword(any(MemberFindPasswordServiceRequest.class));
+
+
+        return List.of(
+                dynamicTest("email 이 Null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .code("abc1AB")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+
+                }),
+                dynamicTest("email 이 형식에 맞지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test")
+                            .code("abc1AB")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getEmail()))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+
+                }),
+                dynamicTest("code 가 Null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .password("1234abcd!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("code"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("코드를 정확히 입력해주세요."));
+
+                }),
+                dynamicTest("새로운 비밀번호가 null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                }),
+                dynamicTest("새로운 비밀번호가 9자 미만이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .password("1234abc!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+                }),
+                dynamicTest("새로운 비밀번호가 20자 초과면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .password("1234abcd1234abcd1234!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+
+                }),
+                dynamicTest("새로운 비밀번호에 특수문자, 문자, 숫자를 포함하지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberFindPasswordApiRequest request = MemberFindPasswordApiRequest.builder()
+                            .email("test@goole.com")
+                            .code("abc1AB")
+                            .password("1234abcdab")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/auth/password")
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                })
+        );
+
+    }
+
+    @TestFactory
+    @DisplayName("멤버 정보 수정 시 요청 값 validation 검증")
+    Collection<DynamicTest> updateMemberValidation() throws Exception {
+        //given
+        Long memberId = 1L;
+
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        willDoNothing()
+                .given(memberService)
+                .updateMember(anyLong(), any(MemberUpdateServiceRequest.class));
+
+        return List.of(
+                dynamicTest("nickname 이 Null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberUpdateApiRequest request = MemberUpdateApiRequest.builder()
+                            .myIntro("update myIntro")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/members/{memberId}", memberId)
+                                    .header("Authorization", "Bearer abc.12a.333")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request)));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("nickname"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("닉네임을 정확히 입력해주세요."));
+
+                }),
+                dynamicTest("nickname 이 15자를 초과하면 검증에 실패한다.", () -> {
+                    //given
+                    MemberUpdateApiRequest request = MemberUpdateApiRequest.builder()
+                            .nickname("1234567890123456")
+                            .myIntro("update myIntro")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/members/{memberId}", memberId)
+                                    .header("Authorization", "Bearer abc.12a.333")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request)));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("nickname"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getNickname()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 1 ~ 15자 입니다."));
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("멤버의 비밀번호 변경 시 요청 값 validation 검증")
+    Collection<DynamicTest> memberPasswordValidation() throws Exception {
+        //given
+        Long memberId = 1L;
+
+        //인증값
+        setDefaultAuthentication(memberId);
+
+
+        willDoNothing()
+                .given(memberService)
+                .updatePassword(anyLong(), any(MemberPasswordUpdateServiceRequest.class));
+
+
+        return List.of(
+                dynamicTest("기존 비밀번호가 null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                            .newPassword("newPassword123!!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/members/{member-id}/password", memberId)
+                                    .header("Authorization", "Bearer abc.12a.333")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request)));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("password"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호를 정확히 입력해주세요."));
+                }),
+                dynamicTest("새로운 비밀번호가 null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                            .password("prevPassword123!!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/members/{member-id}/password", memberId)
+                                    .header("Authorization", "Bearer abc.12a.333")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request)));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("newPassword"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                }),
+                dynamicTest("새로운 비밀번호가 9자 미만이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                            .password("prevPassword123!!")
+                            .newPassword("1234abc!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/members/{member-id}/password", memberId)
+                                    .header("Authorization", "Bearer abc.12a.333")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request)));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("newPassword"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getNewPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+                }),
+                dynamicTest("새로운 비밀번호가 20자 초과이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                            .password("prevPassword123!!")
+                            .newPassword("1234abcd1234abcd1234!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/members/{member-id}/password", memberId)
+                                    .header("Authorization", "Bearer abc.12a.333")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request)));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("newPassword"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getNewPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 9 ~ 20자 입니다."));
+
+                }),
+                dynamicTest("새로운 비밀번호에 특수문자, 문자, 숫자를 포함하지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                            .password("prevPassword123!!")
+                            .newPassword("123456789!")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/members/{member-id}/password", memberId)
+                                    .header("Authorization", "Bearer abc.12a.333")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request)));
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("newPassword"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getNewPassword()))
+                            .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
+                })
+        );
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 시 요청 값 validation 검증 - password 가 null 이면 검증에 실패한다.")
+    void deleteMemberValidation() throws Exception {
+        //given
+        Long memberId = 1L;
+        MemberDeleteApiRequest request = MemberDeleteApiRequest.builder()
+                .build();
+
+        //인증값
+        setDefaultAuthentication(memberId);
+
+        willDoNothing()
+                .given(memberService)
+                .deleteMember(anyLong(), any(MemberDeleteServiceRequest.class));
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                delete("/members/{member-id}", memberId)
+                        .header("Authorization", "Bearer abc.12a.333")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        actions.andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data[0].field").value("password"))
+                .andExpect(jsonPath("$.data[0].value").value("null"))
+                .andExpect(jsonPath("$.data[0].reason").value("비밀번호를 정확히 입력해주세요."));
+    }
+
+    @TestFactory
+    @DisplayName("메일 인증 요청 시 요청 값 validation 검증")
+    Collection<DynamicTest> sendEmailValidation() throws Exception {
+        //given
+
+        willDoNothing()
+                .given(memberService)
+                .sendCodeToEmail(anyString());
+
+        return List.of(
+                dynamicTest("이메일 값이 null 이면 검증에 실패한다.", () -> {
+                    MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                            .build();
+
+                    String content = objectMapper.writeValueAsString(request);
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/members/email")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(content));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                }),
+                dynamicTest("이메일 값 형식에 맞지 않으면 검증에 실패한다.", () -> {
+                    MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                            .email("test")
+                            .build();
+
+                    String content = objectMapper.writeValueAsString(request);
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/members/email")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(content));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getEmail()))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("이메일 인증 코드 전송 시 요청 값 validation 검증")
+    Collection<DynamicTest> confirmEmailValidation() throws Exception {
+        //given
+
+        given(memberService.checkCode(anyString(), anyString()))
+                .willReturn(true);
+
+
+        return List.of(
+            dynamicTest("이메일 값이 null 이면 검증에 실패한다.", () -> {
+                //given
+                MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                        .code("123456")
+                        .build();
+
+                String content = objectMapper.writeValueAsString(request);
+
+                //when
+                ResultActions actions = mockMvc.perform(
+                        post("/members/email/confirm")
+                                .contentType(APPLICATION_JSON)
+                                .content(content));
+
+                //then
+                actions
+                        .andDo(print())
+                        .andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.data[0].field").value("email"))
+                        .andExpect(jsonPath("$.data[0].value").value("null"))
+                        .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+            }),
+            dynamicTest("이메일 값이 형식에 맞지 않으면 검증에 실패한다.", () -> {
+                //given
+                MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                        .email("test")
+                        .code("123456")
+                        .build();
+
+                String content = objectMapper.writeValueAsString(request);
+
+                //when
+                ResultActions actions = mockMvc.perform(
+                        post("/members/email/confirm")
+                                .contentType(APPLICATION_JSON)
+                                .content(content));
+
+                //then
+                actions
+                        .andDo(print())
+                        .andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.data[0].field").value("email"))
+                        .andExpect(jsonPath("$.data[0].value").value(request.getEmail()))
+                        .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+            }),
+            dynamicTest("code 값이 null 이면 검증에 실패한다.", () -> {
+                //given
+                MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                        .email("test@google.com")
+                        .build();
+
+                String content = objectMapper.writeValueAsString(request);
+
+                //when
+                ResultActions actions = mockMvc.perform(
+                        post("/members/email/confirm")
+                                .contentType(APPLICATION_JSON)
+                                .content(content));
+
+                //then
+                actions
+                        .andDo(print())
+                        .andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.data[0].field").value("code"))
+                        .andExpect(jsonPath("$.data[0].value").value("null"))
+                        .andExpect(jsonPath("$.data[0].reason").value("코드를 정확히 입력해주세요."));
+            })
+        );
     }
 
     private MemberResponse getMemberResponse(Long memberId) {

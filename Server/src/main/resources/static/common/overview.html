@@ -533,6 +533,30 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
+<h2 id="_stub_로그인_데이터">stub 로그인 데이터</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>아래 id, pw 로 로그인하면 토큰이 발급됩니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pw</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>test@google.com</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1q2w3e4r!</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
 <h2 id="overview-response">HTTP Response</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -590,13 +614,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code>{
   "data" : [ {
-    "field" : "password",
-    "value" : "",
-    "reason" : "비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."
-  }, {
     "field" : "email",
     "value" : "",
     "reason" : "이메일을 정확히 입력해주세요."
+  }, {
+    "field" : "password",
+    "value" : "",
+    "reason" : "비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."
   } ],
   "code" : 400,
   "status" : "BAD_REQUEST",
@@ -711,7 +735,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-08-10 22:23:27 +0900
+Last updated 2023-08-14 00:15:16 +0900
 </div>
 </div>
 </body>

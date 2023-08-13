@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
@@ -34,7 +33,7 @@ import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
 import sixman.stackoverflow.domain.member.service.MemberService;
 import sixman.stackoverflow.global.common.CommonController;
-import sixman.stackoverflow.module.aws.s3service.S3Service;
+import sixman.stackoverflow.module.aws.service.S3Service;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -101,7 +100,7 @@ public abstract class ControllerTest {
     }
 
     protected static String generateLinkCode(Class<?> clazz) {
-        return String.format("link:common/%s.html[%s 값 보기,role=\"popup\"]",
+        return String.format("link:../common/%s.html[%s 값 보기,role=\"popup\"]",
                 clazz.getSimpleName().toLowerCase(), clazz.getSimpleName());
     }
 

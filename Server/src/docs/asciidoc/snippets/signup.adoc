@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[signup]]
+= 회원가입 API
+
+== 회원 가입
+=== HTTP Request
+include::{snippets}/member/signup/http-request.adoc[]
+==== Request Body
+include::{snippets}/member/signup/request-body.adoc[]
+==== Request Fields
+include::{snippets}/member/signup/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/member/signup/http-response.adoc[]
+==== Response Header
+include::{snippets}/member/signup/response-headers.adoc[]
+
+

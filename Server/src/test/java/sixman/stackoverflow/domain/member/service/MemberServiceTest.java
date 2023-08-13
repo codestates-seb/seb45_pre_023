@@ -3,33 +3,46 @@ package sixman.stackoverflow.domain.member.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberCreateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberPasswordUpdateServiceRequest;
-import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServiceRequest;
+import sixman.stackoverflow.domain.member.service.dto.request.*;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.domain.tag.entity.Tag;
+import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotCompleteException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberDuplicateException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
+import sixman.stackoverflow.module.email.service.MailService;
 
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class MemberServiceTest extends ServiceTest {
 
     @Autowired MemberService memberService;
     @Autowired MemberRepository memberRepository;
+    @Autowired MailService mailService;
+
 
     @Test
     @DisplayName("email, nickname, password 를 받아 회원가입을 한다.")
@@ -44,6 +57,12 @@ class MemberServiceTest extends ServiceTest {
                 .nickname(nickname)
                 .password(password)
                 .build();
+
+        willDoNothing()
+                .given(redisService)
+                .saveValues(anyString(), anyString(), any(Duration.class));
+
+        given(redisService.getValues(anyString())).willReturn("true");
 
         //when
         Long memberId = memberService.signup(request);
@@ -71,10 +90,29 @@ class MemberServiceTest extends ServiceTest {
                 .password("1234abcd!!!")
                 .build();
 
+
         //when & then
         assertThatThrownBy(() -> memberService.signup(request))
                 .isInstanceOf(MemberDuplicateException.class)
                 .hasMessageContaining("이미 존재하는 회원 이메일입니다.");
+    }
+
+    @Test
+    @DisplayName("회원가입 시 아직 이메일 인증이 완료되지 않으면 EmailAuthNotCompleteException 을 발생시킨다.")
+    void signupEmailAuthNotCompleteException() {
+        //given
+        MemberCreateServiceRequest request = MemberCreateServiceRequest.builder()
+                .email("test@google.com")
+                .nickname("nickname")
+                .password("1234abcd!!!")
+                .build();
+
+        given(redisService.getValues(anyString())).willReturn("code12");
+
+        //when & then
+        assertThatThrownBy(() -> memberService.signup(request))
+                .isInstanceOf(EmailAuthNotCompleteException.class)
+                .hasMessageContaining("이메일 인증이 완료되지 않았습니다.");
     }
 
     @Test
@@ -193,6 +231,58 @@ class MemberServiceTest extends ServiceTest {
         assertThatThrownBy(() -> memberService.updatePassword(member.getMemberId(), request))
                 .isInstanceOf(MemberPasswordException.class)
                 .hasMessageContaining("비밀번호를 확인해주세요.");
+    }
+
+    @Test
+    @DisplayName("member email 인증이 완료되면 member 의 비밀번호를 변경할 수 있다.")
+    void findPassword() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        String email = member.getEmail();
+        String password = "1234abcd!!";
+        String code = "abcd12";
+
+        given(redisService.getValues(anyString())).willReturn("true");
+
+        MemberFindPasswordServiceRequest request = MemberFindPasswordServiceRequest.builder()
+                .email(email)
+                .password(password)
+                .code(code)
+                .build();
+
+        //when
+        memberService.findPassword(request);
+
+        //then
+        Member updatedMember = memberRepository.findById(member.getMemberId()).orElseThrow();
+        assertThat(passwordEncoder.matches(password, updatedMember.getPassword())).isTrue();
+    }
+
+    @Test
+    @DisplayName("member password 를 찾을 때 email 인증이 완료되지 않았으면 EmailAuthNotCompleteException 을 발생시킨다.")
+    void findPasswordException() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        String email = member.getEmail();
+        String password = "1234abcd!!";
+        String code = "abcd12";
+
+        given(redisService.getValues(anyString())).willReturn("abcd12"); //인증이 완료되지 않았으면 저장된 코드를 반환함.
+
+        MemberFindPasswordServiceRequest request = MemberFindPasswordServiceRequest.builder()
+                .email(email)
+                .password(password)
+                .code(code)
+                .build();
+
+        //when & then
+        assertThatThrownBy(() -> memberService.findPassword(request))
+                .isInstanceOf(EmailAuthNotCompleteException.class)
+                .hasMessageContaining("이메일 인증이 완료되지 않았습니다.");
     }
 
     @Test
@@ -340,6 +430,120 @@ class MemberServiceTest extends ServiceTest {
         assertThat(memberAnswer.getPageInfo().getPage()).isEqualTo(1);
         assertThat(memberAnswer.getPageInfo().getSize()).isEqualTo(5);
         assertThat(memberAnswer.getPageInfo().getTotalSize()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("s3 버킷에 image 를 업로드하고 업로드한 이미지의 presigned url 을 반환한다.")
+    void updateImage() {
+        //given
+        Member member = createMember();
+
+        memberRepository.save(member);
+
+        Long loginMemberId = member.getMemberId();
+        Long updateMemberId = member.getMemberId();
+        MultipartFile image =
+                new MockMultipartFile(
+                        "image",
+                        "image.png",
+                        "image/png",
+                        "image".getBytes());
+
+        given(s3Service.uploadImage(anyString(), any(MultipartFile.class)))
+                .willReturn("https://image.png");
+
+        //when
+        String imageUrl = memberService.updateImage(loginMemberId, updateMemberId, image);
+
+        //then
+        assertThat(imageUrl).isEqualTo("https://image.png");
+    }
+
+    @Test
+    @DisplayName("s3 버킷에서 해당 멤버의 이미지를 삭제하고 Myinfo 의 image 를 null 로 만든다.")
+    void deleteImage() {
+        //given
+        Member member = createMember();
+
+        memberRepository.save(member);
+
+        Long loginMemberId = member.getMemberId();
+        Long updateMemberId = member.getMemberId();
+
+        willDoNothing().given(s3Service).deleteImage(anyString());
+
+        //when
+        memberService.deleteImage(loginMemberId, updateMemberId);
+
+        //then
+        assertThat(member.getMyInfo().getImage()).isNull();
+    }
+
+    @Test
+    @DisplayName("이메일 인증을 시도하면 이메일로 인증 코드를 보내고 redis 에 저장한다.")
+    void sendCodeToEmail() {
+        //given
+        String email = "test@google.com";
+
+        given(emailSender.createMimeMessage())
+                .willReturn(new MimeMessage(Session.getInstance(new Properties())));
+
+        //when
+        memberService.sendCodeToEmail(email);
+
+        //then
+        verify(redisService, times(1)).saveValues(anyString(), anyString(), any(Duration.class)); //저장 로직 호출
+        verify(emailSender, times(1)).send(any(MimeMessage.class)); //이메일 전송 로직 호출
+
+    }
+
+    @Test
+    @DisplayName("이메일 인증 시도 시 중복된 이메일이면 MemberDuplicateException 이 발생한다.")
+    void sendCodeToEmailException() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        String email = member.getEmail();
+
+        //when & then
+        assertThatThrownBy(() -> memberService.sendCodeToEmail(email))
+                .isInstanceOf(MemberDuplicateException.class)
+                .hasMessageContaining("이미 존재하는 회원 이메일입니다.");
+    }
+
+    @Test
+    @DisplayName("이메일로 온 코드를 인증할 때 redis 에 저장된 코드와 일치하면 true 를 반환한다.")
+    void checkCode() {
+        //given
+        String email = "test@google.com";
+        String code = "123456";
+
+        given(redisService.getValues(anyString()))
+                .willReturn(code);
+
+        //when
+        boolean result = memberService.checkCode(email, code);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("이메일로 온 코드를 인증할 때 redis 에 저장된 코드와 일치하지 않으면 false 를 반환한다.")
+    void checkCodeFalse() {
+        //given
+        String email = "test@google.com";
+        String code = "123456";
+
+        given(redisService.getValues(anyString()))
+                .willReturn("654321");
+
+        //when
+        boolean result = memberService.checkCode(email, code);
+
+        //then
+        assertThat(result).isFalse();
     }
 
     private Question createQuestion(Member member) {

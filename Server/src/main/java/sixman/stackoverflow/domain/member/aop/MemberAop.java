@@ -88,6 +88,12 @@ public class MemberAop {
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 
+    @Around("execution(* sixman.stackoverflow.domain.member.controller.MemberController.updateImage(..))")
+    public Object deleteImage(ProceedingJoinPoint joinPoint) {
+
+        return ResponseEntity.noContent().build();
+    }
+
     @Around("execution(* sixman.stackoverflow.domain.member.controller.MemberController.deleteMember(..))")
     public Object deleteMember(ProceedingJoinPoint joinPoint) {
 

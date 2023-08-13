@@ -1,16 +1,13 @@
-= 회원 관리 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
 
-== 회원 가입
-=== HTTP Request
-include::{snippets}/member/signup/http-request.adoc[]
-==== Request Body
-include::{snippets}/member/signup/request-body.adoc[]
-==== Request Fields
-include::{snippets}/member/signup/request-fields.adoc[]
-=== HTTP Response
-include::{snippets}/member/signup/http-response.adoc[]
-==== Response Header
-include::{snippets}/member/signup/response-headers.adoc[]
+[[Member]]
+= 회원 관리 API
 
 == 회원 정보 조회
 === HTTP Request
@@ -89,6 +86,18 @@ include::{snippets}/member/updateimage/path-parameters.adoc[]
 include::{snippets}/member/updateimage/request-parts.adoc[]
 === HTTP Response
 include::{snippets}/member/updateimage/http-response.adoc[]
+==== Response Header
+include::{snippets}/member/updateimage/response-headers.adoc[]
+
+== 회원정보(이미지) 삭제
+=== HTTP Request
+include::{snippets}/member/deleteimage/http-request.adoc[]
+==== Request Header
+include::{snippets}/member/deleteimage/request-headers.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/deleteimage/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/member/deleteimage/http-response.adoc[]
 
 == 회원 탈퇴
 === HTTP Request

@@ -1,0 +1,5 @@
+:doctype: book
+:icons: font
+
+[[authority]]
+include::{snippets}/common/enums/custom-response-fields-Provider.adoc[]

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sixman.stackoverflow.domain.member.service.dto.request.MemberDeleteServiceRequest;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -14,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class MemberDeleteApiRequest {
 
-    @NotNull(message = "{validation.member.password}")
+    @NotBlank(message = "{validation.member.password-notblank}")
     private String password;
 
     public MemberDeleteServiceRequest toServiceRequest(Long deleteMemberId) {

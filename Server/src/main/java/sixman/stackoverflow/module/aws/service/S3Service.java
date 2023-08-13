@@ -1,11 +1,15 @@
-package sixman.stackoverflow.module.aws.s3service;
+package sixman.stackoverflow.module.aws.service;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sixman.stackoverflow.global.exception.businessexception.s3exception.S3FileNotValidException;
+import sixman.stackoverflow.global.exception.businessexception.s3exception.S3PathNotValidException;
 import sixman.stackoverflow.global.exception.businessexception.s3exception.S3UploadException;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
@@ -26,15 +30,17 @@ public class S3Service {
 
     private final String BUCKET_NAME = "sixman-images";
     private final Region REGION = Region.AP_NORTHEAST_2;
+    private final S3Client s3Client;
+    private final AwsCredentialsProvider credentialsProvider;
 
-    public S3Service(AwsCredentialsProvider credentialsProvider) {
+    public S3Service(S3Client s3Client, AwsCredentialsProvider credentialsProvider) {
+        this.s3Client = s3Client;
         this.credentialsProvider = credentialsProvider;
     }
-    private final AwsCredentialsProvider credentialsProvider;
 
     public String getPreSignedUrl(String imagePath) {
 
-        if (!isValidPath(imagePath)) return null;
+        checkValidPath(imagePath);
 
         S3Presigner presigner = getS3Presigner();
 
@@ -47,7 +53,7 @@ public class S3Service {
 
     public String uploadImage(String imagePath, MultipartFile file) {
 
-        if (!isValid(imagePath, file)) return null;
+        checkValid(imagePath, file);
 
         S3Presigner presigner = getS3Presigner();
 
@@ -58,6 +64,13 @@ public class S3Service {
         presigner.close();
 
         return preSingedUrl;
+    }
+
+    public void deleteImage(String imagePath) {
+
+        checkValidPath(imagePath);
+
+        deleteFromS3(imagePath);
     }
 
     private S3Presigner getS3Presigner() {
@@ -123,21 +136,36 @@ public class S3Service {
         }
     }
 
-    private boolean isValid(String imagePath, MultipartFile file) {
+    private void deleteFromS3(String imagePath) {
 
-        return isValidPath(imagePath) && isValidFile(file);
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(BUCKET_NAME)
+                .key(imagePath)
+                .build();
+
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
-    private boolean isValidFile(MultipartFile file) {
+    private void checkValid(String imagePath, MultipartFile file) {
+        checkValidPath(imagePath);
+        checkValidFile(file);
+    }
+
+    private void checkValidFile(MultipartFile file) {
         String contentType = file.getContentType();
-        if (contentType == null) {
-            return false;
+
+        if (contentType == null || !isImage(contentType)) {
+            throw new S3FileNotValidException();
         }
+    }
+
+    private boolean isImage(String contentType) {
+
         return contentType.equals("image/jpg") || contentType.equals("image/jpeg") || contentType.equals("image/png");
     }
 
-    private boolean isValidPath(String imagePath) {
+    private void checkValidPath(String imagePath) {
 
-        return imagePath.startsWith("images/");
+        if(imagePath == null || !imagePath.startsWith("images/")) throw new S3PathNotValidException();
     }
 }
