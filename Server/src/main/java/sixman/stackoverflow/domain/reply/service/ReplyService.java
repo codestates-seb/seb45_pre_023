@@ -11,6 +11,7 @@ import sixman.stackoverflow.global.exception.businessexception.replyexception.Re
 import java.util.List;
 
 @Service
+@Transactional
 public class ReplyService {
 
     private final ReplyRepository replyRepository;

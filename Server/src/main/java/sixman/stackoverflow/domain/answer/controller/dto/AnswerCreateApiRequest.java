@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Builder
 public class AnswerCreateApiRequest {
+    private Long answerId;
     @NotBlank(message = "{validation.answer.content}")
     private String content;
     private Integer views;

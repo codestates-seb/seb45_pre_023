@@ -9,6 +9,7 @@ import sixman.stackoverflow.domain.answer.service.AnswerService;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
+
 @RestController
 @RequestMapping("/")
 public class AnswerController {
@@ -27,12 +28,16 @@ public class AnswerController {
     }
 
     @GetMapping("/questions/{question-id}/answers/{answer-id}")
-    public ResponseEntity<ApiSingleResponse<AnswerResponse>> getAnswer(@PathVariable("answer-id") Long answerId) {
+    public ResponseEntity<ApiSingleResponse<AnswerResponse>> getAnswer(@PathVariable("answer-id") Long answerId
+                                                                       ) {
         AnswerResponse answerResponse = getAnswerResponse(answerId);
 
         return ResponseEntity.ok(ApiSingleResponse.ok(answerResponse));
 
     }
+    @GetMapping("/questions/{question-id}/answers/{answer-id}")
+
+
 
     @PatchMapping("/questions/{question-id}/answers/{answer-id}")
     public ResponseEntity<Void> patchAnswer(@PathVariable("answer-id") Long answerId,

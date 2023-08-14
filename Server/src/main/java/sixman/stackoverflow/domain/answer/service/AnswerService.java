@@ -12,6 +12,7 @@ import sixman.stackoverflow.global.exception.businessexception.answerexception.A
 import java.util.List;
 
 @Service
+@Transactional
 public class AnswerService {
 
     private final AnswerRepository answerRepository;
