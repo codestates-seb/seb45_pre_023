@@ -15,4 +15,5 @@ public class ReplyCreateApiRequest {
     @NotBlank(message = "{validation.reply.content}")
     private String content;
 
+
 }
