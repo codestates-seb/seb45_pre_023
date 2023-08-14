@@ -12,15 +12,44 @@ import Header from './components/Header/Header';
 // import MemberDelete from './pages/Member/Settings/Delete';
 // import MemberMain from './pages/Member/memberMain';
 
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [isLogin, setIsLogin] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
+
+  const provider = ['Google', 'GitHub', 'Kakao'];
+
+  const getAccessToken = async (authorizationCode) => {
+    return axios
+      .post(
+        `http://localhost:8080/provider=${provider[1]}&code=authorizationCode`
+      )
+      .then((res) => {
+        setAccessToken(res.data.accessToken);
+        setIsLogin(true);
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
+  };
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const authorizationCode = url.searchParams.get('code');
+    if (authorizationCode) {
+      console.log(authorizationCode);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
-      <Header />
+      <Header isLogin={isLogin} />
       <Routes>
         <Route path={RouteConst.Login} element={<Login />} />
-        <Route path={RouteConst.Main} element={<Main />} />
         <Route path={RouteConst.SignUp} element={<SignUp />} />
+        <Route path={RouteConst.Main} element={<Main />} />
         <Route path={RouteConst.Question} element={<Question />} />
         <Route path={RouteConst.Ask} element={<Ask />} />
         {/* <Route path={RouteConst.memberMain} element={<MemberMain />} />

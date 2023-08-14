@@ -41,6 +41,8 @@ module.exports = {
         152: '38rem',
         160: '40rem',
         168: '42rem',
+        172: '43rem',
+        174: '43.5rem',
         176: '44rem',
         180: '45rem',
         184: '46rem',
@@ -59,6 +61,7 @@ module.exports = {
       },
       colors: {
         stack: 'rgb(81 88 95);',
+        reds: 'rgb(188 183 183);',
       },
       fontSize: {
         xss: '8px',

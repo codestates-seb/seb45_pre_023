@@ -1,5 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { Link } from 'react-router-dom';
+import { RouteConst } from '../../../Interface/RouteConst';
 
 export default function SignUpForm() {
   return (
@@ -108,9 +110,11 @@ export default function SignUpForm() {
 
       <div className="w-68 mt-8 text-sm text-center">
         Already have an account?{' '}
-        <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
-          Log in
-        </span>{' '}
+        <Link to={RouteConst.Login}>
+          <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
+            Log in
+          </span>{' '}
+        </Link>
       </div>
       <div className="w-68 my-3 text-sm text-center mb-18">
         Are you an employer?{' '}
