@@ -5,7 +5,6 @@ import lombok.Setter;
 import sixman.stackoverflow.domain.question.entity.Question;
 
 import javax.validation.constraints.NotBlank;
-
 @Getter
 @Setter
 public class QuestionUpdateApiRequest {

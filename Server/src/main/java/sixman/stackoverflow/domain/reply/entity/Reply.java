@@ -29,3 +29,4 @@ public class Reply extends BaseEntity {
     @JoinColumn(name = "answer_id")
     private Answer answer;
 }
+

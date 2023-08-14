@@ -15,4 +15,5 @@ public class ApiListResponse<T> {
     public static <T> ApiListResponse<T> of(List<T> data) {
         return new ApiListResponse<>(data);
     }
+
 }

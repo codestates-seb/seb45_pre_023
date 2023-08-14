@@ -29,3 +29,4 @@ public class Tag extends BaseEntity {
         this.tagName = tagName;
     }
 }
+

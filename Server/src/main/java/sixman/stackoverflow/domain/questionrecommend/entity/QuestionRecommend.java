@@ -38,3 +38,4 @@ public class QuestionRecommend extends BaseEntity {
         }
     }
 }
+

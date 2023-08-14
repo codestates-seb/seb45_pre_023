@@ -9,3 +9,4 @@ public interface QuestionRecommendRepository extends JpaRepository<QuestionRecom
 
     long countByQuestionAndType(Question question, TypeEnum type);
 }
+

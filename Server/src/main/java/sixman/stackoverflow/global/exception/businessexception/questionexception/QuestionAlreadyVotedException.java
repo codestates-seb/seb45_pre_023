@@ -10,3 +10,4 @@ public class QuestionAlreadyVotedException extends QuestionException {
         super(CODE, HttpStatus.BAD_REQUEST, MESSAGE);
     }
 }
+
