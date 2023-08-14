@@ -22,4 +22,16 @@ public class MyInfo extends BaseEntity {
     private String myIntro;
 
     private String image;
+
+    public static MyInfo createMyInfo(){
+        return new MyInfo();
+    }
+
+    public void updateMyIntro(String myIntro){
+        this.myIntro = myIntro;
+    }
+
+    public void updateImage(String image){
+        this.image = image;
+    }
 }
