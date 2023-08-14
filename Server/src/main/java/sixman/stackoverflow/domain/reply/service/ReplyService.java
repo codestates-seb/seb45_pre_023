@@ -19,7 +19,9 @@ import sixman.stackoverflow.global.exception.businessexception.replyexception.Re
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Transactional
+import static sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse.createReplyResponse;
+
+
 @Service
 @Transactional
 public class ReplyService {
@@ -48,21 +50,21 @@ public class ReplyService {
 
         return reply.getReplyId();
     }
-//    public List<ReplyResponse> getRepiles(Long answerId) { // 리플목록
-//        Answer answer= answerRepository.findById(answerId)
-//                .orElseThrow(() -> new AnswerNotFoundException());
-//
-//        List<Reply> replies = replyRepository.findByAnswer(answer);
-//
-//        Long memberId = SecurityUtil.getCurrentId();
-//        Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new MemberNotFoundException());
-//
-//
-//        return replies.stream()
-//                .map(reply -> createReplyResponse(reply, member)
-//                .collect(Collectors.toList());
-//    }
+    public List<ReplyResponse> getReplies(Long answerId) { // 리플목록
+        Answer answer= answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerNotFoundException());
+
+        List<Reply> replies = replyRepository.findByAnswer(answer);
+
+        Long memberId = SecurityUtil.getCurrentId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException());
+
+
+        return replies.stream()
+                .map(reply -> createReplyResponse(reply, member))
+                .collect(Collectors.toList());
+    }
 
 
 

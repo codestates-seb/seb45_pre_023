@@ -15,7 +15,8 @@ public class AnswerResponse {
 
     private Long answerId;
     private String content;
-    private Integer recommends;
+    private Integer upvoteCount;
+    private Integer downvoteCount;
     private List<ReplyResponse> replies;
 
 

@@ -28,9 +28,9 @@ public class Answer extends BaseEntity {
 
     private Integer views;
 
-    private int upvoteCount;
+    private Integer upvoteCount;
 
-    private int downvoteCount;
+    private Integer downvoteCount;
 
 
 

@@ -18,7 +18,7 @@ public class ReplyResponse {
     private String content;
     private Member member;
 
-    public ReplyResponse createReplyResponse(Reply reply, Member member) {
+    public static ReplyResponse createReplyResponse(Reply reply, Member member) {
         return ReplyResponse.builder()
                 .replyId(reply.getReplyId())
                 .content(reply.getContent())

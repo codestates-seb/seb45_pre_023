@@ -25,7 +25,7 @@ public class ReplyController {
 
 
     @PostMapping("/answers/{answer-id}/replies")
-    public ResponseEntity<Void> postReply(@PathVariable("answer-id")Long answerId,
+    public ResponseEntity<Void> createReply(@PathVariable("answer-id")Long answerId,
                                                        @RequestBody ReplyCreateApiRequest request) {
 
         // Long createdReply = replyService.createreply(request); // 나중에 바로 반환할 때 보여주자

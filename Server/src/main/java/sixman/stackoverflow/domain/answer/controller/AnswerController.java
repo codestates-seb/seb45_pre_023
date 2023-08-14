@@ -11,6 +11,7 @@ import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.answerrecommend.service.AnswerRecommendService;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.reply.service.ReplyService;
+import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
@@ -33,7 +34,7 @@ public class AnswerController {
         this.answerRecommendService = answerRecommendService;
     }
     @PostMapping("/questions/{question-id}/answers")
-    public ResponseEntity<Void> postAnswer(@PathVariable("question-id")Long questionId,
+    public ResponseEntity<Void> createAnswer(@PathVariable("question-id")Long questionId,
                                            @RequestBody AnswerCreateApiRequest request) {
         answerService.createAnswer(request, questionId);
 
@@ -44,16 +45,10 @@ public class AnswerController {
     public ResponseEntity<ApiSingleResponse<AnswerResponse>> getAnswer(@PathVariable("answer-id") Long answerId
                                                                        ) {
         AnswerResponse answerResponse = getAnswerResponse(answerId);
-//        int upvoteCount = answerResponse.getAnswer().getRecommendCount();
-//        int downvoteCount = answerResponse.getAnswer().getDownvoteCount();
-//        answerResponse.setUpvoteCount(upvoteCount);
-//        answerResponse.setDownvoteCount(downvoteCount); // 구현중
 
         return ResponseEntity.ok(ApiSingleResponse.ok(answerResponse));
 
     }
-    @GetMapping("/questions/{question-id}/answers/{answer-id}")
-
 
 
     @PatchMapping("/questions/{question-id}/answers/{answer-id}")
@@ -94,12 +89,15 @@ public class AnswerController {
     private AnswerResponse getAnswerResponse(Long answerId) {
         Answer answer = answerService.findAnswer(answerId);
 
-       // List<Reply> replies = replyService. // 구현중
+        List<ReplyResponse> replyResponses = replyService.getReplies(answerId);
+
 
         AnswerResponse answerResponse = AnswerResponse.builder() // 초기화 과정
                 .answerId(answer.getAnswerId())
                 .content(answer.getContent())
-                //.recommends(answer.getAnswerRecommends()) 서비스 로직에 ?
+                .upvoteCount(answer.getUpvoteCount())
+                .downvoteCount(answer.getDownvoteCount())
+                .replies(replyResponses)
                 .build();
         return answerResponse;
     }
