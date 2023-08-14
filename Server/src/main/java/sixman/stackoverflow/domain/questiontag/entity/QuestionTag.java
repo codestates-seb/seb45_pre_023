@@ -26,4 +26,11 @@ public class QuestionTag extends BaseEntity {
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
+    public static QuestionTag createQuestionTag(Question question, Tag tag) {
+        return QuestionTag.builder()
+                .question(question)
+                .tag(tag)
+                .build();
+    }
 }
+

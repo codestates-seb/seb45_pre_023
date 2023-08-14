@@ -19,10 +19,14 @@ public class Tag extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;
 
+    @Column(nullable = false, unique = true)
     private String tagName;
 
     @OneToMany(mappedBy = "tag")
     private List<QuestionTag> questionTags = new ArrayList<>();
 
-
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
 }
+

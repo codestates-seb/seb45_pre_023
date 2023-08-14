@@ -1,10 +1,12 @@
 package sixman.stackoverflow.domain.question.entity;
 
 import lombok.*;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.questionrecommend.entity.QuestionRecommend;
 import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.global.entity.BaseEntity;
+import sixman.stackoverflow.global.entity.TypeEnum;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ public class Question extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
 
+    private Long memberId;
+
     @Column(nullable = false)
     private String title;
 
@@ -28,18 +32,46 @@ public class Question extends BaseEntity {
 
     private Integer views;
 
-    @OneToMany(mappedBy = "question")
+    private int recommendCount;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionRecommend> questionRecommends = new ArrayList<>();
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionTag> questionTags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Answer> answers = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
 
+    public void setQuestionTags(List<QuestionTag> questionTags) {
+        this.questionTags.clear();
+        if (questionTags != null) {
+            this.questionTags.addAll(questionTags);
+        }
+    }
 
+    public void applyRecommend(TypeEnum type) {
+        if (type == TypeEnum.UPVOTE) {
+            this.recommendCount++;
+        } else {
+            this.recommendCount--;
+        }
+    }
 
+    public boolean hasRecommendationFrom(Member member) {
+        return this.questionRecommends.stream()
+                .anyMatch(recommend -> recommend.getMember().equals(member));
+    }
 }
