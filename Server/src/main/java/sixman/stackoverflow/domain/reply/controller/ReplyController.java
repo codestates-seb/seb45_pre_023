@@ -2,6 +2,7 @@ package sixman.stackoverflow.domain.reply.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.reply.controller.dto.ReplyCreateApiRequest;
 import sixman.stackoverflow.domain.reply.controller.dto.ReplyUpdateApiRequest;
 import sixman.stackoverflow.domain.reply.entity.Reply;
@@ -29,7 +30,7 @@ public class ReplyController {
 
         // Long createdReply = replyService.createreply(request); // 나중에 바로 반환할 때 보여주자
 
-        replyService.createreply(request);
+        replyService.createreply(request,answerId);
 
         return ResponseEntity.ok().build();
     }
@@ -44,9 +45,12 @@ public class ReplyController {
     }
 
     @PatchMapping("/answers/{answer-id}/replies/{reply-id}")
-    public ResponseEntity<Void> patchReply(@PathVariable("reply-id") Long replyId,
+    public ResponseEntity<Void> updateReply(@PathVariable("reply-id") Long replyId,
                                            @RequestBody ReplyUpdateApiRequest request) {
-        replyService.updateReply(replyId, request.getContent());
+
+        Long memberId = SecurityUtil.getCurrentId();
+
+        replyService.updateReply(replyId, request.getContent(),memberId);
         return ResponseEntity.ok().build();
     }
 
@@ -55,7 +59,9 @@ public class ReplyController {
     @DeleteMapping("/answers/{answer-id}/replies/{reply-id}")
     public ResponseEntity<Void> deleteReply(@PathVariable("reply-id") Long replyId) {
 
-        replyService.deleteReply(replyId);
+        Long memberId = SecurityUtil.getCurrentId();
+
+        replyService.deleteReply(replyId,memberId);
 
         return ResponseEntity.noContent().build();
     }

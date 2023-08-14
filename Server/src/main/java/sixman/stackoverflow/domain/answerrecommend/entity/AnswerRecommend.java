@@ -19,6 +19,10 @@ public class AnswerRecommend extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long AnswerRecommendId;
 
+    public void setType(TypeEnum type) {
+        this.type = type;
+    }
+
     @Enumerated(EnumType.STRING)
     private TypeEnum type;
 

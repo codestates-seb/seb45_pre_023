@@ -3,6 +3,7 @@ package sixman.stackoverflow.domain.answer.service.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
 
 import java.time.LocalDateTime;
@@ -14,8 +15,8 @@ public class AnswerResponse {
 
     private Long answerId;
     private String content;
-    private Integer views;
     private Integer recommends;
+    private List<ReplyResponse> replies;
 
 
     }
