@@ -1,14 +1,16 @@
-= Auth API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[Login]]
+= 로그인 API
 
 IMPORTANT: 로그아웃은 브라우저에서 토큰 삭제로 구현합니다.
 
-== stub 로그인 데이터
-아래 id, pw 로 로그인하면 토큰이 발급됩니다.
-|===
-| id | pw
-| `test@google.com`
-| `1q2w3e4r!`
-|===
 
 == 일반 login
 === HTTP Request
@@ -25,24 +27,12 @@ include::{snippets}/auth/login/response-headers.adoc[]
 == OAuth login
 === HTTP Request
 include::{snippets}/auth/oauth/http-request.adoc[]
-==== Request Path Parameter
-include::{snippets}/auth/oauth/path-parameters.adoc[]
 ==== Request Query Parameter
 include::{snippets}/auth/oauth/request-parameters.adoc[]
-
 === HTTP Response
 include::{snippets}/auth/oauth/http-response.adoc[]
 ==== Response Header
 include::{snippets}/auth/oauth/response-headers.adoc[]
 
-== refresh 으로 token 발급
-=== HTTP Request
-include::{snippets}/auth/refresh/http-request.adoc[]
-==== Request Header
-include::{snippets}/auth/refresh/request-headers.adoc[]
-=== HTTP Response
-include::{snippets}/auth/refresh/http-response.adoc[]
-==== Response Header
-include::{snippets}/auth/refresh/response-headers.adoc[]
 
 

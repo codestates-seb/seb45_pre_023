@@ -53,6 +53,14 @@
 | 서버 에러 / 서버에서 처리하지 못한 오류
 |===
 
+== stub 로그인 데이터
+아래 id, pw 로 로그인하면 토큰이 발급됩니다.
+|===
+| id | pw
+| `test@google.com`
+| `1q2w3e4r!`
+|===
+
 [[overview-response]]
 == HTTP Response
 === HTTP Response - Success

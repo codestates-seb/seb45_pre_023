@@ -28,5 +28,17 @@ public class Reply extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "answer_id")
     private Answer answer;
+
+    public static Reply createReply(String content, Member member, Answer answer) {
+        return Reply.builder()
+                .content(content)
+                .member(member)
+                .answer(answer)
+                .build();
+    }
+    public void setReplyContent(String newContent) {
+        this.content = newContent;
+
+    }
 }
 

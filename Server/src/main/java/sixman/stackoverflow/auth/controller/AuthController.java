@@ -7,9 +7,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.auth.jwt.dto.Token;
+import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
-import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
+import sixman.stackoverflow.domain.member.controller.dto.MemberFindPasswordApiRequest;
 import sixman.stackoverflow.domain.member.service.MemberService;
 
 import javax.validation.Valid;
@@ -28,8 +29,8 @@ public class AuthController {
         this.memberService = memberService;
     }
 
-    @GetMapping("/oauth/{provider}")
-    public ResponseEntity<Void> login(@PathVariable String provider, String code) {
+    @GetMapping("/oauth")
+    public ResponseEntity<Void> login(Provider provider, String code) {
         
         Token token = oAuthService.login(provider, code);
 
@@ -44,10 +45,20 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody @Valid MemberCreateApiRequest request) {
 
-        Long memberId = memberService.signup(request.toResponseRequest());
+        Long memberId = memberService.signup(request.toServiceRequest());
 
         URI uri = URI.create("/members/" + memberId);
 
         return ResponseEntity.created(uri).build();
     }
+
+
+    @PatchMapping("/password")
+    public ResponseEntity<Void> findPassword(@RequestBody @Valid MemberFindPasswordApiRequest request) {
+
+        memberService.findPassword(request.toServiceRequest());
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

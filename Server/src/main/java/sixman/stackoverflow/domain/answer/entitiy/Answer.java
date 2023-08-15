@@ -25,8 +25,11 @@ public class Answer extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    private Integer upvoteCount;
 
-    private Integer views;
+    private Integer downvoteCount;
+
+
 
     @OneToMany(mappedBy = "answer")
     private List<AnswerRecommend> answerRecommends = new ArrayList<>();
@@ -42,7 +45,26 @@ public class Answer extends BaseEntity {
     @OneToMany(mappedBy = "answer")
     private List<Reply> replies = new ArrayList<>();
 
-    // 생성자 추가
 
 
+
+    public static Answer createAnswer(String content, Member member, Question question) {
+        return Answer.builder()
+                .content(content)
+                .member(member)
+                .question(question)
+                .build();
+    }
+    public void setAnswerContent(String newContent) {
+        this.content = newContent;
+
+    }
+
+    public void increaseRecommendCount() {
+        upvoteCount++;
+    }
+
+    public void increaseDownvoteCount() {
+        downvoteCount++;
+    }
 }
