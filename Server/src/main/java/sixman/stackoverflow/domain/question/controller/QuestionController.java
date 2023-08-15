@@ -8,6 +8,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import sixman.stackoverflow.domain.answer.controller.dto.AnswerCreateApiRequest;
+import sixman.stackoverflow.domain.answer.service.AnswerService;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
@@ -27,6 +30,7 @@ import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.global.response.PageInfo;
 
 import javax.validation.Valid;
+import java.net.URI;
 import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
@@ -39,11 +43,18 @@ public class QuestionController {
     private final QuestionService questionService;
     private final MemberRepository memberRepository;
 
+    private final AnswerService answerService;
+
+    public QuestionController(QuestionService questionService, AnswerService answerService) {
+        this.questionService = questionService;
+        this.answerService = answerService;
     public QuestionController(QuestionService questionService,
                               MemberRepository memberRepository) {
         this.questionService = questionService;
         this.memberRepository = memberRepository;
     }
+
+
 
     //최초 질문 목록 조회 기능 구현(최신순 정렬 페이지 당 10개 글)
     @GetMapping
@@ -155,4 +166,22 @@ public class QuestionController {
         return ResponseEntity.noContent().build();
     }
 
+    // 태그 삭제 기능
+    @DeleteMapping("/{questionId}/tags")
+    public ResponseEntity<ApiSingleResponse<Void>> removeTagsFromQuestion(
+            @PathVariable Long questionId,
+            @RequestBody List<String> tagNames) {
+        questionService.removeTagsFromQuestion(questionId, tagNames);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{question-id}/answers")
+    public ResponseEntity<Void> createAnswer(@PathVariable("question-id")Long questionId,
+                                             @RequestBody @Valid AnswerCreateApiRequest request) {
+        Long answerId = answerService.createAnswer(request.toServiceRequest(), questionId);
+
+        URI uri = URI.create("/{question-id}/answers/" + answerId);
+
+        return ResponseEntity.created(uri).build();
+    }
 }

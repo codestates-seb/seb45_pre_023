@@ -7,6 +7,7 @@ import sixman.stackoverflow.domain.answer.controller.dto.AnswerCreateApiRequest;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
 
+import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.entity.Question;
@@ -37,7 +38,7 @@ public class AnswerService {
     }
 
 
-    public Long createAnswer(AnswerCreateApiRequest request, Long questionId) {
+    public Long createAnswer(AnswerCreateServiceRequest request, Long questionId) {
 
         Long memberId = SecurityUtil.getCurrentId();
         Member member = memberRepository.findById(memberId)
@@ -82,8 +83,8 @@ public class AnswerService {
 
 
 
-    private Answer postAnswer(AnswerCreateApiRequest request, Member member, Question question) {
-        return Answer.createAnswer(
+    private Answer postAnswer(AnswerCreateServiceRequest request, Member member, Question question) {
+        return Answer.createAnswers(
                 request.getContent(), member, question
         );
     }
