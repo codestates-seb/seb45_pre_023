@@ -17,6 +17,7 @@ import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.reply.service.ReplyService;
 import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
 
@@ -51,22 +52,22 @@ public class AnswerController {
 
     @GetMapping("/{answer-id}")
     public ResponseEntity<ApiSingleResponse<AnswerResponse>> getAnswer(@PathVariable("answer-id") Long answerId) {
-        AnswerResponse answerResponse = getAnswerResponse(answerId);
+
+        AnswerResponse answerResponse = answerService.findAnswer(answerId);
 
         return ResponseEntity.ok(ApiSingleResponse.ok(answerResponse));
-
     }
 
-        @GetMapping("/{answer-id}")
-        public ResponseEntity<Page<ReplyResponse>> getRepliesByAnswerId(@PathVariable("answer-id") Long answerId,
-                                                                        @RequestParam(defaultValue = "0") int page,
-                                                                        @RequestParam(defaultValue = "5") int size) {
+    @GetMapping("/{answer-id}/replies")
+    public ResponseEntity<ApiPageResponse<ReplyResponse>> getRepliesByAnswerId(@PathVariable("answer-id") Long answerId,
+                                                                    @RequestParam(defaultValue = "1") int page,
+                                                                    @RequestParam(defaultValue = "5") int size) {
 
-            Pageable pageable = PageRequest.of(page, size);
-            Page<ReplyResponse> repliesPage = replyService.getRepliesPaged(answerId, pageable);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ReplyResponse> repliesPage = replyService.getRepliesPaged(answerId, pageable);
 
-            return ResponseEntity.ok(repliesPage);
-        }
+        return ResponseEntity.ok(ApiPageResponse.ok(repliesPage));
+    }
 
 
     @PatchMapping("/{answer-id}")

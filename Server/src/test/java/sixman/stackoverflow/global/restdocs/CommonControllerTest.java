@@ -27,6 +27,7 @@ import static org.springframework.restdocs.snippet.Attributes.attributes;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static sixman.stackoverflow.global.restdocs.utils.CustomResponseFieldsSnippet.customResponseFields;
+import static org.mockito.ArgumentMatchers.any;
 
 public class CommonControllerTest extends ControllerTest {
 

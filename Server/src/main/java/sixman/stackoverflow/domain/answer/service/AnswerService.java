@@ -1,5 +1,7 @@
 package sixman.stackoverflow.domain.answer.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
@@ -8,6 +10,7 @@ import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
 
 import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
+import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.entity.Question;
@@ -53,9 +56,16 @@ public class AnswerService {
 
     }
     @Transactional(readOnly = true)
-    public Answer findAnswer(long replyId) {
-        return answerRepository.findById(replyId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+    public AnswerResponse findAnswer(long answerId) {
+//        return answerRepository.findById(replyId)
+//                .orElseThrow(() -> new AnswerNotFoundException());
+
+        return null;
+    }
+
+    //todo : 구현 필요 (answer 를 5개씩 페이징해서 조회)
+    public Page<AnswerResponse> findAnswers(Long questionId, Pageable pageable) {
+        return null;
     }
 
     public Answer updateAnswer(Long answerId, String newContent, Long memberId) {

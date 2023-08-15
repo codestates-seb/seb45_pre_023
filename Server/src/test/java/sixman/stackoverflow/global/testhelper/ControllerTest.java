@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -27,15 +30,26 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import sixman.stackoverflow.auth.controller.AuthController;
 import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
+import sixman.stackoverflow.domain.answer.controller.AnswerController;
+import sixman.stackoverflow.domain.answer.service.AnswerService;
+import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
+import sixman.stackoverflow.domain.answerrecommend.service.AnswerRecommendService;
 import sixman.stackoverflow.domain.member.controller.MemberController;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.member.service.MemberService;
+import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.question.controller.QuestionController;
 import sixman.stackoverflow.domain.question.service.QuestionService;
+import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
+import sixman.stackoverflow.domain.reply.controller.ReplyController;
+import sixman.stackoverflow.domain.reply.service.ReplyService;
+import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.common.CommonController;
+import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.response.PageInfo;
 import sixman.stackoverflow.module.aws.service.S3Service;
 
 import javax.validation.Validation;
@@ -45,9 +59,8 @@ import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -56,16 +69,19 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest({MemberController.class, AuthController.class, CommonController.class, QuestionController.class})
+@WebMvcTest({MemberController.class, AuthController.class, CommonController.class, QuestionController.class, AnswerController.class, ReplyController.class})
 @ExtendWith({RestDocumentationExtension.class})
 @ActiveProfiles("local")
 public abstract class ControllerTest {
 
     @MockBean protected MemberService memberService;
+    @MockBean protected AnswerService answerService;
     @MockBean protected OAuthService oAuthService;
     @MockBean protected MemberRepository memberRepository;
     @MockBean protected QuestionService questionService;
     @MockBean protected S3Service s3Service;
+    @MockBean protected ReplyService replyService;
+    @MockBean protected AnswerRecommendService answerRecommendService;
     @Autowired protected MockMvc mockMvc;
     @Autowired protected ObjectMapper objectMapper;
     protected RestDocumentationResultHandler documentHandler;
@@ -200,6 +216,78 @@ public abstract class ControllerTest {
                 notSavedmember.getPassword(),
                 Collections.singleton(grantedAuthority)
         );
+    }
+
+    protected QuestionDetailResponse.QuestionAnswer createAnswerResponse() {
+
+        List<AnswerResponse> answers = createAnswers();
+
+        Page<AnswerResponse> page = new PageImpl<>(answers, PageRequest.of(0, 5), 20);
+        PageInfo pageInfo = PageInfo.of(page);
+
+        return QuestionDetailResponse.QuestionAnswer.builder()
+                .answers(answers)
+                .pageInfo(pageInfo)
+                .build();
+    }
+
+    protected List<AnswerResponse> createAnswers() {
+        List<AnswerResponse> answers = new ArrayList<>();
+
+        for (int i = 1; i <= 5; i++) {
+
+            TypeEnum type;
+            if(i % 2 == 0) {
+                type = TypeEnum.UPVOTE;
+            } else {
+                type = TypeEnum.DOWNVOTE;
+            }
+
+            AnswerResponse answer = AnswerResponse.builder()
+                    .answerId((long) i)
+                    .content("content")
+                    .member(MemberInfo.of(createMember((long) i)))
+                    .recommend(10)
+                    .recommendType(type)
+                    .reply(createReplyResponse(i))
+                    .createdDate(LocalDateTime.now())
+                    .updatedDate(LocalDateTime.now())
+                    .build();
+
+            answers.add(answer);
+        }
+        return answers;
+    }
+
+    protected AnswerResponse.AnswerReply createReplyResponse(int index) {
+
+        List<ReplyResponse> replies = getReplyResponses((long) index);
+
+        Page<ReplyResponse> page = new PageImpl<>(replies, PageRequest.of(0, 5), 20);
+        PageInfo pageInfo = PageInfo.of(page);
+
+        return AnswerResponse.AnswerReply.builder()
+                .replies(replies)
+                .pageInfo(pageInfo)
+                .build();
+    }
+
+    protected List<ReplyResponse> getReplyResponses(long index) {
+        List<ReplyResponse> replies = new ArrayList<>();
+
+        for (int i = 1; i <= 5; i++) {
+
+            ReplyResponse reply = ReplyResponse.builder()
+                    .replyId(index * 5 + i)
+                    .content("content")
+                    .member(MemberInfo.of(createMember((long) i)))
+                    .createdDate(LocalDateTime.now())
+                    .updatedDate(LocalDateTime.now())
+                    .build();
+
+            replies.add(reply);
+        }
+        return replies;
     }
 
 }

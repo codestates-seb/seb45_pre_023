@@ -6,11 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.domain.answer.controller.dto.AnswerCreateApiRequest;
 import sixman.stackoverflow.domain.answer.service.AnswerService;
-import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
@@ -24,15 +22,12 @@ import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.InvalidPageParameterException;
-import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
-import sixman.stackoverflow.global.response.PageInfo;
 
 import javax.validation.Valid;
 import java.net.URI;
 import javax.validation.constraints.Positive;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,16 +37,12 @@ public class QuestionController {
 
     private final QuestionService questionService;
     private final MemberRepository memberRepository;
-
     private final AnswerService answerService;
 
-    public QuestionController(QuestionService questionService, AnswerService answerService) {
-        this.questionService = questionService;
-        this.answerService = answerService;
-    public QuestionController(QuestionService questionService,
-                              MemberRepository memberRepository) {
+    public QuestionController(QuestionService questionService, MemberRepository memberRepository, AnswerService answerService) {
         this.questionService = questionService;
         this.memberRepository = memberRepository;
+        this.answerService = answerService;
     }
 
 
@@ -180,8 +171,18 @@ public class QuestionController {
                                              @RequestBody @Valid AnswerCreateApiRequest request) {
         Long answerId = answerService.createAnswer(request.toServiceRequest(), questionId);
 
-        URI uri = URI.create("/{question-id}/answers/" + answerId);
+        URI uri = URI.create("/answers/" + answerId);
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @GetMapping("/{question-id}/answers")
+    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(@PathVariable("question-id")Long questionId,
+                                           @RequestParam(defaultValue = "1") int page
+                                           ) {
+
+        Page<AnswerResponse> answers = answerService.findAnswers(questionId, PageRequest.of(page - 1, 5));
+
+        return ResponseEntity.ok(ApiPageResponse.ok(answers));
     }
 }
