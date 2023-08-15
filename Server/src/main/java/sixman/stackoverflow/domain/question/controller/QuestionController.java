@@ -7,6 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import sixman.stackoverflow.auth.utils.SecurityUtil;
+import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
+import sixman.stackoverflow.domain.member.entity.Member;
+import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionUpdateApiRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
@@ -24,6 +31,7 @@ import sixman.stackoverflow.global.response.PageInfo;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/questions")
@@ -76,12 +84,20 @@ public class QuestionController {
     }
 
     // 질문글 생성 기능
-
-    @PostMapping("/members/{memberId}/questions")
+    @PostMapping
     public ResponseEntity<ApiSingleResponse<QuestionResponse>> createQuestion(
-            @PathVariable Long memberId,
             @RequestBody @Valid QuestionCreateApiRequest questionCreateApiRequest) {
-        Question question = questionCreateApiRequest.toEntity();
+
+        Long memberId = SecurityUtil.getCurrentId();
+
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        if (optionalMember.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        Member member = optionalMember.get();
+        Question question = questionCreateApiRequest.toEntity(member);
         Question savedQuestion = questionService.createQuestion(question);
         QuestionResponse questionResponse = QuestionResponse.from(savedQuestion);
 
@@ -89,15 +105,15 @@ public class QuestionController {
     }
 
     // 질문글 추천 기능
-    @PostMapping("/{questionId}/upvote")
-    public ResponseEntity<ApiSingleResponse<Void>> recommendQuestion(@PathVariable Long questionId) {
+    @PatchMapping("/{question-id}/upvote")
+    public ResponseEntity<ApiSingleResponse<Void>> recommendQuestion(@PathVariable @Positive Long questionId) {
         questionService.addQuestionRecommend(questionId, TypeEnum.UPVOTE);
         return ResponseEntity.noContent().build();
     }
 
     // 질문글 비추천 기능
-    @PostMapping("/{questionId}/downvote")
-    public ResponseEntity<ApiSingleResponse<Void>> disrecommendQuestion(@PathVariable Long questionId) {
+    @PatchMapping("/{question-id}/downvote")
+    public ResponseEntity<ApiSingleResponse<Void>> disrecommendQuestion(@PathVariable @Positive Long questionId) {
         questionService.addQuestionRecommend(questionId, TypeEnum.DOWNVOTE);
         return ResponseEntity.noContent().build();
     }
@@ -112,7 +128,7 @@ public class QuestionController {
     }
 
     //질문글 수정
-    @PatchMapping("/{questionId}")
+    @PatchMapping("/{question-id}")
     public ResponseEntity<ApiSingleResponse<QuestionResponse>> updateQuestion(
             @PathVariable Long questionId,
             @RequestBody @Valid QuestionUpdateApiRequest questionUpdateApiRequest) {
@@ -125,7 +141,7 @@ public class QuestionController {
     }
 
     // 태그 수정 기능
-    @PatchMapping("/{questionId}/tags")
+    @PatchMapping("/{question-Id}/tags")
     public ResponseEntity<ApiSingleResponse<Void>> updateTags(
             @PathVariable Long questionId,
             @RequestBody List<String> tagNames) {
@@ -134,8 +150,9 @@ public class QuestionController {
         return ResponseEntity.ok(response);
     }
     // 질문글 삭제 기능
-    @DeleteMapping("/{questionId}")
-    public ResponseEntity<ApiSingleResponse<Void>> deleteQuestion(@PathVariable Long questionId) {
+    @DeleteMapping("/{question-id}")
+    public ResponseEntity<ApiSingleResponse<Void>> deleteQuestion(@PathVariable @Positive Long questionId,
+                                                                  Authentication authentication) {
         Question existingQuestion = questionService.getQuestionById(questionId);
 
         // 질문이 존재하는지 확인

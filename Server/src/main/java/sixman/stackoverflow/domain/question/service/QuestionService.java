@@ -3,6 +3,9 @@ package sixman.stackoverflow.domain.question.service;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
+import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
+import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionTagCreateApiRequest;
@@ -48,6 +51,17 @@ public class QuestionService {
     public Question getQuestionById(Long questionId) {
         return questionRepository.findById(questionId)
                 .orElse(null);
+    }
+
+    public Page<AnswerResponse> getAnswerResponsesForQuestion(Question question, Pageable pageable) {
+//        Page<Answer> answers = answerRepository.findByQuestion(question, pageable);
+//        List<AnswerResponse> answerResponses = answers.getContent().stream()
+//                .map(answer -> AnswerResponse.answerfrom(answer))// answerfrom() 메서드 구현
+//                .collect(Collectors.toList());
+//
+//        return new PageImpl<>(answerResponses, pageable, answers.getTotalElements());
+
+        return null;
     }
 
     public List<QuestionTagResponse> getQuestionTags(Long questionId) {
