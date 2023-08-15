@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.parameters.P;
 import sixman.stackoverflow.domain.member.entity.Member;
+import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 
@@ -17,26 +18,16 @@ public class ReplyResponse {
 
     private Long replyId;
     private String content;
-    private Long memberId;
-    private String nickname;
-    private String image;
+    private MemberInfo member;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
-
-
-
-
-    public static ReplyResponse createReplyResponse(Reply reply) {
-
+    public static ReplyResponse createReplyResponse(Reply reply, Member member) {
 
         return ReplyResponse.builder()
                 .replyId(reply.getReplyId())
                 .content(reply.getContent())
-                .nickname(reply.getMember().getNickname())
-                .createdDate(reply.getCreatedDate())
-                .updatedDate(reply.getModifiedDate())
-                .image(reply.getMember().getMyInfo().getImage())
+                .member(MemberInfo.of(member))
                 .build();
 
     }

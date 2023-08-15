@@ -62,12 +62,15 @@ public class ReplyService {
         List<Reply> replies = replyRepository.findRepliesByAnswer(answer);
 
 
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException());
 
         // 리스트로 된 replies를 맵에 넣어서
         // 하나 하나 꺼내서 멤버 아이디닉네임값과 가져와서 그걸 ReplyResponse저장한 후 반환
 
         return replies.stream()
-                .map(reply -> createReplyResponse(reply))
+
+                .map(reply -> createReplyResponse(reply, member))
                 .collect(Collectors.toList());
     }
 

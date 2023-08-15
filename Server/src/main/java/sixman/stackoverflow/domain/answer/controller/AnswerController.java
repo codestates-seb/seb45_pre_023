@@ -115,19 +115,21 @@ public class AnswerController {
     }
 
     private AnswerResponse getAnswerResponse(Long answerId) {
-        Answer answer = answerService.findAnswer(answerId);
+//        Answer answer = answerService.findAnswer(answerId);
+//
+//        List<ReplyResponse> replyResponses = replyService.getReplies(answerId);
+//
+//
+//        AnswerResponse answerResponse = AnswerResponse.builder() // 초기화 과정
+//                .answerId(answer.getAnswerId())
+//                .content(answer.getContent())
+//                .upvoteCount(answer.getUpvoteCount())
+//                .downvoteCount(answer.getDownvoteCount())
+//                .replies(replyResponses)
+//                .build();
+//        return answerResponse;
 
-        List<ReplyResponse> replyResponses = replyService.getReplies(answerId);
-
-
-        AnswerResponse answerResponse = AnswerResponse.builder() // 초기화 과정
-                .answerId(answer.getAnswerId())
-                .content(answer.getContent())
-                .upvoteCount(answer.getUpvoteCount())
-                .downvoteCount(answer.getDownvoteCount())
-                .replies(replyResponses)
-                .build();
-        return answerResponse;
+        return null;
     }
 }
 
