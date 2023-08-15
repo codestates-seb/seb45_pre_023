@@ -13,5 +13,5 @@ public class ReplyUpdateApiRequest {
 
 
     @NotBlank(message = "{validation.reply.content}")
-    private String Content;
+    private String content;
 }

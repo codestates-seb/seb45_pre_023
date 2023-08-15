@@ -11,6 +11,6 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class AnswerUpdateApiRequest {
     @NotBlank(message = "{validation.answer.content}")
-    private String Content;
+    private String content;
 
 }

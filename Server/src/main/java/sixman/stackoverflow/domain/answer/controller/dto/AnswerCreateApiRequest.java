@@ -13,5 +13,4 @@ public class AnswerCreateApiRequest {
 
     @NotBlank(message = "{validation.answer.content}")
     private String content;
-    private Integer views;
 }

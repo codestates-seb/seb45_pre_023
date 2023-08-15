@@ -16,13 +16,16 @@ public class ReplyResponse {
 
     private Long replyId;
     private String content;
-    private Member member;
+    private Long memberId;
 
-    public static ReplyResponse createReplyResponse(Reply reply, Member member) {
+
+    public static ReplyResponse createReplyResponse(Reply reply, Long memberId) {
+
+
         return ReplyResponse.builder()
                 .replyId(reply.getReplyId())
                 .content(reply.getContent())
-                .member(member)
+                .memberId(memberId)
                 .build();
 
     }
