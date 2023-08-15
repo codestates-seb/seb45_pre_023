@@ -34,11 +34,13 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-    //private final AnswerService answerService;
+    private final AnswerService answerService;
 
-    public QuestionController(QuestionService questionService) {
+    public QuestionController(QuestionService questionService, AnswerService answerService) {
         this.questionService = questionService;
+        this.answerService = answerService;
     }
+
 
 
     //최초 질문 목록 조회 기능 구현(최신순 정렬 페이지 당 10개 글)
