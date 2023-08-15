@@ -6,12 +6,44 @@ import {
   handleGoogleLogin,
   handleGithubLogin,
   handleKakaoLogin,
-} from '../../OAuth/OAuth';
+} from '../../../OAuth/OAuth';
+import { useState } from 'react';
+import axios from 'axios';
 
 export default function LoginForm() {
+  const [isUserInfo, setUserInfo] = useState('');
+  const [isErrorMessage, setErrorMessage] = useState('');
+  const [isLoginInfo, setLoginInfo] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleLogin = () => {
+    if (!isLoginInfo.email || !isLoginInfo.password) {
+      return setErrorMessage('Please enter all information.');
+    }
+    axios
+      .post('http://localhost:5000/login', { isLoginInfo })
+      .then((res) => {
+        setUserInfo(res.data);
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        setErrorMessage('Login is failed');
+      });
+  };
+
+  const handleLoginInfo = (key) => (e) => {
+    setLoginInfo({ ...isLoginInfo, [key]: e.target.value });
+  };
+
   return (
     <div className="flex flex-col items-center">
-      <img className="w-8 h-10 cursor-pointer" src="./../StackOverflow.png" />
+      <img
+        className="w-8 h-10 cursor-pointer"
+        src="./../StackOverflow.png"
+        alt="StackOverflow"
+      />
       <ul className="flex flex-col items-center my-5">
         <li
           className="flex flex-row justify-center items-center w-70 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
@@ -19,6 +51,7 @@ export default function LoginForm() {
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google"
             className="w-4 h-4 mr-2"
           />
           <span className="text-sm">Sign up with Google</span>
@@ -36,20 +69,22 @@ export default function LoginForm() {
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg"
+            alt="KakaoTalk"
             className="w-5 h-5 mr-2"
           />
           <span className="text-sm">Sign up with Kakao</span>
         </li>
       </ul>
 
-      <div className="flex flex-col justify-center items-center w-70 h-60 mt-1 bg-white border border-solid border-gray rounded-md shadow-xss">
+      <div className="flex flex-col justify-center items-center w-70 h-64 mt-1 bg-white border border-solid border-gray rounded-md shadow-xss">
         <div className="flex flex-col justify-center items-center">
           <span className="mt-2 w-58 text-left text-md font-semibold">
             Email
           </span>
           <input
-            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
+            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="text"
+            onChange={handleLoginInfo('email')}
           ></input>
         </div>
 
@@ -63,12 +98,18 @@ export default function LoginForm() {
             </span>
           </div>
           <input
-            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
+            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="password"
+            onChange={handleLoginInfo('password')}
           ></input>
         </div>
 
-        <div className="flex flex-col justify-center items-center w-58 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md">
+        <div className="mt-2 text-sm text-red-500">{isErrorMessage}</div>
+
+        <div
+          className="flex flex-col justify-center items-center w-58 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
+          onClick={handleLogin}
+        >
           Log in
         </div>
       </div>

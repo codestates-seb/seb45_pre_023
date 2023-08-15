@@ -2,7 +2,7 @@ import { useState } from 'react';
 import DiscardModal from '../Modal/DiscardModal';
 
 export default function DiscardBtn() {
-  const [isOpen, setisopen] = useState(true);
+  const [isOpen, setisopen] = useState(false);
 
   const handlerDiscardModal = () => {
     setisopen(!isOpen);

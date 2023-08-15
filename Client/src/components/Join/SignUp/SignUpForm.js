@@ -2,25 +2,69 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { Link } from 'react-router-dom';
 import { RouteConst } from '../../../Interface/RouteConst';
+import {
+  handleGoogleLogin,
+  handleGithubLogin,
+  handleKakaoLogin,
+} from '../../../OAuth/OAuth';
+import { useState } from 'react';
+import axios from 'axios';
 
 export default function SignUpForm() {
+  const [isErrorMessage, setErrorMessage] = useState('');
+  const [isSignUpInfo, setSignUpInfo] = useState({
+    nickname: '',
+    email: '',
+    password: '',
+  });
+
+  const handleSignUp = () => {
+    if (!isSignUpInfo.nickname || !isSignUpInfo.email || !isSignUpInfo.password) {
+      return setErrorMessage('Please enter all information.');
+    }
+    axios
+      .post('http://localhost:5000/signup', { isSignUpInfo })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        setErrorMessage('SignUp is failed');
+      });
+  };
+
+  const handleSignUpInfo = (key) => (e) => {
+    setSignUpInfo({ ...isSignUpInfo, [key]: e.target.value });
+  };
+
   return (
     <div className="flex flex-col items-center">
       <ul className="flex flex-col items-center mt-8">
-        <li className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer">
+        <li
+          className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
+          onClick={handleGoogleLogin}
+        >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google"
             className="w-4 h-4 mr-2"
           />
           <span className="text-sm">Sign up with Google</span>
         </li>
-        <li className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer">
+        <li
+          className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
+          onClick={handleGithubLogin}
+        >
           <FontAwesomeIcon icon={faGithub} className="w-4 h-4 mr-2" />
           <span className="text-sm">Sign up with GitHub</span>
         </li>
-        <li className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer">
+        <li
+          className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
+          onClick={handleKakaoLogin}
+        >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg"
+            alt="KakaoTalk"
             className="w-5 h-5 mr-2"
           />
           <span className="text-sm">Sign up with Kakao</span>
@@ -35,6 +79,7 @@ export default function SignUpForm() {
           <input
             className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
             type="text"
+            onChange={handleSignUpInfo('nickname')}
           ></input>
         </div>
 
@@ -45,6 +90,7 @@ export default function SignUpForm() {
           <input
             className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
             type="text"
+            onChange={handleSignUpInfo('email')}
           ></input>
         </div>
 
@@ -55,6 +101,7 @@ export default function SignUpForm() {
           <input
             className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
             type="password"
+            onChange={handleSignUpInfo('password')}
           ></input>
           <span className="w-68 text-xs text-gray-400">
             Passwords must contain at least eight characters, including at least
@@ -70,7 +117,7 @@ export default function SignUpForm() {
             </div>
 
             <div className="flex flex-row justify-center items-center text-xss mt-3">
-              <img src="" />
+              {/* <img src="" alt=""/> */}
               reCAPTCHA
             </div>
 
@@ -88,7 +135,12 @@ export default function SignUpForm() {
           </span>
         </div>
 
-        <div className="flex flex-col justify-center items-center w-68 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md">
+        <div className="mt-2 text-sm text-red-500">{isErrorMessage}</div>
+
+        <div
+          className="flex flex-col justify-center items-center w-68 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
+          onClick={handleSignUp}
+        >
           Sign up
         </div>
 

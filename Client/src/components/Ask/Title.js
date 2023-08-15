@@ -1,9 +1,11 @@
-import NextBtn from './button/NextBtn';
+import { useSelector } from 'react-redux';
 import TipTitle from './Tips/TipTitle';
-import useAskBox from '../../hooks/useAskBox';
+import NextBtn from './button/NextBtn';
 
 export default function Title({ isSelected, setisSelected }) {
-  const {isNum} = useAskBox();
+  const tipboxNum = useSelector((state) => {
+    return state.tipbox.value; // store 안에 reducer가 저장되어 있는 Slice의 이름
+  });
 
   return (
     <div className="relative flex flex-col my-2 px-6 py-5 w-212 bg-white border-2 border-solid border-gray rounded-md">
@@ -21,8 +23,7 @@ export default function Title({ isSelected, setisSelected }) {
         }}
       ></input>
 
-      {isNum === 1 && <NextBtn />}
-
+      {tipboxNum === 1 && <NextBtn />}
       {isSelected === 1 && <TipTitle />}
     </div>
   );

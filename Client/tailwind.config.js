@@ -55,6 +55,7 @@ module.exports = {
         212: '53rem',
         216: '54rem',
         220: '55rem',
+        260: '65rem',
       },
       borderWidth: {
         1: '1px',
@@ -70,6 +71,12 @@ module.exports = {
       },
       boxShadow: {
         'xss': '2px 2px 10px -3px rgba(0, 0, 0, 0.3)',
+      },
+      flexGrow: {
+        2: '2',
+        3: '3',
+        4: '4',
+        5: '5',
       }
     },
   },

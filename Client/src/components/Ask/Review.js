@@ -1,13 +1,16 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
-import DiscardBtn from './button/DiscardBtn';
+import { useSelector } from 'react-redux';
+import ReviewBtn from './button/ReviewBtn';
 import TipReview from './Tips/TipReview';
-import useAskBox from '../../hooks/useAskBox';
 
 export default function Review({ isSelected, setisSelected }) {
-  const {isNum} = useAskBox();
   const [isOpen, setisopen] = useState(false);
+
+  const tipboxNum = useSelector((state) => {
+    return state.tipbox.value; // store 안에 reducer가 저장되어 있는 Slice의 이름
+  });
 
   return (
     <div className="relative flex flex-col my-2 px-6 py-5 w-212 bg-white border-2 border-solid border-gray rounded-md">
@@ -37,12 +40,12 @@ export default function Review({ isSelected, setisSelected }) {
         )}
       </div>
       {!isOpen || (
-        <div className="mb-4 py-3 bg-white text-center text-sm text-gray-500 border-l-2 border-r-2 border-b-2 border-solid border-gray rounded-b-md">
+        <div className="py-3 bg-white text-center text-sm text-gray-500 border-l-2 border-r-2 border-b-2 border-solid border-gray rounded-b-md">
           No duplicate questions found.
         </div>
       )}
 
-      {isNum === 5 ? <DiscardBtn /> : null}
+      {tipboxNum === 5 ? <ReviewBtn /> : null}
       {isSelected === 5 && <TipReview />}
     </div>
   );
