@@ -22,8 +22,6 @@ public class Question extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
 
-    private Long memberId;
-
     @Column(nullable = false)
     private String title;
 
