@@ -58,8 +58,8 @@ public class Member extends BaseEntity {
     private List<Reply> replies = new ArrayList<>();
 
     @Builder
-    private Member(Long id, String email, String nickname, String password, Authority authority, MyInfo myInfo, boolean enabled){
-        this.memberId = id;
+    private Member(Long memberId, String email, String nickname, String password, Authority authority, MyInfo myInfo, boolean enabled){
+        this.memberId = memberId;
         this.email = email;
         this.nickname = nickname;
         this.password = password;

@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.question.controller.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import sixman.stackoverflow.domain.question.entity.Question;
@@ -7,6 +8,7 @@ import sixman.stackoverflow.domain.question.entity.Question;
 import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
+@Builder
 public class QuestionUpdateApiRequest {
 
     @NotBlank(message = "{validation.question.title}")

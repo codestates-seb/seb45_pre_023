@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
+import sixman.stackoverflow.domain.tag.entity.Tag;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -13,18 +16,18 @@ import java.time.LocalDateTime;
 public class QuestionTagResponse {
 
     private Long questionTagId;
-    private Long questionId;
     private String tagName;
-    private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
 
-    public static QuestionTagResponse from(QuestionTag questionTag) {
-        return QuestionTagResponse.builder()
-                .questionTagId(questionTag.getQuestionTagId())
-                .questionId(questionTag.getQuestion().getQuestionId())
-                .tagName(questionTag.getTag().getTagName())
-                .createdDate(questionTag.getCreatedDate())
-                .updatedDate(questionTag.getModifiedDate())
-                .build();
+    public static List<QuestionTagResponse> of(List<Tag> tags) {
+        List<QuestionTagResponse> questionTagResponses = new ArrayList<>();
+
+        for (Tag tag : tags) {
+            questionTagResponses.add(QuestionTagResponse.builder()
+                    .questionTagId(tag.getTagId())
+                    .tagName(tag.getTagName())
+                    .build());
+        }
+
+        return questionTagResponses;
     }
 }
