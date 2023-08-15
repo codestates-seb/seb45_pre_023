@@ -58,10 +58,12 @@ public class ReplyService {
 
         Long memberId = SecurityUtil.getCurrentId();
 
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException());
 
 
         return replies.stream()
-                .map(reply -> createReplyResponse(reply, memberId))
+                .map(reply -> createReplyResponse(reply, member))
                 .collect(Collectors.toList());
     }
 

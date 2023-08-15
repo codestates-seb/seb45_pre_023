@@ -11,6 +11,8 @@ import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionTagCreateApiRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
+import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
+import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionTagResponse;
 import sixman.stackoverflow.domain.questionrecommend.entity.QuestionRecommend;
 import sixman.stackoverflow.domain.questionrecommend.repository.QuestionRecommendRepository;
@@ -33,24 +35,31 @@ public class QuestionService {
     private final QuestionRecommendRepository questionRecommendRepository;
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
+    private final AnswerRepository answerRepository;
 
     public QuestionService(QuestionRepository questionRepository,
                            QuestionRecommendRepository questionRecommendRepository,
                            MemberRepository memberRepository,
-                           TagRepository tagRepository) {
+                           TagRepository tagRepository,
+                           AnswerRepository answerRepository) {
         this.questionRepository = questionRepository;
         this.questionRecommendRepository = questionRecommendRepository;
         this.memberRepository = memberRepository;
         this.tagRepository = tagRepository;
+        this.answerRepository = answerRepository;
     }
 
-    public Page<Question> getLatestQuestions(Pageable pageable) {
-        return questionRepository.findAllByOrderByCreatedDateDesc(pageable);
+    public Page<QuestionResponse> getLatestQuestions(Pageable pageable) {
+
+//        return questionRepository.findAllByOrderByCreatedDateDesc(pageable);
+        return null;
     }
 
-    public Question getQuestionById(Long questionId) {
-        return questionRepository.findById(questionId)
-                .orElse(null);
+    public QuestionDetailResponse getQuestionById(Long questionId) {
+        /*return questionRepository.findById(questionId)
+                .orElse(null);*/
+
+        return null;
     }
 
     public Page<AnswerResponse> getAnswerResponsesForQuestion(Question question, Pageable pageable) {
@@ -65,23 +74,20 @@ public class QuestionService {
     }
 
     public List<QuestionTagResponse> getQuestionTags(Long questionId) {
-        Question question = getQuestionById(questionId);
-        List<QuestionTag> questionTags = question.getQuestionTags();
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow();
+        List<Tag> tags = question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList());
 
-        List<QuestionTagResponse> tagResponses = new ArrayList<>();
-        for (QuestionTag questionTag : questionTags) {
-            tagResponses.add(QuestionTagResponse.from(questionTag));
-        }
-
-        return tagResponses;
+        return QuestionTagResponse.of(tags);
     }
 
-    public Question createQuestion(Question question) {
-        return questionRepository.save(question);
+    public Long createQuestion(Question question) {
+        return questionRepository.save(question).getQuestionId();
     }
 
     public void addTagsToQuestion(Long questionId, List<QuestionTagCreateApiRequest> tagCreateRequests) {
-        Question question = getQuestionById(questionId);
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow();
 
         for (QuestionTagCreateApiRequest tagCreateRequest : tagCreateRequests) {
             String tagName = tagCreateRequest.getTagName();
@@ -93,17 +99,19 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    public Question updateQuestion(Long questionId, Question updatedQuestion) {
-        Question existingQuestion = getQuestionById(questionId);
+    public Question updateQuestion(Long questionId, String title, String content) {
+        Question existingQuestion = questionRepository.findById(questionId)
+                .orElseThrow();
 
-        existingQuestion.setTitle(updatedQuestion.getTitle());
-        existingQuestion.setContent(updatedQuestion.getContent());
+        existingQuestion.setTitle(title);
+        existingQuestion.setContent(content);
 
         return questionRepository.save(existingQuestion);
     }
 
     public void updateTags(Long questionId, List<String> tagNames) {
-        Question question = getQuestionById(questionId);
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow();
 
         List<QuestionTag> newQuestionTags = new ArrayList<>();
         for (String tagName : tagNames) {
@@ -117,12 +125,14 @@ public class QuestionService {
     }
 
     public void deleteQuestion(Long questionId) {
-        Question question = getQuestionById(questionId);
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow();
         questionRepository.delete(question);
     }
 
     public void removeTagsFromQuestion(Long questionId, List<String> tagNames) {
-        Question question = getQuestionById(questionId);
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow();
 
         List<QuestionTag> updatedTags = question.getQuestionTags().stream()
                 .filter(questionTag -> !tagNames.contains(questionTag.getTag().getTagName()))
@@ -133,7 +143,8 @@ public class QuestionService {
     }
 
     public void addQuestionRecommend(Long questionId, TypeEnum type) {
-        Question question = getQuestionById(questionId);
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow();
         String currentEmail = SecurityUtil.getCurrentEmail();
 
         Member currentMember = memberRepository.findByEmail(currentEmail)
