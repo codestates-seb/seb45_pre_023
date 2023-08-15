@@ -48,7 +48,7 @@ public class Answer extends BaseEntity {
 
 
 
-    public static Answer createAnswer(String content, Member member, Question question) {
+    public static Answer createAnswers(String content, Member member, Question question) {
         return Answer.builder()
                 .content(content)
                 .member(member)

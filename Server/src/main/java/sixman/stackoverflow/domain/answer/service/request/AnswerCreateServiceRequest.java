@@ -1,15 +1,17 @@
-package sixman.stackoverflow.domain.reply.service.dto.request;
+package sixman.stackoverflow.domain.answer.service.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
+
 @AllArgsConstructor
 @Getter
 @Builder
 @NoArgsConstructor
-public class ReplyCreateServiceRequest {
+public class AnswerCreateServiceRequest {
 
     private String content;
 }

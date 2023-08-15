@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sixman.stackoverflow.domain.answer.controller.dto.AnswerCreateApiRequest;
+import sixman.stackoverflow.domain.answer.service.AnswerService;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionUpdateApiRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
@@ -23,6 +25,7 @@ import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.global.response.PageInfo;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -31,9 +34,12 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+    //private final AnswerService answerService;
+
     public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
     }
+
 
     //최초 질문 목록 조회 기능 구현(최신순 정렬 페이지 당 10개 글)
     @GetMapping
@@ -155,5 +161,15 @@ public class QuestionController {
             @RequestBody List<String> tagNames) {
         questionService.removeTagsFromQuestion(questionId, tagNames);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{question-id}/answers")
+    public ResponseEntity<Void> createAnswer(@PathVariable("question-id")Long questionId,
+                                             @RequestBody @Valid AnswerCreateApiRequest request) {
+        Long answerId = answerService.createAnswer(request.toServiceRequest(), questionId);
+
+        URI uri = URI.create("/{question-id}/answers/" + answerId);
+
+        return ResponseEntity.created(uri).build();
     }
 }

@@ -12,9 +12,10 @@ import sixman.stackoverflow.global.response.ApiSingleResponse;
 
 
 import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/replies")
 public class ReplyController {
 
     private final ReplyService replyService;
@@ -24,18 +25,17 @@ public class ReplyController {
     }
 
 
-    @PostMapping("/answers/{answer-id}/replies")
-    public ResponseEntity<Void> createReply(@PathVariable("answer-id")Long answerId,
-                                                       @RequestBody ReplyCreateApiRequest request) {
+//    @PostMapping("/questions/{question-id}/answers/{answer-id}/replies")
+//    public ResponseEntity<Void> createReply(@PathVariable("answer-id")Long answerId,
+//                                                       @RequestBody @Valid ReplyCreateApiRequest request) {
+//
+//        Long replyId = replyService.createReply(request.toServiceRequest(),answerId);
+//
+//        URI uri = URI.create("/replies/" + replyId);
+//        return ResponseEntity.created(uri).build();
+//    }
 
-        // Long createdReply = replyService.createreply(request); // 나중에 바로 반환할 때 보여주자
-        Long memberId = SecurityUtil.getCurrentId();
-        replyService.createreply(request,answerId,memberId);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/answers/{answer-id}/replies/{reply-id}")
+    @GetMapping("/{reply-id}")
     public ResponseEntity<ApiSingleResponse<ReplyResponse>> getReply(@PathVariable("reply-id") Long replyId) {
 
         ReplyResponse replyResponse = getReplyResponse(replyId);
@@ -44,19 +44,19 @@ public class ReplyController {
 
     }
 
-    @PatchMapping("/answers/{answer-id}/replies/{reply-id}")
+    @PatchMapping("/{reply-id}")
     public ResponseEntity<Void> updateReply(@PathVariable("reply-id") Long replyId,
-                                           @RequestBody ReplyUpdateApiRequest request) {
+                                           @RequestBody @Valid ReplyUpdateApiRequest request) {
 
         Long memberId = SecurityUtil.getCurrentId();
 
         replyService.updateReply(replyId, request.getContent(),memberId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 
 
-    @DeleteMapping("/answers/{answer-id}/replies/{reply-id}")
+    @DeleteMapping("/{reply-id}")
     public ResponseEntity<Void> deleteReply(@PathVariable("reply-id") Long replyId) {
 
         Long memberId = SecurityUtil.getCurrentId();
@@ -74,6 +74,7 @@ public class ReplyController {
         ReplyResponse replyResponse = ReplyResponse.builder() // 초기화 과정
                 .replyId(reply.getReplyId())
                 .content(reply.getContent())
+                .nickname(reply.getMember().getNickname())
                 .build();
 
         return replyResponse;
