@@ -25,12 +25,12 @@ include::common/overview.adoc[]
 === Question API
 * link:snippets/getquestion.html[질문 목록/단건 조회 API, window=_blank]
 * link:snippets/cudquestion.html[질문 생성/수정/삭제 API, window=_blank]
-* link:snippets/recommendquestion.adoc[질문 추천 API, window=_blank]
+* link:snippets/recommendquestion.html[질문 추천 API, window=_blank]
 
 === Answer API
 * link:snippets/getanswer.html[답변 목록/단건 조회 API, window=_blank]
 * link:snippets/cudanswer.html[답변 생성/수정/삭제 API, window=_blank]
-* link:snippets/recommendanswer.adoc[답변 추천 API, window=_blank]
+* link:snippets/recommendanswer.html[답변 추천 API, window=_blank]
 
 === Reply API
 * link:snippets/getreply.html[댓글 목록/단건 조회 API, window=_blank]
