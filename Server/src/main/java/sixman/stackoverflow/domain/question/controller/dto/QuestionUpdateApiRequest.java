@@ -9,10 +9,10 @@ import javax.validation.constraints.NotBlank;
 @Setter
 public class QuestionUpdateApiRequest {
 
-    @NotBlank(message = "제목을 입력해주세요.")
+    @NotBlank(message = "{validation.question.title}")
     private String title;
 
-    @NotBlank(message = "내용을 입력해주세요.")
+    @NotBlank(message = "{validation.question.content}")
     private String content;
 
     // 업데이트 메서드

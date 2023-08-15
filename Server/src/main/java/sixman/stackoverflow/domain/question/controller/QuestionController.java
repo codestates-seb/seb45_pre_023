@@ -6,39 +6,49 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.domain.answer.controller.dto.AnswerCreateApiRequest;
 import sixman.stackoverflow.domain.answer.service.AnswerService;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
+import sixman.stackoverflow.domain.member.entity.Member;
+import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionUpdateApiRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.service.QuestionService;
 import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
-import sixman.stackoverflow.domain.question.controller.dto.QuestionTagCreateApiRequest;
-import sixman.stackoverflow.domain.question.service.response.ApiListResponse;
-import sixman.stackoverflow.domain.question.service.response.QuestionTagResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.InvalidPageParameterException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.global.response.PageInfo;
+import org.springframework.security.core.Authentication;
 
 import javax.validation.Valid;
 import java.net.URI;
+import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/questions")
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final MemberRepository memberRepository;
 
     private final AnswerService answerService;
 
     public QuestionController(QuestionService questionService, AnswerService answerService) {
         this.questionService = questionService;
         this.answerService = answerService;
+    public QuestionController(QuestionService questionService,
+                              MemberRepository memberRepository) {
+        this.questionService = questionService;
+        this.memberRepository = memberRepository;
     }
 
 
@@ -46,15 +56,18 @@ public class QuestionController {
     //최초 질문 목록 조회 기능 구현(최신순 정렬 페이지 당 10개 글)
     @GetMapping
     public ResponseEntity<ApiPageResponse<QuestionResponse>> getQuestions(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         if (page < 0 || size <= 0) {
             throw new InvalidPageParameterException();
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        int adjustedPage = page - 1;
+
+
+        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by("createdDate").descending());
         Page<QuestionResponse> questions = questionService.getLatestQuestions(pageable)
-                .map(QuestionResponse::from);
+                .map(QuestionResponse::fromQuestion);
 
         PageInfo pageInfo = PageInfo.of(questions);
 
@@ -62,8 +75,8 @@ public class QuestionController {
     }
 
     // 질문글 조회 기능 구현
-    @GetMapping("/{memberId}/questions")
-    public ResponseEntity<ApiSingleResponse<QuestionResponse>> getQuestionById(@PathVariable Long questionId) {
+    @GetMapping("/{question-Id}")
+    public ResponseEntity<ApiSingleResponse<QuestionResponse>> getQuestionById(@PathVariable @Positive Long questionId) {
         Question question = questionService.getQuestionById(questionId);
 
         if (question == null) {
@@ -75,21 +88,35 @@ public class QuestionController {
         return ResponseEntity.ok(ApiSingleResponse.ok(questionResponse, "질문 조회 성공"));
     }
 
-    // 질문의 태그 리스트 조회
-    @GetMapping("/{questionId}/tags")
-    public ResponseEntity<ApiListResponse<QuestionTagResponse>> getQuestionTags(
-            @PathVariable Long questionId) {
-        List<QuestionTagResponse> tagResponses = questionService.getQuestionTags(questionId);
-        return ResponseEntity.ok(new ApiListResponse<>(tagResponses));
+    // 질문글 답변 페이징 조회
+    @GetMapping("/{questionId}/answers")
+    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswersForQuestion(
+            @PathVariable @Positive Long questionId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Question question = questionService.getQuestionById(questionId);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<AnswerResponse> answerResponses = questionService.getAnswerResponsesForQuestion(question, pageable);
+
+        return ResponseEntity.ok(ApiPageResponse.ok(answerResponses, "답변 조회 성공"));
     }
+
 
     // 질문글 생성 기능
 
-    @PostMapping("/members/{memberId}/questions")
+    @PostMapping("/{memberId}")
     public ResponseEntity<ApiSingleResponse<QuestionResponse>> createQuestion(
-            @PathVariable Long memberId,
+            @PathVariable @Positive Long memberId,
             @RequestBody @Valid QuestionCreateApiRequest questionCreateApiRequest) {
-        Question question = questionCreateApiRequest.toEntity();
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        if (optionalMember.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        Member member = optionalMember.get();
+        Question question = questionCreateApiRequest.toEntity(member);
         Question savedQuestion = questionService.createQuestion(question);
         QuestionResponse questionResponse = QuestionResponse.from(savedQuestion);
 
@@ -97,33 +124,27 @@ public class QuestionController {
     }
 
     // 질문글 추천 기능
-    @PostMapping("/{questionId}/upvote")
-    public ResponseEntity<ApiSingleResponse<Void>> recommendQuestion(@PathVariable Long questionId) {
+    @PatchMapping("/{question-Id}/upvote")
+    public ResponseEntity<ApiSingleResponse<Void>> recommendQuestion(@PathVariable @Positive Long questionId) {
         questionService.addQuestionRecommend(questionId, TypeEnum.UPVOTE);
         return ResponseEntity.noContent().build();
     }
 
     // 질문글 비추천 기능
-    @PostMapping("/{questionId}/downvote")
-    public ResponseEntity<ApiSingleResponse<Void>> disrecommendQuestion(@PathVariable Long questionId) {
+    @PatchMapping("/{question-Id}/downvote")
+    public ResponseEntity<ApiSingleResponse<Void>> disrecommendQuestion(@PathVariable @Positive Long questionId) {
         questionService.addQuestionRecommend(questionId, TypeEnum.DOWNVOTE);
         return ResponseEntity.noContent().build();
     }
 
-    // 태그 추가 기능
-    @PostMapping("/{questionId}/tags")
-    public ResponseEntity<ApiSingleResponse<Void>> addTagsToQuestion(
-            @PathVariable Long questionId,
-            @RequestBody List<QuestionTagCreateApiRequest> tagCreateRequests) {
-        questionService.addTagsToQuestion(questionId, tagCreateRequests);
-        return ResponseEntity.noContent().build();
-    }
 
     //질문글 수정
-    @PatchMapping("/{questionId}")
+    @PatchMapping("/{question-Id}")
+    @PreAuthorize("#question.member.nickname == authentication.principal.nickname")
     public ResponseEntity<ApiSingleResponse<QuestionResponse>> updateQuestion(
-            @PathVariable Long questionId,
-            @RequestBody @Valid QuestionUpdateApiRequest questionUpdateApiRequest) {
+            @PathVariable @Positive Long questionId,
+            @RequestBody @Valid QuestionUpdateApiRequest questionUpdateApiRequest,
+            Authentication authentication) {
         Question question = questionService.getQuestionById(questionId);
         Question updatedQuestion = questionUpdateApiRequest.updateEntity(question);
         Question updated = questionService.updateQuestion(questionId, updatedQuestion);
@@ -133,17 +154,21 @@ public class QuestionController {
     }
 
     // 태그 수정 기능
-    @PatchMapping("/{questionId}/tags")
+    @PreAuthorize("#question.member.nickname == authentication.principal.nickname")
+    @PatchMapping("/{question-Id}/tags")
     public ResponseEntity<ApiSingleResponse<Void>> updateTags(
-            @PathVariable Long questionId,
-            @RequestBody List<String> tagNames) {
+            @PathVariable @Positive Long questionId,
+            @RequestBody List<String> tagNames,
+            Authentication authentication) {
         questionService.updateTags(questionId, tagNames);
         ApiSingleResponse<Void> response = new ApiSingleResponse<>(null, 200, "Success", "OK");
         return ResponseEntity.ok(response);
     }
     // 질문글 삭제 기능
-    @DeleteMapping("/{questionId}")
-    public ResponseEntity<ApiSingleResponse<Void>> deleteQuestion(@PathVariable Long questionId) {
+    @DeleteMapping("/{question-Id}")
+    @PreAuthorize("#question.member.nickname == authentication.principal.nickname")
+    public ResponseEntity<ApiSingleResponse<Void>> deleteQuestion(@PathVariable @Positive Long questionId,
+                                                                  Authentication authentication) {
         Question existingQuestion = questionService.getQuestionById(questionId);
 
         // 질문이 존재하는지 확인

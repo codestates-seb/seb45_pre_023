@@ -10,6 +10,6 @@ import javax.validation.constraints.NotBlank;
 @Setter
 public class QuestionTagCreateApiRequest {
 
-    @NotBlank(message = "태그를 선택해주세요.")
+    @NotBlank(message = "{validation.question.tag}")
     private String tagName;
 }
