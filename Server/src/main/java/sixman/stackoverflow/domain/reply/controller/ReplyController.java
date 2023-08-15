@@ -38,7 +38,7 @@ public class ReplyController {
     @GetMapping("/{reply-id}")
     public ResponseEntity<ApiSingleResponse<ReplyResponse>> getReply(@PathVariable("reply-id") Long replyId) {
 
-        ReplyResponse replyResponse = getReplyResponse(replyId);
+        ReplyResponse replyResponse = replyService.findReply(replyId);
 
         return ResponseEntity.ok(ApiSingleResponse.ok(replyResponse));
 
@@ -69,15 +69,17 @@ public class ReplyController {
 
 
     private ReplyResponse getReplyResponse(Long replyId) {
-        Reply reply = replyService.findReply(replyId);
+//        Reply reply = replyService.findReply(replyId);
 
-        ReplyResponse replyResponse = ReplyResponse.builder() // 초기화 과정
-                .replyId(reply.getReplyId())
-                .content(reply.getContent())
-                .nickname(reply.getMember().getNickname())
-                .build();
+//        ReplyResponse replyResponse = ReplyResponse.builder() // 초기화 과정
+//                .replyId(reply.getReplyId())
+//                .content(reply.getContent())
+//                .nickname(reply.getMember().getNickname())
+//                .build();
+//
+//        return replyResponse;
 
-        return replyResponse;
+        return null;
 
     }
 

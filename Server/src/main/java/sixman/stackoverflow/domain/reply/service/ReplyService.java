@@ -56,11 +56,13 @@ public class ReplyService {
         return reply.getReplyId();
     }
     public List<ReplyResponse> getReplies(Long answerId) {
+
+        Long memberId = SecurityUtil.getCurrentId();
+
         Answer answer= answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerNotFoundException());
 
         List<Reply> replies = replyRepository.findRepliesByAnswer(answer);
-
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException());
@@ -86,9 +88,11 @@ public class ReplyService {
 
 
     @Transactional(readOnly = true)
-    public Reply findReply(long replyId) {
-        return replyRepository.findById(replyId)
-                .orElseThrow(() -> new ReplyNotFoundException());
+    public ReplyResponse findReply(long replyId) {
+//        return replyRepository.findById(replyId)
+//                .orElseThrow(() -> new ReplyNotFoundException());
+
+        return null;
     }
 
     public Reply updateReply(Long replyId, String newContent, Long memberId) {

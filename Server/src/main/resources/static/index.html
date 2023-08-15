@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Rest Docs Practice Application API Document</title>
+<title>Sixman Application API Document</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -475,7 +475,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>Rest Docs Practice Application API Document</h1>
+<h1>Sixman Application API Document</h1>
 <div class="details">
 <span id="revnumber">version 0.0.1-SNAPSHOT</span>
 </div>
@@ -498,6 +498,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_auth_api">Auth API</a></li>
 <li><a href="#_member_api">Member API</a></li>
+<li><a href="#_question_api">Question API</a></li>
+<li><a href="#_answer_api">Answer API</a></li>
+<li><a href="#_reply_api">Reply API</a></li>
 </ul>
 </li>
 </ul>
@@ -829,13 +832,58 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_question_api"><a class="link" href="#_question_api">Question API</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="snippets/getquestion.html" target="_blank" rel="noopener">질문 목록/단건 조회 API</a></p>
+</li>
+<li>
+<p><a href="snippets/cudquestion.html" target="_blank" rel="noopener">질문 생성/수정/삭제 API</a></p>
+</li>
+<li>
+<p><a href="snippets/recommendquestion.adoc" target="_blank" rel="noopener">질문 추천 API</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_answer_api"><a class="link" href="#_answer_api">Answer API</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="snippets/getanswer.html" target="_blank" rel="noopener">답변 목록/단건 조회 API</a></p>
+</li>
+<li>
+<p><a href="snippets/cudanswer.html" target="_blank" rel="noopener">답변 생성/수정/삭제 API</a></p>
+</li>
+<li>
+<p><a href="snippets/recommendanswer.adoc" target="_blank" rel="noopener">답변 추천 API</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reply_api"><a class="link" href="#_reply_api">Reply API</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="snippets/getreply.html" target="_blank" rel="noopener">댓글 목록/단건 조회 API</a></p>
+</li>
+<li>
+<p><a href="snippets/cudreply.html" target="_blank" rel="noopener">댓글 생성/수정/삭제 API</a></p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-08-14 00:47:57 +0900
+Last updated 2023-08-16 06:21:18 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

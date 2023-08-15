@@ -8,8 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
-import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionUpdateApiRequest;
@@ -17,11 +15,9 @@ import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionTagResponse;
-import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
-import sixman.stackoverflow.global.response.PageInfo;
 import sixman.stackoverflow.global.testhelper.ControllerTest;
 
 import javax.persistence.EnumType;
@@ -31,10 +27,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -78,7 +74,10 @@ public class QuestionControllerTest extends ControllerTest {
         //restDocs
         setConstraintClass(QuestionCreateApiRequest.class);
 
-        actions.andDo(document("question-create",
+        actions.andDo(documentHandler.document(
+                requestHeaders(
+                        headerWithName("Authorization").description("AccessToken")
+                ),
                 requestFields(
                         fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
                         fieldWithPath("content").description("질문 내용").attributes(getConstraint("content"))
@@ -204,7 +203,7 @@ public class QuestionControllerTest extends ControllerTest {
                 .recommend(10)
                 .recommendType(TypeEnum.UPVOTE)
                 .tags(List.of(tag1, tag2))
-                .answer(createAnswer())
+                .answer(createAnswerResponse())
                 .createdDate(LocalDateTime.now())
                 .updatedDate(LocalDateTime.now())
                 .build();
@@ -442,67 +441,5 @@ public class QuestionControllerTest extends ControllerTest {
                         )
                 )
         );
-    }
-
-    private QuestionDetailResponse.QuestionAnswer createAnswer() {
-
-        List<AnswerResponse> answers = new ArrayList<>();
-
-        for (int i = 1; i <= 5; i++) {
-
-            TypeEnum type;
-            if(i % 2 == 0) {
-                type = TypeEnum.UPVOTE;
-            } else {
-                type = TypeEnum.DOWNVOTE;
-            }
-
-            AnswerResponse answer = AnswerResponse.builder()
-                    .answerId((long) i)
-                    .content("content")
-                    .member(MemberInfo.of(createMember((long) i)))
-                    .recommend(10)
-                    .recommendType(type)
-                    .reply(createReply(i))
-                    .createdDate(LocalDateTime.now())
-                    .updatedDate(LocalDateTime.now())
-                    .build();
-
-            answers.add(answer);
-        }
-
-        Page<AnswerResponse> page = new PageImpl<>(answers, PageRequest.of(0, 5), 20);
-        PageInfo pageInfo = PageInfo.of(page);
-
-        return QuestionDetailResponse.QuestionAnswer.builder()
-                .answers(answers)
-                .pageInfo(pageInfo)
-                .build();
-    }
-
-    private AnswerResponse.AnswerReply createReply(int index) {
-
-        List<ReplyResponse> replies = new ArrayList<>();
-
-        for (int i = 1; i <= 5; i++) {
-
-            ReplyResponse reply = ReplyResponse.builder()
-                    .replyId((long) index * 5 + i)
-                    .content("content")
-                    .member(MemberInfo.of(createMember((long) i)))
-                    .createdDate(LocalDateTime.now())
-                    .updatedDate(LocalDateTime.now())
-                    .build();
-
-            replies.add(reply);
-        }
-
-        Page<ReplyResponse> page = new PageImpl<>(replies, PageRequest.of(0, 5), 20);
-        PageInfo pageInfo = PageInfo.of(page);
-
-        return AnswerResponse.AnswerReply.builder()
-                .replies(replies)
-                .pageInfo(pageInfo)
-                .build();
     }
 }
