@@ -25,9 +25,6 @@ public class Answer extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-
-    private Integer views;
-
     private Integer upvoteCount;
 
     private Integer downvoteCount;
@@ -50,18 +47,12 @@ public class Answer extends BaseEntity {
 
 
 
-//    public static Answer createAnswer(String content, Member member, Question question) {
-//        return Answer.builder()
-//                .content(content)
-//                .member(member)
-//                .question(question)
-//                .build();
-//    }
 
-    public static Answer createAnswer(String content, Member member) {
+    public static Answer createAnswer(String content, Member member, Question question) {
         return Answer.builder()
                 .content(content)
                 .member(member)
+                .question(question)
                 .build();
     }
     public void setAnswerContent(String newContent) {

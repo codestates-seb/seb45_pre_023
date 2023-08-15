@@ -29,8 +29,8 @@ public class ReplyController {
                                                        @RequestBody ReplyCreateApiRequest request) {
 
         // Long createdReply = replyService.createreply(request); // 나중에 바로 반환할 때 보여주자
-
-        replyService.createreply(request,answerId);
+        Long memberId = SecurityUtil.getCurrentId();
+        replyService.createreply(request,answerId,memberId);
 
         return ResponseEntity.ok().build();
     }
@@ -69,7 +69,7 @@ public class ReplyController {
 
 
     private ReplyResponse getReplyResponse(Long replyId) {
-        Reply reply = replyService.findreply(replyId);
+        Reply reply = replyService.findReply(replyId);
 
         ReplyResponse replyResponse = ReplyResponse.builder() // 초기화 과정
                 .replyId(reply.getReplyId())

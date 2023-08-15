@@ -36,8 +36,8 @@ public class ReplyService {
         this.answerRepository = answerRepository;
     }
 
-    public Long createreply(ReplyCreateApiRequest request, Long answerId) {
-        Long memberId = SecurityUtil.getCurrentId();
+    public Long createreply(ReplyCreateApiRequest request, Long answerId, Long memberId) {
+
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException());
@@ -57,19 +57,18 @@ public class ReplyService {
         List<Reply> replies = replyRepository.findByAnswer(answer);
 
         Long memberId = SecurityUtil.getCurrentId();
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException());
+
 
 
         return replies.stream()
-                .map(reply -> createReplyResponse(reply, member))
+                .map(reply -> createReplyResponse(reply, memberId))
                 .collect(Collectors.toList());
     }
 
 
 
     @Transactional(readOnly = true)
-    public Reply findreply(long replyId) {
+    public Reply findReply(long replyId) {
         return replyRepository.findById(replyId)
                 .orElseThrow(() -> new ReplyNotFoundException());
     }
