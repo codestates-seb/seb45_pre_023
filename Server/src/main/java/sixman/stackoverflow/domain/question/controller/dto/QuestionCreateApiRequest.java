@@ -25,7 +25,6 @@ public class QuestionCreateApiRequest {
         return Question.builder()
                 .title(title)
                 .content(content)
-                .memberId(memberId)
                 .build();
     }
 }
