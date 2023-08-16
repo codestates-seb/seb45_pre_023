@@ -100,7 +100,7 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    public Question updateQuestion(Long questionId, String title, String content) {
+    public Question updateQuestion(Long questionId, String title, String detail, String expect) {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow();
 
@@ -112,7 +112,8 @@ public class QuestionService {
         }
 
         existingQuestion.setTitle(title);
-        existingQuestion.setContent(content);
+        existingQuestion.setDetail(detail);
+        existingQuestion.setExpect(expect);
 
         return questionRepository.save(existingQuestion);
     }

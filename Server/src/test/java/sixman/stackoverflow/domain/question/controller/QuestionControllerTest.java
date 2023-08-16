@@ -49,7 +49,8 @@ public class QuestionControllerTest extends ControllerTest {
 
         QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
                 .title("title")
-                .content("content")
+                .detail("detail")
+                .expect("expect")
                 .build();
 
         setDefaultAuthentication(1L);
@@ -80,7 +81,8 @@ public class QuestionControllerTest extends ControllerTest {
                 ),
                 requestFields(
                         fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
-                        fieldWithPath("content").description("질문 내용").attributes(getConstraint("content"))
+                        fieldWithPath("detail").description("질문 내용").attributes(getConstraint("detail")),
+                        fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect"))
                 ),
                 responseHeaders(
                         headerWithName("Location").description("생성된 질문의 URI")
@@ -110,7 +112,7 @@ public class QuestionControllerTest extends ControllerTest {
             QuestionResponse response = QuestionResponse.builder()
                     .questionId((long) i)
                     .title("title")
-                    .content("content")
+                    .answerCount(5)
                     .member(MemberInfo.of(createMember(1L)))
                     .views(100)
                     .recommend(10)
@@ -151,7 +153,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("data").description("질문 목ㄺ"),
                                 fieldWithPath("data[].questionId").description("질문 ID"),
                                 fieldWithPath("data[].title").description("질문 제목"),
-                                fieldWithPath("data[].content").description("질문 내용"),
+                                fieldWithPath("data[].answerCount").description("질문의 답변 개수"),
                                 fieldWithPath("data[].member").description("질문 작성자 정보"),
                                 fieldWithPath("data[].member.memberId").description("질문 작성자 ID"),
                                 fieldWithPath("data[].member.nickname").description("질문 작성자 닉네임"),
@@ -197,7 +199,8 @@ public class QuestionControllerTest extends ControllerTest {
         QuestionDetailResponse response = QuestionDetailResponse.builder()
                 .questionId(1L)
                 .title("title")
-                .content("content")
+                .detail("detail")
+                .expect("expect")
                 .member(MemberInfo.of(createMember(1L)))
                 .views(100)
                 .recommend(10)
@@ -235,7 +238,8 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("data").description("질문 정보"),
                                 fieldWithPath("data.questionId").description("질문 ID"),
                                 fieldWithPath("data.title").description("질문 제목"),
-                                fieldWithPath("data.content").description("질문 내용"),
+                                fieldWithPath("data.detail").description("질문 내용"),
+                                fieldWithPath("data.expect").description("질문 내용2"),
                                 fieldWithPath("data.member").description("질문 작성자 정보"),
                                 fieldWithPath("data.member.memberId").description("질문 작성자 ID"),
                                 fieldWithPath("data.member.nickname").description("질문 작성자 닉네임"),
@@ -302,7 +306,8 @@ public class QuestionControllerTest extends ControllerTest {
         //given
         QuestionUpdateApiRequest request = QuestionUpdateApiRequest.builder()
                 .title("update title")
-                .content("update content")
+                .detail("update detail")
+                .expect("update expect")
                 .build();
 
         Long questionId = 1L;
@@ -333,7 +338,8 @@ public class QuestionControllerTest extends ControllerTest {
                         ),
                         requestFields(
                                 fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
-                                fieldWithPath("content").description("질문 내용").attributes(getConstraint("content"))
+                                fieldWithPath("detail").description("질문 내용").attributes(getConstraint("detail")),
+                                fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect"))
                         )
                 )
         );

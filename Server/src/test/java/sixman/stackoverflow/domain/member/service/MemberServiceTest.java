@@ -546,7 +546,8 @@ class MemberServiceTest extends ServiceTest {
     private Question createQuestion(Member member) {
         return Question.builder()
                 .title("title")
-                .content("content")
+                .detail("detail")
+                .expect("expect")
                 .member(member)
                 .build();
     }

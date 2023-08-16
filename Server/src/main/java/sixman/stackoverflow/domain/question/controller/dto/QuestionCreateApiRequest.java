@@ -18,13 +18,17 @@ public class QuestionCreateApiRequest {
     private String title;
 
     @NotBlank(message = "{validation.question.content}")
-    private String content;
+    private String detail;
+
+    @NotBlank(message = "{validation.question.content}")
+    private String expect;
 
     // 생성 메서드
     public Question toEntity(Member member) {
         return Question.builder()
                 .title(title)
-                .content(content)
+                .detail(detail)
+                .expect(expect)
                 .member(member)
                 .build();
     }

@@ -25,10 +25,7 @@ public class Answer extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    private Integer upvoteCount;
-
-    private Integer downvoteCount;
-
+    private Integer recommend;
 
 
     @OneToMany(mappedBy = "answer")
@@ -60,11 +57,15 @@ public class Answer extends BaseEntity {
 
     }
 
-    public void increaseRecommendCount() {
-        upvoteCount++;
+    public void setRecommend(Integer recommend) {
+        this.recommend = recommend;
     }
 
-    public void increaseDownvoteCount() {
-        downvoteCount++;
-    }
+    //    public void increaseRecommendCount() {
+//        upvoteCount++;
+//    }
+
+//    public void increaseDownvoteCount() {
+//        downvoteCount++;
+//    }
 }

@@ -132,7 +132,7 @@ public class QuestionController {
             @PathVariable("question-id") @Positive Long questionId,
             @RequestBody @Valid QuestionUpdateApiRequest request) {
 
-        questionService.updateQuestion(questionId, request.getTitle(), request.getContent());
+        questionService.updateQuestion(questionId, request.getTitle(), request.getDetail(), request.getExpect());
 
         return ResponseEntity.noContent().build();
     }
