@@ -262,7 +262,7 @@ public class MemberService {
     }
 
     private void checkEmailAuthComplete(String email) {
-        if(!redisService.getValues(AUTH_CODE_PREFIX + email).equals("true")){
+        if(redisService.getValues(AUTH_CODE_PREFIX + email) == null || !redisService.getValues(AUTH_CODE_PREFIX + email).equals("true")){
             throw new EmailAuthNotCompleteException();
         }
 
