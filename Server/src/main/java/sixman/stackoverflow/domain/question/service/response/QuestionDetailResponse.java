@@ -21,7 +21,8 @@ public class QuestionDetailResponse {
 
     private Long questionId;
     private String title;
-    private String content;
+    private String detail;
+    private String expect;
     private MemberInfo member;
     private Integer views;
     private Integer recommend;
@@ -44,7 +45,8 @@ public class QuestionDetailResponse {
         return QuestionDetailResponse.builder()
                 .questionId(question.getQuestionId())
                 .title(question.getTitle())
-                .content(question.getContent())
+                .detail(question.getDetail())
+                .expect(question.getExpect())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
                 .recommend(question.getRecommendCount())
