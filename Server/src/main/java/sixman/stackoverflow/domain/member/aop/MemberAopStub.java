@@ -3,7 +3,6 @@ package sixman.stackoverflow.domain.member.aop;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +22,7 @@ import java.util.List;
 
 @Component
 @Aspect
-public class MemberAop {
+public class MemberAopStub {
 
     @Around("execution(* sixman.stackoverflow.domain.member.controller.MemberController.getMember(..))")
     public Object getMember(ProceedingJoinPoint joinPoint) {

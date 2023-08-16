@@ -45,6 +45,7 @@ public class Question extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+
     public void setTitle(String title) {
         this.title = title;
     }
