@@ -121,7 +121,7 @@ public abstract class ControllerTest {
     }
 
     protected static String generateLinkCode(Class<?> clazz) {
-        return String.format("link:../common/%s.html[%s 값 보기,role=\"popup\"]",
+        return String.format("link:/common/%s.html[%s 값 보기,role=\"popup\"]",
                 clazz.getSimpleName().toLowerCase(), clazz.getSimpleName());
     }
 
