@@ -16,6 +16,7 @@ public class MemberProfile {
                 .nickname(email.split("@")[0])
                 .password("oauthUser")
                 .authority(Authority.ROLE_USER)
+
                 .build();
     }
 }

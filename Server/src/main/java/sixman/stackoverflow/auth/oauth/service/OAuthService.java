@@ -98,7 +98,10 @@ public class OAuthService {
     }
 
     private Member saveMember(MemberProfile memberProfile) {
-        Member member = memberProfile.toMember();
+        Member member = Member.createMember(
+                memberProfile.getEmail(),
+                memberProfile.getEmail().split("@")[0],
+                "oauthUser");
         return memberRepository.save(member);
     }
 
