@@ -55,7 +55,9 @@ public class SecurityConfig {
                 .accessDeniedHandler(new MemberAccessDeniedHandler())
                 .authenticationEntryPoint(new MemberAuthenticationEntryPoint());
 
-        http.authorizeRequests(getAuthorizeRequestsCustomizer());
+//        http.authorizeRequests(getAuthorizeRequestsCustomizer());
+        http.authorizeRequests()
+                .antMatchers().permitAll();
 
         return http.build();
     }
