@@ -23,7 +23,8 @@ public class QuestionResponse {
     private Integer answerCount;
     private MemberInfo member;
     private Integer views;
-    private Integer recommend;
+    private Integer upvoteCount;
+    private Integer downvoteCount;
     private List<QuestionTagResponse> tags;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
@@ -37,7 +38,8 @@ public class QuestionResponse {
                 .answerCount(question.getAnswers().size())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
-                .recommend(question.getRecommendCount())
+                .upvoteCount(question.getUpvoteCount())
+                .downvoteCount(question.getDownvoteCount())
                 .tags(QuestionTagResponse.of(question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList())))
                 .createdDate(question.getCreatedDate())
                 .updatedDate(question.getModifiedDate())

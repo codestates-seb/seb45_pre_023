@@ -33,7 +33,9 @@ public class Question extends BaseEntity {
 
     private Integer views;
 
-    private int recommendCount;
+    private int upvoteCount;
+
+    private int downvoteCount;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionRecommend> questionRecommends = new ArrayList<>();
@@ -47,6 +49,7 @@ public class Question extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
 
     public void setTitle(String title) {
         this.title = title;
@@ -69,9 +72,9 @@ public class Question extends BaseEntity {
 
     public void applyRecommend(TypeEnum type) {
         if (type == TypeEnum.UPVOTE) {
-            this.recommendCount++;
+            this.upvoteCount++;
         } else {
-            this.recommendCount--;
+            this.downvoteCount++;
         }
     }
 

@@ -15,6 +15,8 @@ import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
+import sixman.stackoverflow.domain.reply.entity.Reply;
+import sixman.stackoverflow.domain.reply.repository.ReplyRepository;
 import sixman.stackoverflow.global.exception.businessexception.answerexception.AnswerNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
@@ -29,15 +31,17 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final MemberRepository memberRepository;
-
     private final QuestionRepository questionRepository;
+    private final ReplyRepository replyRepository;
 
     public AnswerService(AnswerRepository answerRepository,
                          MemberRepository memberRepository,
-                         QuestionRepository questionRepository) {
+                         QuestionRepository questionRepository,
+                         ReplyRepository replyRepository) {
         this.answerRepository = answerRepository;
         this.memberRepository = memberRepository;
         this.questionRepository = questionRepository;
+        this.replyRepository = replyRepository;
     }
 
 
@@ -63,9 +67,16 @@ public class AnswerService {
         return AnswerResponse.createAnswerResponse(answer);
     }
 
-    //todo : 구현 필요 (answer 를 5개씩 페이징해서 조회)
+
     public Page<AnswerResponse> findAnswers(Long questionId, Pageable pageable) {
-        return null;
+        Page<Answer> answers = answerRepository.findByQuestionQuestionIdOrderByCreatedDateAsc(questionId, pageable);
+
+        Page<AnswerResponse> answerResponses = answers.map(answer -> {
+            Page<Reply> replyPage = replyRepository.findByAnswer(answer, pageable);
+            return AnswerResponse.of(answer, replyPage);
+        });
+
+        return answerResponses;
     }
 
     public Answer updateAnswer(Long answerId, String newContent) {
