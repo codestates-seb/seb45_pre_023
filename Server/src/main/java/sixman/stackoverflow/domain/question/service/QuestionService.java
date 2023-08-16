@@ -4,6 +4,8 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
+import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
+import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionTagCreateApiRequest;

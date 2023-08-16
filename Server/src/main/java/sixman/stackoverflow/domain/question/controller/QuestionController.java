@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
+import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Validated
 @RequestMapping("/questions")
 public class QuestionController {
 
@@ -46,11 +49,9 @@ public class QuestionController {
     //최초 질문 목록 조회 기능 구현(최신순 정렬 페이지 당 10개 글)
     @GetMapping
     public ResponseEntity<ApiPageResponse<QuestionResponse>> getQuestions(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        if (page < 0 || size <= 0) {
-            throw new InvalidPageParameterException();
-        }
+            @RequestParam(defaultValue = "1") @Positive int page,
+            @RequestParam(defaultValue = "10") @Positive int size) {
+
 
         int adjustedPage = page - 1;
 
@@ -95,7 +96,7 @@ public class QuestionController {
 
     // 질문글 생성 기능
 
-    @PostMapping("/{memberId}")
+    @PostMapping
     public ResponseEntity<ApiSingleResponse<QuestionResponse>> createQuestion(
             @PathVariable @Positive Long memberId,
             @RequestBody @Valid QuestionCreateApiRequest questionCreateApiRequest) {
@@ -130,11 +131,9 @@ public class QuestionController {
 
     //질문글 수정
     @PatchMapping("/{question-Id}")
-    @PreAuthorize("#question.member.nickname == authentication.principal.nickname")
     public ResponseEntity<ApiSingleResponse<QuestionResponse>> updateQuestion(
             @PathVariable @Positive Long questionId,
-            @RequestBody @Valid QuestionUpdateApiRequest questionUpdateApiRequest,
-            Authentication authentication) {
+            @RequestBody @Valid QuestionUpdateApiRequest questionUpdateApiRequest) {
         Question question = questionService.getQuestionById(questionId);
         Question updatedQuestion = questionUpdateApiRequest.updateEntity(question);
         Question updated = questionService.updateQuestion(questionId, updatedQuestion);
@@ -144,21 +143,17 @@ public class QuestionController {
     }
 
     // 태그 수정 기능
-    @PreAuthorize("#question.member.nickname == authentication.principal.nickname")
     @PatchMapping("/{question-Id}/tags")
     public ResponseEntity<ApiSingleResponse<Void>> updateTags(
             @PathVariable @Positive Long questionId,
-            @RequestBody List<String> tagNames,
-            Authentication authentication) {
+            @RequestBody List<String> tagNames) {
         questionService.updateTags(questionId, tagNames);
         ApiSingleResponse<Void> response = new ApiSingleResponse<>(null, 200, "Success", "OK");
         return ResponseEntity.ok(response);
     }
     // 질문글 삭제 기능
     @DeleteMapping("/{question-Id}")
-    @PreAuthorize("#question.member.nickname == authentication.principal.nickname")
-    public ResponseEntity<ApiSingleResponse<Void>> deleteQuestion(@PathVariable @Positive Long questionId,
-                                                                  Authentication authentication) {
+    public ResponseEntity<ApiSingleResponse<Void>> deleteQuestion(@PathVariable @Positive Long questionId) {
         Question existingQuestion = questionService.getQuestionById(questionId);
 
         // 질문이 존재하는지 확인
