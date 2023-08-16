@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Sixman Application API Document</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,112 +436,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script>
-    function ready(callbackFunc) {
-        if (document.readyState !== 'loading') {
-            // Document is already ready, call the callback directly
-            callbackFunc();
-        } else if (document.addEventListener) {
-            // All modern browsers to register DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', callbackFunc);
-        } else {
-            // Old IE browsers
-            document.attachEvent('onreadystatechange', function () {
-                if (document.readyState === 'complete') {
-                    callbackFunc();
-                }
-            });
-        }
-    }
-
-    function openPopup(event) {
-
-        const target = event.target;
-        if (target.className !== "popup") {
-            return;
-        }
-
-        event.preventDefault();
-        const screenX = event.screenX;
-        const screenY = event.screenY;
-        window.open(target.href, target.text, `left=${screenX}, top=${screenY}, width=500, height=600, status=no, menubar=no, toolbar=no, resizable=no`);
-    }
-
-    ready(function () {
-        const el = document.getElementById("content");
-        el.addEventListener("click", event => openPopup(event), false);
-    });
-</script>
 </head>
-<body class="book toc2 toc-left">
+<body class="book">
 <div id="header">
-<h1>Sixman Application API Document</h1>
-<div class="details">
-<span id="revnumber">version 0.0.1-SNAPSHOT</span>
-</div>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel0">
-<li><a href="#overview">Overview</a>
-<ul class="sectlevel1">
-<li><a href="#overview-host">Host</a></li>
-<li><a href="#overview-http-status-codes">HTTP status codes</a></li>
-<li><a href="#_stub_로그인_데이터">stub 로그인 데이터</a></li>
-<li><a href="#overview-response">HTTP Response</a>
-<ul class="sectlevel2">
-<li><a href="#_http_response_success">HTTP Response - Success</a></li>
-<li><a href="#_http_response_errorvalidation_오류">HTTP Response - Error(Validation 오류)</a></li>
-<li><a href="#_http_response_error기타_오류">HTTP Response - Error(기타 오류)</a></li>
-</ul>
-</li>
-<li><a href="#API-List">APIs</a>
-<ul class="sectlevel2">
-<li><a href="#_auth_api">Auth API</a></li>
-<li><a href="#_member_api">Member API</a></li>
-<li><a href="#_question_api">Question API</a></li>
-<li><a href="#_answer_api">Answer API</a></li>
-<li><a href="#_reply_api">Reply API</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
 </div>
 <div id="content">
-<h1 id="overview" class="sect0"><a class="link" href="#overview">Overview</a></h1>
-<div class="sect1">
-<h2 id="overview-host"><a class="link" href="#overview-host">Host</a></h2>
+<div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">환경</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Host</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">company</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>codestates</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">author</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sixman</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Github</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="https://github.com/codestates-seb/seb45_pre_023" class="bare">https://github.com/codestates-seb/seb45_pre_023</a></code></p></td>
-</tr>
-</tbody>
-</table>
+<div id="authority" class="paragraph">
+<p>Provider</p>
 </div>
-</div>
-<div class="sect1">
-<h2 id="overview-http-status-codes"><a class="link" href="#overview-http-status-codes">HTTP status codes</a></h2>
-<div class="sectionbody">
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -549,345 +453,33 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">상태 코드</th>
-<th class="tableblock halign-left valign-top">설명</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200 OK</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">성공</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>201 Created</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">생성 성공</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>204 No Content</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">성공했지만 응답할 데이터 없음</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>400 Bad Request</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">잘못된 요청, 값</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>401 Unauthorized</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">비인증 상태</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>403 Forbidden</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">권한 거부</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404 Not Found</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 요청 리소스</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>405 Method Not Allowed</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">허용되지 않는 메소드</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>409 Conflict</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">충돌되는 데이터 (중복)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500 Internal Server Error</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">서버 에러 / 서버에서 처리하지 못한 오류</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_stub_로그인_데이터"><a class="link" href="#_stub_로그인_데이터">stub 로그인 데이터</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>아래 id, pw 로 로그인하면 토큰이 발급됩니다.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">pw</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>test@google.com</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1q2w3e4r!</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="overview-response"><a class="link" href="#overview-response">HTTP Response</a></h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_http_response_success"><a class="link" href="#_http_response_success">HTTP Response - Success</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
-  "data" : "success data",
-  "code" : 200,
-  "status" : "OK",
-  "message" : "OK"
-}</code></pre>
-</div>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Enum Name</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Varies</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 데이터 (본문)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GITHUB</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">github</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 코드</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>KAKAO</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kakao</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>status</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 상태</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 메시지</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GOOGLE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">google</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect2">
-<h3 id="_http_response_errorvalidation_오류"><a class="link" href="#_http_response_errorvalidation_오류">HTTP Response - Error(Validation 오류)</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
-  "data" : [ {
-    "field" : "password",
-    "value" : "",
-    "reason" : "비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."
-  }, {
-    "field" : "email",
-    "value" : "",
-    "reason" : "이메일을 정확히 입력해주세요."
-  } ],
-  "code" : 400,
-  "status" : "BAD_REQUEST",
-  "message" : "입력 값을 확인해주세요."
-}</code></pre>
-</div>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 코드</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>status</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 상태</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 메세지</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">예외 리스트</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data[].field</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">예외 발생 필드</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data[].value</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">예외 발생 값</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data[].reason</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">예외 발생 이유</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_http_response_error기타_오류"><a class="link" href="#_http_response_error기타_오류">HTTP Response - Error(기타 오류)</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
-  "data" : null,
-  "code" : 401,
-  "status" : "MEMBER-401",
-  "message" : "존재하지 않는 회원입니다."
-}</code></pre>
-</div>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 코드</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>status</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">예외 상태</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">예외 메세지</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">null 값</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="API-List"><a class="link" href="#API-List">APIs</a></h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_auth_api"><a class="link" href="#_auth_api">Auth API</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="snippets/login.html" target="_blank" rel="noopener">로그인 API</a></p>
-</li>
-<li>
-<p><a href="snippets/signup.html" target="_blank" rel="noopener">회원가입 API</a></p>
-</li>
-<li>
-<p><a href="snippets/findpassword.html" target="_blank" rel="noopener">비밀번호 찾기 API</a></p>
-</li>
-<li>
-<p><a href="snippets/refreshtoken.html" target="_blank" rel="noopener">토큰 재발급 API</a></p>
-</li>
-<li>
-<p><a href="snippets/email.html" target="_blank" rel="noopener">이메일 인증 API</a></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_member_api"><a class="link" href="#_member_api">Member API</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="snippets/member.html" target="_blank" rel="noopener">회원 정보 API</a></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_question_api"><a class="link" href="#_question_api">Question API</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="snippets/getquestion.html" target="_blank" rel="noopener">질문 목록/단건 조회 API</a></p>
-</li>
-<li>
-<p><a href="snippets/cudquestion.html" target="_blank" rel="noopener">질문 생성/수정/삭제 API</a></p>
-</li>
-<li>
-<p><a href="snippets/recommendquestion.html" target="_blank" rel="noopener">질문 추천 API</a></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_answer_api"><a class="link" href="#_answer_api">Answer API</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="snippets/getanswer.html" target="_blank" rel="noopener">답변 목록/단건 조회 API</a></p>
-</li>
-<li>
-<p><a href="snippets/cudanswer.html" target="_blank" rel="noopener">답변 생성/수정/삭제 API</a></p>
-</li>
-<li>
-<p><a href="snippets/recommendanswer.html" target="_blank" rel="noopener">답변 추천 API</a></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_reply_api"><a class="link" href="#_reply_api">Reply API</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="snippets/getreply.html" target="_blank" rel="noopener">댓글 목록/단건 조회 API</a></p>
-</li>
-<li>
-<p><a href="snippets/cudreply.html" target="_blank" rel="noopener">댓글 생성/수정/삭제 API</a></p>
-</li>
-</ul>
-</div>
-</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-08-16 19:55:52 +0900
+Last updated 2023-08-16 01:36:34 +0900
 </div>
 </div>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
-<script>hljs.initHighlighting()</script>
 </body>
 </html>
