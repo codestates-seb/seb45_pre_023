@@ -3,9 +3,15 @@ module.exports = {
   theme: {
     extend: {
       spacing: {
+        12: '3rem',
+        14: '3.5rem',
+        16: '4rem',
         18: '4.5rem',
+        20: '5rem',
+        24: '6rem',
         28: '7rem',
         32: '8rem',
+        34: '8.5rem',
         36: '9rem',
         40: '10rem',
         42: '10.5rem',
@@ -22,6 +28,7 @@ module.exports = {
         70: '17.5rem',
         72: '18rem',
         80: '20rem',
+        84: '21.5rem',
         88: '22rem',
         96: '24rem',
         104: '26rem',
@@ -34,6 +41,8 @@ module.exports = {
         152: '38rem',
         160: '40rem',
         168: '42rem',
+        172: '43rem',
+        174: '43.5rem',
         176: '44rem',
         180: '45rem',
         184: '46rem',
@@ -46,18 +55,28 @@ module.exports = {
         212: '53rem',
         216: '54rem',
         220: '55rem',
+        260: '65rem',
       },
       borderWidth: {
         1: '1px',
       },
       colors: {
         stack: 'rgb(81 88 95);',
+        reds: 'rgb(188 183 183);',
       },
       fontSize: {
         xss: '8px',
+        smm: '13px',
+        based: '15px',
       },
       boxShadow: {
         'xss': '2px 2px 10px -3px rgba(0, 0, 0, 0.3)',
+      },
+      flexGrow: {
+        2: '2',
+        3: '3',
+        4: '4',
+        5: '5',
       }
     },
   },
