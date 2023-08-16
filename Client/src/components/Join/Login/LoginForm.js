@@ -1,39 +1,107 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { Link } from 'react-router-dom';
+import { RouteConst } from '../../../Interface/RouteConst';
+import {
+  handleGoogleLogin,
+  handleGithubLogin,
+  handleKakaoLogin,
+} from '../../../OAuth/OAuth';
+import { useState } from 'react';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { google, github, kakao } from '../../../redux/createSlice/oauthSlice';
 
 export default function LoginForm() {
+  const [isErrorMessage, setErrorMessage] = useState('');
+  const [LoginInfo, setLoginInfo] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleLogin = () => {
+    if (!LoginInfo.email || !LoginInfo.password) {
+      return setErrorMessage('Please enter all information.');
+    }
+    return axios
+      .post(
+        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/login',
+        LoginInfo
+      )
+      .then((res) => {
+        console.log(res.headers.authorization);
+        console.log(res.headers.refresh); // Login 됐다는 useState 설정하기.
+        setErrorMessage('');
+      })
+      .catch((err) => {
+        console.log(err);
+        setErrorMessage('Login is failed');
+      });
+  };
+
+  const handleLoginInfo = (key) => (e) => {
+    setLoginInfo({ ...LoginInfo, [key]: e.target.value });
+  };
+
+  const dispatch = useDispatch();
+
   return (
     <div className="flex flex-col items-center">
-      <img className="w-9 h-12 cursor-pointer" src="./../StackOverflow.png" />
-      <ul className="flex flex-col items-center mt-3">
-        <li className="flex flex-row justify-center items-center w-70 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer">
+      <img
+        className="w-8 h-10 cursor-pointer"
+        src="./../StackOverflow.png"
+        alt="StackOverflow"
+      />
+      <ul className="flex flex-col items-center my-5">
+        <li
+          className="flex flex-row justify-center items-center w-70 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
+          onClick={() => {
+            dispatch(google);
+            handleGoogleLogin();
+          }}
+        >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google"
             className="w-4 h-4 mr-2"
           />
           <span className="text-sm">Sign up with Google</span>
         </li>
-        <li className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer">
+        <li
+          className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
+          onClick={() => {
+            dispatch(github);
+            handleGithubLogin();
+          }}
+        >
           <FontAwesomeIcon icon={faGithub} className="w-4 h-4 mr-2" />
           <span className="text-sm">Sign up with GitHub</span>
         </li>
-        <li className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-yellow-200 hover:bg-yellow-300 border border-solid border-gray rounded-md cursor-pointer">
+        <li
+          className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
+          onClick={() => {
+            dispatch(kakao);
+            handleKakaoLogin();
+          }}
+        >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg"
+            alt="KakaoTalk"
             className="w-5 h-5 mr-2"
           />
           <span className="text-sm">Sign up with Kakao</span>
         </li>
       </ul>
 
-      <div className="flex flex-col justify-center items-center w-70 h-60 mt-3 bg-white border border-solid border-gray rounded-md shadow-xss">
+      <form className="flex flex-col justify-center items-center w-70 h-64 mt-1 bg-white border border-solid border-gray rounded-md shadow-xss">
         <div className="flex flex-col justify-center items-center">
           <span className="mt-2 w-58 text-left text-md font-semibold">
             Email
           </span>
           <input
-            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
+            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="text"
+            onChange={handleLoginInfo('email')}
           ></input>
         </div>
 
@@ -47,21 +115,33 @@ export default function LoginForm() {
             </span>
           </div>
           <input
-            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
+            className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="password"
+            onChange={handleLoginInfo('password')}
           ></input>
         </div>
 
-        <div className="flex flex-col justify-center items-center w-58 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md">
+        <div className="mt-2 text-sm text-red-500">{isErrorMessage}</div>
+
+        <button
+          className="flex flex-col justify-center items-center w-58 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
+          onClick={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          type="submit"
+        >
           Log in
-        </div>
-      </div>
+        </button>
+      </form>
 
       <div className="w-70 mt-8 text-sm text-center">
         Don’t have an account?{' '}
-        <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
-          Sign up
-        </span>{' '}
+        <Link to={RouteConst.SignUp}>
+          <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
+            Sign up
+          </span>{' '}
+        </Link>
       </div>
       <div className="w-70 my-3 text-sm text-center mb-18">
         Are you an employer?{' '}
