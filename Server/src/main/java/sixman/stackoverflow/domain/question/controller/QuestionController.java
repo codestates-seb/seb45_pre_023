@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.domain.answer.controller.dto.AnswerCreateApiRequest;
 import sixman.stackoverflow.domain.answer.service.AnswerService;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Validated
 @RequestMapping("/questions")
 public class QuestionController {
 
@@ -50,11 +52,8 @@ public class QuestionController {
     //최초 질문 목록 조회 기능 구현(최신순 정렬 페이지 당 10개 글)
     @GetMapping
     public ResponseEntity<ApiPageResponse<QuestionResponse>> getQuestions(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        if (page < 0 || size <= 0) {
-            throw new InvalidPageParameterException();
-        }
+            @RequestParam(defaultValue = "1") @Positive int page,
+            @RequestParam(defaultValue = "10") @Positive int size) {
 
         int adjustedPage = page - 1;
 
@@ -66,12 +65,12 @@ public class QuestionController {
     }
 
     // 질문글 조회 기능 구현
-    @GetMapping("/{question-id}")
-    public ResponseEntity<ApiSingleResponse<QuestionDetailResponse>> getQuestionById(@PathVariable("question-id") @Positive Long questionId) {
+        @GetMapping("/{question-id}")
+        public ResponseEntity<ApiSingleResponse<QuestionDetailResponse>> getQuestionById(@PathVariable("question-id") @Positive Long questionId) {
 
-        QuestionDetailResponse questionDetailResponse = questionService.getQuestionById(questionId);
+            QuestionDetailResponse questionDetailResponse = questionService.getQuestionById(questionId);
 
-        return ResponseEntity.ok(ApiSingleResponse.ok(questionDetailResponse, "질문 조회 성공"));
+            return ResponseEntity.ok(ApiSingleResponse.ok(questionDetailResponse, "질문 조회 성공"));
     }
 
     //필요없음
