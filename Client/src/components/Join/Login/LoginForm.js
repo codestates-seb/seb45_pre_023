@@ -9,33 +9,41 @@ import {
 } from '../../../OAuth/OAuth';
 import { useState } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { google, github, kakao } from '../../../redux/createSlice/oauthSlice';
 
 export default function LoginForm() {
-  const [isUserInfo, setUserInfo] = useState('');
   const [isErrorMessage, setErrorMessage] = useState('');
-  const [isLoginInfo, setLoginInfo] = useState({
+  const [LoginInfo, setLoginInfo] = useState({
     email: '',
     password: '',
   });
 
   const handleLogin = () => {
-    if (!isLoginInfo.email || !isLoginInfo.password) {
+    if (!LoginInfo.email || !LoginInfo.password) {
       return setErrorMessage('Please enter all information.');
     }
-    axios
-      .post('http://localhost:5000/login', { isLoginInfo })
+    return axios
+      .post(
+        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/login',
+        LoginInfo
+      )
       .then((res) => {
-        setUserInfo(res.data);
+        console.log(res.headers.authorization);
+        console.log(res.headers.refresh); // Login 됐다는 useState 설정하기.
+        setErrorMessage('');
       })
       .catch((err) => {
-        console.log(err.response.data);
+        console.log(err);
         setErrorMessage('Login is failed');
       });
   };
 
   const handleLoginInfo = (key) => (e) => {
-    setLoginInfo({ ...isLoginInfo, [key]: e.target.value });
+    setLoginInfo({ ...LoginInfo, [key]: e.target.value });
   };
+
+  const dispatch = useDispatch();
 
   return (
     <div className="flex flex-col items-center">
@@ -47,7 +55,10 @@ export default function LoginForm() {
       <ul className="flex flex-col items-center my-5">
         <li
           className="flex flex-row justify-center items-center w-70 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
-          onClick={handleGoogleLogin}
+          onClick={() => {
+            dispatch(google);
+            handleGoogleLogin();
+          }}
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
@@ -58,14 +69,20 @@ export default function LoginForm() {
         </li>
         <li
           className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
-          onClick={handleGithubLogin}
+          onClick={() => {
+            dispatch(github);
+            handleGithubLogin();
+          }}
         >
           <FontAwesomeIcon icon={faGithub} className="w-4 h-4 mr-2" />
           <span className="text-sm">Sign up with GitHub</span>
         </li>
         <li
           className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
-          onClick={handleKakaoLogin}
+          onClick={() => {
+            dispatch(kakao);
+            handleKakaoLogin();
+          }}
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg"
@@ -76,7 +93,7 @@ export default function LoginForm() {
         </li>
       </ul>
 
-      <div className="flex flex-col justify-center items-center w-70 h-64 mt-1 bg-white border border-solid border-gray rounded-md shadow-xss">
+      <form className="flex flex-col justify-center items-center w-70 h-64 mt-1 bg-white border border-solid border-gray rounded-md shadow-xss">
         <div className="flex flex-col justify-center items-center">
           <span className="mt-2 w-58 text-left text-md font-semibold">
             Email
@@ -106,13 +123,17 @@ export default function LoginForm() {
 
         <div className="mt-2 text-sm text-red-500">{isErrorMessage}</div>
 
-        <div
+        <button
           className="flex flex-col justify-center items-center w-58 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
-          onClick={handleLogin}
+          onClick={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          type="submit"
         >
           Log in
-        </div>
-      </div>
+        </button>
+      </form>
 
       <div className="w-70 mt-8 text-sm text-center">
         Don’t have an account?{' '}

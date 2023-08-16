@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export const tipboxSlice = createSlice({
+const tipboxSlice = createSlice({
   name: 'tipbox', // action 이름
   initialState: { value: 1 }, // 초기값
   reducers: {

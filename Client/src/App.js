@@ -12,6 +12,8 @@ import Header from './components/Header/Header';
 // import MemberDelete from './pages/Member/Settings/Delete';
 // import MemberMain from './pages/Member/memberMain';
 
+import { useSelector } from 'react-redux';
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -19,16 +21,17 @@ function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [accessToken, setAccessToken] = useState('');
 
-  const provider = ['Google', 'GitHub', 'Kakao'];
+  const provider = useSelector(state => state.oauth.value)
 
   const getAccessToken = async (authorizationCode) => {
     return axios
-      .post(
-        `http://localhost:8080/provider=${provider[1]}&code=authorizationCode`
+      .get(
+        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/oauth?provider=${provider}&code=${authorizationCode}`
       )
       .then((res) => {
-        setAccessToken(res.data.accessToken);
-        setIsLogin(true);
+        console.log(res);
+        // setAccessToken(res.data.accessToken);
+        // setIsLogin(true);
       })
       .catch((err) => {
         console.log(err.response.data);
@@ -39,7 +42,7 @@ function App() {
     const url = new URL(window.location.href);
     const authorizationCode = url.searchParams.get('code');
     if (authorizationCode) {
-      console.log(authorizationCode);
+      getAccessToken(authorizationCode); // getAccessToken 함수 호출로 바꾸기
     }
   }, []);
 

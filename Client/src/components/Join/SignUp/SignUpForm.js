@@ -9,21 +9,26 @@ import {
 } from '../../../OAuth/OAuth';
 import { useState } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { google, github, kakao } from '../../../redux/createSlice/oauthSlice';
 
 export default function SignUpForm() {
   const [isErrorMessage, setErrorMessage] = useState('');
-  const [isSignUpInfo, setSignUpInfo] = useState({
-    nickname: '',
+  const [SignUpInfo, setSignUpInfo] = useState({
     email: '',
+    nickname: '',
     password: '',
   });
 
   const handleSignUp = () => {
-    if (!isSignUpInfo.nickname || !isSignUpInfo.email || !isSignUpInfo.password) {
+    if (!SignUpInfo.nickname || !SignUpInfo.email || !SignUpInfo.password) {
       return setErrorMessage('Please enter all information.');
     }
     axios
-      .post('http://localhost:5000/signup', { isSignUpInfo })
+      .post(
+        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/signup',
+        SignUpInfo
+      )
       .then((res) => {
         console.log(res.data);
       })
@@ -34,15 +39,20 @@ export default function SignUpForm() {
   };
 
   const handleSignUpInfo = (key) => (e) => {
-    setSignUpInfo({ ...isSignUpInfo, [key]: e.target.value });
+    setSignUpInfo({ ...SignUpInfo, [key]: e.target.value });
   };
+
+  const dispatch = useDispatch();
 
   return (
     <div className="flex flex-col items-center">
       <ul className="flex flex-col items-center mt-8">
         <li
           className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
-          onClick={handleGoogleLogin}
+          onClick={() => {
+            dispatch(google);
+            handleGoogleLogin();
+          }}
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
@@ -53,14 +63,20 @@ export default function SignUpForm() {
         </li>
         <li
           className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
-          onClick={handleGithubLogin}
+          onClick={() => {
+            dispatch(google);
+            handleGithubLogin();
+          }}
         >
           <FontAwesomeIcon icon={faGithub} className="w-4 h-4 mr-2" />
           <span className="text-sm">Sign up with GitHub</span>
         </li>
         <li
           className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
-          onClick={handleKakaoLogin}
+          onClick={() => {
+            dispatch(google);
+            handleKakaoLogin();
+          }}
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg"
