@@ -48,7 +48,7 @@ public class OAuthService {
     @Transactional
     public Token login(Provider provider, String code) {
 
-        ClientRegistration clientRegistration = inMemoryRepository.findByRegistrationId(provider.getName());
+        ClientRegistration clientRegistration = inMemoryRepository.findByRegistrationId(provider.getDescription());
 
         String token = getToken(code, clientRegistration);
 
