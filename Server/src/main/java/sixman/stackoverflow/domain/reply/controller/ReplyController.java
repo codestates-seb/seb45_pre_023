@@ -35,7 +35,7 @@ public class ReplyController {
 //        return ResponseEntity.created(uri).build();
 //    }
 
-    @GetMapping("/{reply-id}")
+    @GetMapping("/{reply-id}") // 리플 단건 조회
     public ResponseEntity<ApiSingleResponse<ReplyResponse>> getReply(@PathVariable("reply-id") Long replyId) {
 
         ReplyResponse replyResponse = replyService.findReply(replyId);
@@ -46,14 +46,12 @@ public class ReplyController {
 
     @PatchMapping("/{reply-id}")
     public ResponseEntity<Void> updateReply(@PathVariable("reply-id") Long replyId,
-                                           @RequestBody @Valid ReplyUpdateApiRequest request) {
+                                            @RequestBody @Valid ReplyUpdateApiRequest request) {
 
-        Long memberId = SecurityUtil.getCurrentId();
 
-        replyService.updateReply(replyId, request.getContent(),memberId);
+        replyService.updateReply(replyId, request.getContent());
         return ResponseEntity.noContent().build();
     }
-
 
 
     @DeleteMapping("/{reply-id}")
@@ -61,27 +59,25 @@ public class ReplyController {
 
         Long memberId = SecurityUtil.getCurrentId();
 
-        replyService.deleteReply(replyId,memberId);
+        replyService.deleteReply(replyId);
 
         return ResponseEntity.noContent().build();
     }
 
 
-
-    private ReplyResponse getReplyResponse(Long replyId) {
+//    private ReplyResponse getReplyResponse(Long replyId) {
 //        Reply reply = replyService.findReply(replyId);
-
+//
 //        ReplyResponse replyResponse = ReplyResponse.builder() // 초기화 과정
 //                .replyId(reply.getReplyId())
 //                .content(reply.getContent())
-//                .nickname(reply.getMember().getNickname())
+//                .member(reply.getMember().getMyInfo())
 //                .build();
 //
 //        return replyResponse;
 
-        return null;
-
-    }
-
 
 }
+
+
+

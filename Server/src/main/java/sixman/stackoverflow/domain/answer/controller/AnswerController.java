@@ -50,7 +50,7 @@ public class AnswerController {
 //        return ResponseEntity.created(uri).build();
 //    }
 
-    @GetMapping("/{answer-id}")
+    @GetMapping("/{answer-id}") // 답변 단건 조회
     public ResponseEntity<ApiSingleResponse<AnswerResponse>> getAnswer(@PathVariable("answer-id") Long answerId) {
 
         AnswerResponse answerResponse = answerService.findAnswer(answerId);
@@ -58,7 +58,7 @@ public class AnswerController {
         return ResponseEntity.ok(ApiSingleResponse.ok(answerResponse));
     }
 
-    @GetMapping("/{answer-id}/replies")
+    @GetMapping("/{answer-id}/replies") //답변에 대한 페이징 조회
     public ResponseEntity<ApiPageResponse<ReplyResponse>> getRepliesByAnswerId(@PathVariable("answer-id") Long answerId,
                                                                     @RequestParam(defaultValue = "1") int page,
                                                                     @RequestParam(defaultValue = "5") int size) {
@@ -70,42 +70,42 @@ public class AnswerController {
     }
 
 
-    @PatchMapping("/{answer-id}")
+    @PatchMapping("/{answer-id}") // 답변 수정
     public ResponseEntity<Void> updateAnswer(@PathVariable("answer-id") Long answerId,
                                            @RequestBody @Valid AnswerUpdateApiRequest request) {
 
-        Long memberId = SecurityUtil.getCurrentId();
 
-        answerService.updateAnswer(answerId, request.getContent(), memberId);
+
+        answerService.updateAnswer(answerId, request.getContent());
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{answer-id}/upvote")
+    @PatchMapping("/{answer-id}/upvote") //답변 추천
     public ResponseEntity<Void> upvoteAnswer(@PathVariable("answer-id") Long answerId) {
-        Long memberId = SecurityUtil.getCurrentId();
-        answerRecommendService.recommendAnswer(answerId, memberId, TypeEnum.UPVOTE);
+
+        answerRecommendService.recommendAnswer(answerId, TypeEnum.UPVOTE);
 
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{answer-id}/downvote")
+    @PatchMapping("/{answer-id}/downvote")// 답변 비추천
     public ResponseEntity<Void> downvoteAnswer(@PathVariable("answer-id") Long answerId) {
-        Long memberId = SecurityUtil.getCurrentId();
-        answerRecommendService.recommendAnswer(answerId, memberId, TypeEnum.DOWNVOTE);
+
+        answerRecommendService.recommendAnswer(answerId, TypeEnum.DOWNVOTE);
 
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{answer-id}")
+    @DeleteMapping("/{answer-id}")// 답변 삭제
     public ResponseEntity<Void> deleteAnswer(@PathVariable("answer-id") Long answerId) {
 
-        Long memberId = SecurityUtil.getCurrentId();
-        answerService.deleteAnswer(answerId, memberId);
+
+        answerService.deleteAnswer(answerId);
 
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("{answer-id}/replies") //answer에 대한 질문 생성
+    @PostMapping("{answer-id}/replies") //answer에 대한 리플 생성
     public ResponseEntity<Void> createReply(@PathVariable("answer-id")Long answerId,
                                             @RequestBody @Valid ReplyCreateApiRequest request) {
 
