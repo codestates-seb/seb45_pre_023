@@ -68,6 +68,9 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/questions/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/answers/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/replies/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/").permitAll()
+                .antMatchers(HttpMethod.GET, "/snippets/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/common/**").permitAll()
                 .anyRequest().authenticated();
     }
 
