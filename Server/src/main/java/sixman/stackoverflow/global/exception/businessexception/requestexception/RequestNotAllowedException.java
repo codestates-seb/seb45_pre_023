@@ -10,4 +10,8 @@ public class RequestNotAllowedException extends RequestException {
     public RequestNotAllowedException() {
         super(CODE, HttpStatus.METHOD_NOT_ALLOWED, MESSAGE);
     }
+
+    public RequestNotAllowedException(String allowedMethod) {
+        super(CODE, HttpStatus.METHOD_NOT_ALLOWED, MESSAGE + " 허용된 메소드 : " + allowedMethod);
+    }
 }

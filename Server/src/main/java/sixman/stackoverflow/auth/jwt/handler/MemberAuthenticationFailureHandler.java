@@ -2,6 +2,7 @@ package sixman.stackoverflow.auth.jwt.handler;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -11,6 +12,7 @@ import sixman.stackoverflow.auth.utils.AuthUtil;
 import sixman.stackoverflow.global.exception.businessexception.commonexception.UnknownException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.requestexception.RequestNotAllowedException;
 
 
 import javax.servlet.ServletException;
@@ -30,6 +32,10 @@ public class MemberAuthenticationFailureHandler implements AuthenticationFailure
         }
         if(exception instanceof InternalAuthenticationServiceException){
             AuthUtil.sendErrorResponse(response, new MemberBadCredentialsException());
+            return;
+        }
+        if(exception instanceof AuthenticationServiceException){
+            AuthUtil.sendErrorResponse(response, new RequestNotAllowedException("POST"));
             return;
         }
         log.error("# Authentication failed with unknown reason : {}", exception.getMessage());
