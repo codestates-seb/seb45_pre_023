@@ -106,9 +106,5 @@ include::{snippets}/member/deletemember/http-request.adoc[]
 include::{snippets}/member/deletemember/request-headers.adoc[]
 ==== Request Path Parameter
 include::{snippets}/member/deletemember/path-parameters.adoc[]
-==== Request Body
-include::{snippets}/member/deletemember/request-body.adoc[]
-==== Request Fields
-include::{snippets}/member/deletemember/request-fields.adoc[]
 === HTTP Response
 include::{snippets}/member/deletemember/http-response.adoc[]
