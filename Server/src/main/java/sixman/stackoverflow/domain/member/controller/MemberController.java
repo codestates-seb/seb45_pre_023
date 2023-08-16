@@ -121,12 +121,11 @@ public class MemberController {
     }
 
     @DeleteMapping("/{member-id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable("member-id") Long deleteMemberId,
-                                             @RequestBody @Valid MemberDeleteApiRequest request) {
+    public ResponseEntity<Void> deleteMember(@PathVariable("member-id") Long deleteMemberId) {
 
         Long loginMemberId = SecurityUtil.getCurrentId();
 
-        memberService.deleteMember(loginMemberId, request.toServiceRequest(deleteMemberId));
+        memberService.deleteMember(loginMemberId,deleteMemberId);
 
         return ResponseEntity.noContent().build();
     }

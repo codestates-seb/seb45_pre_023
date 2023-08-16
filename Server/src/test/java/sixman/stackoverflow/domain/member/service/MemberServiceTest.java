@@ -292,13 +292,8 @@ class MemberServiceTest extends ServiceTest {
 
         memberRepository.save(member);
 
-        MemberDeleteServiceRequest request = MemberDeleteServiceRequest.builder()
-                .deleteMemberId(member.getMemberId())
-                .password(password)
-                .build();
-
         //when
-        memberService.deleteMember(member.getMemberId(), request);
+        memberService.deleteMember(member.getMemberId(), member.getMemberId());
 
         //then
         Member deletedMember = memberRepository.findById(member.getMemberId()).orElseThrow();
@@ -317,13 +312,8 @@ class MemberServiceTest extends ServiceTest {
         memberRepository.save(member);
         memberRepository.save(otherMember);
 
-        MemberDeleteServiceRequest request = MemberDeleteServiceRequest.builder()
-                .deleteMemberId(otherMember.getMemberId()) // 다른 멤버를 삭제
-                .password(password)
-                .build();
-
         //when
-        assertThatThrownBy(() -> memberService.deleteMember(member.getMemberId(), request))
+        assertThatThrownBy(() -> memberService.deleteMember(member.getMemberId(), otherMember.getMemberId())) // 다른 멤버를 삭제
                 .isInstanceOf(MemberAccessDeniedException.class)
                 .hasMessageContaining("접근 권한이 없습니다.");
     }

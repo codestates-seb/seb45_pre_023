@@ -483,23 +483,19 @@ class MemberControllerTest extends ControllerTest {
     void deleteMember() throws Exception {
         //given
         Long memberId = 1L;
-        MemberDeleteApiRequest request = MemberDeleteApiRequest.builder()
-                .password("1234abcd!!")
-                .build();
 
         //인증값
         setDefaultAuthentication(memberId);
 
         willDoNothing()
                 .given(memberService)
-                .deleteMember(anyLong(), any(MemberDeleteServiceRequest.class));
+                .deleteMember(anyLong(), anyLong());
 
         //when
         ResultActions actions = mockMvc.perform(
                 delete("/members/{member-id}", memberId)
                         .header("Authorization", "Bearer abc.12a.333")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
+                        .contentType(APPLICATION_JSON));
 
         //then
         actions
@@ -515,9 +511,6 @@ class MemberControllerTest extends ControllerTest {
                 ),
                 requestHeaders(
                         headerWithName("Authorization").description("accessToken")
-                ),
-                requestFields(
-                        fieldWithPath("password").description("회원의 비밀번호").attributes(getConstraint("password"))
                 )
         ));
     }
@@ -1097,36 +1090,6 @@ class MemberControllerTest extends ControllerTest {
                             .andExpect(jsonPath("$.data[0].reason").value("비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."));
                 })
         );
-    }
-
-    @Test
-    @DisplayName("회원 탈퇴 시 요청 값 validation 검증 - password 가 null 이면 검증에 실패한다.")
-    void deleteMemberValidation() throws Exception {
-        //given
-        Long memberId = 1L;
-        MemberDeleteApiRequest request = MemberDeleteApiRequest.builder()
-                .build();
-
-        //인증값
-        setDefaultAuthentication(memberId);
-
-        willDoNothing()
-                .given(memberService)
-                .deleteMember(anyLong(), any(MemberDeleteServiceRequest.class));
-
-        //when
-        ResultActions actions = mockMvc.perform(
-                delete("/members/{member-id}", memberId)
-                        .header("Authorization", "Bearer abc.12a.333")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
-
-        //then
-        actions.andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.data[0].field").value("password"))
-                .andExpect(jsonPath("$.data[0].value").value("null"))
-                .andExpect(jsonPath("$.data[0].reason").value("비밀번호를 정확히 입력해주세요."));
     }
 
     @TestFactory

@@ -152,13 +152,11 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMember(Long memberId, MemberDeleteServiceRequest request){
+    public void deleteMember(Long memberId, Long deleteMemberId){
 
-        checkAccessAuthority(memberId, request.getDeleteMemberId());
+        checkAccessAuthority(memberId, deleteMemberId);
 
-        Member member = verifiedMember(request.getDeleteMemberId());
-
-        checkPassword(request.getPassword(), member.getPassword());
+        Member member = verifiedMember(deleteMemberId);
 
         member.disable();
     }
