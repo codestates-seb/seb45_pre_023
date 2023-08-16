@@ -1,4 +1,3 @@
-import FilteringButton from '../../components/Main/FilteringButton';
 import QuestionList from '../../components/Main/QuestionLists';
 import LeftSidebar from '../../components/SideBar/LeftSidebar';
 import RightSidebar from '../../components/SideBar/RightSidebar';
@@ -8,11 +7,8 @@ export default function Main() {
     <>
       <div className="flex">
         <LeftSidebar />
+        <QuestionList />
         <RightSidebar />
-        <div>
-          <FilteringButton />
-          <QuestionList />
-        </div>
       </div>
     </>
   );
