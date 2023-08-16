@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import { RouteConst } from "../../Interface/RouteConst";
+
 export default function LeftSidebar() {
   return (
     <div className="left-sidebar w-40 ml-28">
@@ -5,7 +8,7 @@ export default function LeftSidebar() {
         <div className="py-2 font-bold">Home</div>
         <div className=" text-xs p-1 pt-4 decoration-gray-500">PUBLIC</div>
         <ul className="py-1 text-xs pl-4 decoration-gray-500">
-          <li className="py-1">Questions</li>
+          <Link to={RouteConst.Question} className="py-1">Questions</Link>
           <li className="py-1">Tags</li>
           <li className="py-1">Users</li>
           <li className="py-1">Companies</li>
