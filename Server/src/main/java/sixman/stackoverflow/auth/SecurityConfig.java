@@ -3,11 +3,13 @@ package sixman.stackoverflow.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import sixman.stackoverflow.auth.jwt.filter.JwtAuthenticationFilter;
 import sixman.stackoverflow.auth.jwt.filter.JwtRefreshFilter;
 import sixman.stackoverflow.auth.jwt.filter.JwtVerificationFilter;
-import sixman.stackoverflow.auth.jwt.handler.MemberAuthenticationFailureHandler;
-import sixman.stackoverflow.auth.jwt.handler.MemberAuthenticationSuccessHandler;
-import sixman.stackoverflow.auth.jwt.handler.MemberRefreshFailureHandler;
+import sixman.stackoverflow.auth.jwt.handler.*;
 import sixman.stackoverflow.auth.jwt.service.TokenProvider;
 
 import java.util.List;
@@ -51,12 +51,26 @@ public class SecurityConfig {
 
         http.oauth2Login();
 
-        http.authorizeRequests()
-                .anyRequest().permitAll();
+        http.exceptionHandling()
+                .accessDeniedHandler(new MemberAccessDeniedHandler())
+                .authenticationEntryPoint(new MemberAuthenticationEntryPoint());
 
+        http.authorizeRequests(getAuthorizeRequestsCustomizer());
 
         return http.build();
     }
+
+    private Customizer<ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry> getAuthorizeRequestsCustomizer() {
+        return (requests) -> requests
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/members/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/members/email/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/questions/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/answers/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/replies/**").permitAll()
+                .anyRequest().authenticated();
+    }
+
 
     @Bean
     public Customizer<CorsConfigurer<HttpSecurity>> getCorsConfigurerCustomizer() {
