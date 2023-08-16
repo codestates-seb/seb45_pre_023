@@ -11,6 +11,7 @@ import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.reply.controller.dto.ReplyCreateApiRequest;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.reply.repository.ReplyRepository;
@@ -55,47 +56,61 @@ public class ReplyService {
 
         return reply.getReplyId();
     }
-    public List<ReplyResponse> getReplies(Long answerId) {
-
-        Long memberId = SecurityUtil.getCurrentId();
-
-        Answer answer= answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
-
-        List<Reply> replies = replyRepository.findRepliesByAnswer(answer);
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException());
-
-        // 리스트로 된 replies를 맵에 넣어서
-        // 하나 하나 꺼내서 멤버 아이디닉네임값과 가져와서 그걸 ReplyResponse저장한 후 반환
-
-        return replies.stream()
-
-                .map(reply -> createReplyResponse(reply, member))
-                .collect(Collectors.toList());
-    }
+//    public List<ReplyResponse> getReplies(Long answerId) {
+//
+//        Long memberId = SecurityUtil.getCurrentId();
+//
+//        Answer answer= answerRepository.findById(answerId)
+//                .orElseThrow(() -> new AnswerNotFoundException());
+//
+//        List<Reply> replies = replyRepository.findRepliesByAnswer(answer);
+//
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new MemberNotFoundException());
+//
+//        // 리스트로 된 replies를 맵에 넣어서
+//        // 하나 하나 꺼내서 멤버 아이디닉네임값과 가져와서 그걸 ReplyResponse저장한 후 반환
+//
+//        return replies.stream()
+//
+//                .map(reply -> createReplyResponse(reply, member))
+//                .collect(Collectors.toList());
+//    }
 
     public Page<ReplyResponse> getRepliesPaged(Long answerId, Pageable pageable) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerNotFoundException());
 
-        //Pageable pageable = PageRequest.of(page,size, Sort.by("createdDate").descending()); // 구현중
+
         Page<Reply> repliesPage = replyRepository.findByAnswer(answer, pageable);
-        return null;
+
+        Page<ReplyResponse> replyResponsesPage = repliesPage.map(reply -> ReplyResponse.builder()
+                .replyId(reply.getReplyId())
+                .content(reply.getContent())
+                .member(MemberInfo.of(reply.getMember()))
+                .createdDate(reply.getCreatedDate())
+                .updatedDate(reply.getModifiedDate())
+                .build()
+        );
+
+        return replyResponsesPage;
     }
+
+
 
 
 
     @Transactional(readOnly = true)
     public ReplyResponse findReply(long replyId) {
-//        return replyRepository.findById(replyId)
-//                .orElseThrow(() -> new ReplyNotFoundException());
-
-        return null;
+        Reply reply = replyRepository.findById(replyId)
+                .orElseThrow(() -> new ReplyNotFoundException());
+        return ReplyResponse.createReplyResponse(reply);
     }
 
-    public Reply updateReply(Long replyId, String newContent, Long memberId) {
+    public Reply updateReply(Long replyId, String newContent) {
+
+        Long memberId = SecurityUtil.getCurrentId();
+
         Reply replyUpdate = replyRepository.findById(replyId)
                 .orElseThrow(() -> new ReplyNotFoundException());
 
@@ -108,7 +123,8 @@ public class ReplyService {
     }
 
 
-    public void deleteReply(long replyId, Long memberId) {
+    public void deleteReply(long replyId) {
+        Long memberId = SecurityUtil.getCurrentId();
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(() -> new ReplyNotFoundException());
         checkAccessAuthority(reply.getMember().getMemberId(), memberId);

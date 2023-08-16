@@ -57,10 +57,10 @@ public class AnswerService {
     }
     @Transactional(readOnly = true)
     public AnswerResponse findAnswer(long answerId) {
-//        return answerRepository.findById(replyId)
-//                .orElseThrow(() -> new AnswerNotFoundException());
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerNotFoundException());
 
-        return null;
+        return AnswerResponse.createAnswerResponse(answer);
     }
 
     //todo : 구현 필요 (answer 를 5개씩 페이징해서 조회)
@@ -68,8 +68,8 @@ public class AnswerService {
         return null;
     }
 
-    public Answer updateAnswer(Long answerId, String newContent, Long memberId) {
-
+    public Answer updateAnswer(Long answerId, String newContent) {
+        Long memberId = SecurityUtil.getCurrentId();
         Answer answerUpdate = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerNotFoundException());
 
@@ -80,8 +80,8 @@ public class AnswerService {
         return answerRepository.save(answerUpdate);
     }
 
-    public void deleteAnswer(long answerId, Long memberId) {
-
+    public void deleteAnswer(long answerId) {
+        Long memberId = SecurityUtil.getCurrentId();
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerNotFoundException());
 

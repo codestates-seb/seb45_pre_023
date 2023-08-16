@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface AnswerRecommendRepository extends JpaRepository<AnswerRecommend,Long> {
 
-    Optional<AnswerRecommend> findByAnswerAndMember(Answer answer, Member member);
+    AnswerRecommend findByAnswerAndMember(Answer answer, Member member);
 }
