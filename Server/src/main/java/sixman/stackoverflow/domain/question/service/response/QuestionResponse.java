@@ -19,6 +19,7 @@ public class QuestionResponse {
 
     private Long questionId;
     private String title;
+    private String detail;
     private Integer answerCount;
     private MemberInfo member;
     private Integer views;
@@ -32,6 +33,7 @@ public class QuestionResponse {
         return QuestionResponse.builder()
                 .questionId(question.getQuestionId())
                 .title(question.getTitle())
+                .detail(question.getDetail())
                 .answerCount(question.getAnswers().size())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
