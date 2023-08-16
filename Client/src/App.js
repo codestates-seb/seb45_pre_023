@@ -11,7 +11,6 @@ import Header from './components/Header/Header';
 // import MemberDelete from './pages/Member/Settings/Delete';
 // import MemberMain from './pages/Member/memberMain';
 
-import Header from './components/Header/Header';
 
 function App() {
   return (
