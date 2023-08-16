@@ -25,7 +25,8 @@ public class QuestionDetailResponse {
     private String expect;
     private MemberInfo member;
     private Integer views;
-    private Integer recommend;
+    private Integer upvoteCount;
+    private Integer downvoteCount;
     private TypeEnum recommendType;
     private List<QuestionTagResponse> tags;
     private QuestionAnswer answer;
@@ -40,7 +41,7 @@ public class QuestionDetailResponse {
             private PageInfo pageInfo;
     }
 
-    public static QuestionDetailResponse of(Question question, QuestionAnswer answer, TypeEnum typeEnum) {
+    public static QuestionDetailResponse of(Question question, QuestionAnswer answer) {
 
         return QuestionDetailResponse.builder()
                 .questionId(question.getQuestionId())
@@ -49,8 +50,8 @@ public class QuestionDetailResponse {
                 .expect(question.getExpect())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
-                .recommend(question.getRecommendCount())
-                .recommendType(typeEnum)
+                .upvoteCount(question.getUpvoteCount())
+                .downvoteCount(question.getDownvoteCount())
                 .tags(QuestionTagResponse.of(question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList())))
                 .answer(answer)
                 .createdDate(question.getCreatedDate())
