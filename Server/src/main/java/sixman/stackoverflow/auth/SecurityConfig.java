@@ -57,7 +57,7 @@ public class SecurityConfig {
 
 //        http.authorizeRequests(getAuthorizeRequestsCustomizer());
         http.authorizeRequests()
-                .antMatchers().permitAll();
+                .anyRequest().permitAll();
 
         return http.build();
     }
