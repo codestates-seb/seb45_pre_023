@@ -1,8 +1,8 @@
 export default function RightSidebar() {
   return (
-    <div className="flex flex-col fixed top-20 right-10">
-      <div className="mt-4">이 사이트를 사용중인 사용자!</div>
-      <ul className="pl-8">
+    <div className="w-[300px] flex flex-col ml-8 items-center">
+      <h1 className="mt-4 text-xl">😀 사이트 사용자</h1>
+      <ul className="mt-4">
         <li>Jongbum</li>
         <li>Hoiyeob</li>
         <li>Inwoo</li>

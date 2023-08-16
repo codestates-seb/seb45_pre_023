@@ -1,7 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { faStackOverflow } from '@fortawesome/free-brands-svg-icons';
-import { faCircleQuestion, faMedal, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleQuestion,
+  faMedal,
+  faWindowRestore,
+} from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { RouteConst } from '../../Interface/RouteConst';
 import Search from './Search/Search';
@@ -27,7 +31,7 @@ export default function HeaderAfter() {
   return (
     <header className="sticky top-0 flex flex-row justify-center items-center h-12 z-10 bg-white border-t-4 border-orange-400 border-b-1 border-b-gray-300">
       <Link
-        to={RouteConst.Login}
+        to={RouteConst.Main}
         className="flex flex-row justify-center items-center w-42 h-11 hover:bg-gray-200 hover:h-11 text-lg"
       >
         <FontAwesomeIcon
@@ -44,33 +48,35 @@ export default function HeaderAfter() {
           handleDropdown(0);
         }}
         onBlur={() => {
-          setClick(false)
+          setClick(false);
         }}
       >
         Products
         {isClick === 0 ? <DropdownProducts /> : null}
       </button>
       <Search />
-      <button className="flex flex-row justify-center items-center h-11 px-2 hover:bg-gray-200 hover:h-11">
-        <img
-          className="w-6 h-6 rounded-md border border-solid border-balck"
-          src="" // 나의 프로필 url 주소 작성하기
-          alt="profile"
-        />
-        <span className="mx-1 font-semibold text-xs">4</span>
-        <ul className="flex flex-row">
-          <li className="mx-1 text-yellow-400 text-xs">● 1</li>
-          <li className="mx-1 text-gray-300 text-xs">● 1</li>
-          <li className="mx-1 text-yellow-600 text-xs">● 1</li>
-        </ul>
-      </button>
+      <Link to={RouteConst.memberMain}>
+        <button className="flex flex-row justify-center items-center h-11 px-2 hover:bg-gray-200 hover:h-11">
+          <img
+            className="w-6 h-6 rounded-md border border-solid border-balck"
+            src="" // 나의 프로필 url 주소 작성하기
+            alt="profile"
+          />
+          <span className="mx-1 font-semibold text-xs">4</span>
+          <ul className="flex flex-row">
+            <li className="mx-1 text-yellow-400 text-xs">● 1</li>
+            <li className="mx-1 text-gray-300 text-xs">● 1</li>
+            <li className="mx-1 text-yellow-600 text-xs">● 1</li>
+          </ul>
+        </button>
+      </Link>
       <button
         className="relative w-10 h-11 hover:bg-gray-200 hover:h-11"
         onClick={() => {
           handleDropdown(1);
         }}
         onBlur={() => {
-          setClick(false)
+          setClick(false);
         }}
       >
         <FontAwesomeIcon icon={faWindowRestore} className="w-4 h-4" />
@@ -82,7 +88,7 @@ export default function HeaderAfter() {
           handleDropdown(2);
         }}
         onBlur={() => {
-          setClick(false)
+          setClick(false);
         }}
       >
         <FontAwesomeIcon icon={faMedal} className="w-4 h-4" />
@@ -94,7 +100,7 @@ export default function HeaderAfter() {
           handleDropdown(3);
         }}
         onBlur={() => {
-          setClick(false)
+          setClick(false);
         }}
       >
         <FontAwesomeIcon icon={faCircleQuestion} className="w-4 h-4" />
@@ -106,7 +112,7 @@ export default function HeaderAfter() {
           handleDropdown(4);
         }}
         onBlur={() => {
-          setClick(false)
+          setClick(false);
         }}
       >
         <FontAwesomeIcon icon={faBars} className="w-4 h-4" />
