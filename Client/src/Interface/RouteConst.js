@@ -6,5 +6,6 @@ export const RouteConst ={
     memberMain:'/members/:id',
     memberProfile:'/members/profile/:id',
     memberEdit:'/members/edit/:id',
-    memberDelete:'/members/delete/:id'
+    memberDelete:'/members/delete/:id',
+    notYet:'/nosignal'
 }
