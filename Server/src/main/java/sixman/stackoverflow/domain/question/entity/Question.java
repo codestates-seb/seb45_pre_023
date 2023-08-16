@@ -26,7 +26,10 @@ public class Question extends BaseEntity {
     private String title;
 
     @Column(nullable = false)
-    private String content;
+    private String detail;
+
+    @Column(nullable = false)
+    private String expect;
 
     private Integer views;
 
@@ -49,8 +52,12 @@ public class Question extends BaseEntity {
         this.title = title;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public void setExpect(String expect) {
+        this.expect = expect;
     }
 
     public void setQuestionTags(List<QuestionTag> questionTags) {

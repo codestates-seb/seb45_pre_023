@@ -15,12 +15,16 @@ public class QuestionUpdateApiRequest {
     private String title;
 
     @NotBlank(message = "{validation.question.content}")
-    private String content;
+    private String detail;
+
+    @NotBlank(message = "{validation.question.content}")
+    private String expect;
 
     // 업데이트 메서드
     public Question updateEntity(Question question) {
         question.setTitle(this.title);
-        question.setContent(this.content);
+        question.setDetail(this.detail);
+        question.setExpect(this.expect);
         return question;
     }
 }
