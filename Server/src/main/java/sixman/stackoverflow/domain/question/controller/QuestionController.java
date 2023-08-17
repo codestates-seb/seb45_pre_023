@@ -53,11 +53,12 @@ public class QuestionController {
     @GetMapping
     public ResponseEntity<ApiPageResponse<QuestionResponse>> getQuestions(
             @RequestParam(defaultValue = "1") @Positive int page,
-            @RequestParam(defaultValue = "10") @Positive int size) {
+            @RequestParam(defaultValue = "10") @Positive int size,
+            @RequestParam(defaultValue = "createdDate") String sort) { //createdDate, recommend, views
 
         int adjustedPage = page - 1;
 
-        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by(sort).descending());
         Page<QuestionResponse> questions = questionService.getLatestQuestions(pageable);
 
 
@@ -162,11 +163,14 @@ public class QuestionController {
 
     // 답변 페이징 기능
     @GetMapping("/{question-id}/answers")
-    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(@PathVariable("question-id")Long questionId,
-                                           @RequestParam(defaultValue = "1") int page
-                                           ) {
+    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(
+                            @PathVariable("question-id")Long questionId,
+                            @RequestParam(defaultValue = "1") int page,
+                            @RequestParam(defaultValue = "createdDate") String sort) { //createdDate, recommend
 
-        Page<AnswerResponse> answers = answerService.findAnswers(questionId, PageRequest.of(page - 1, 5));
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by(sort).descending());
+
+        Page<AnswerResponse> answers = answerService.findAnswers(questionId, pageable);
 
         return ResponseEntity.ok(ApiPageResponse.ok(answers));
     }
