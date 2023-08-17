@@ -73,21 +73,6 @@ public class QuestionController {
             return ResponseEntity.ok(ApiSingleResponse.ok(questionDetailResponse, "질문 조회 성공"));
     }
 
-    //필요없음
-//    // 질문글 답변 페이징 조회
-////    @GetMapping("/{questionId}/answers")
-////    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswersForQuestion(
-////            @PathVariable @Positive Long questionId,
-////            @RequestParam(defaultValue = "1") int page,
-////            @RequestParam(defaultValue = "5") int size) {
-////
-////        Question question = questionService.getQuestionById(questionId);
-////        Pageable pageable = PageRequest.of(page - 1, size);
-////        Page<AnswerResponse> answerResponses = questionService.getAnswerResponsesForQuestion(question, pageable);
-////
-////        return ResponseEntity.ok(ApiPageResponse.ok(answerResponses, "답변 조회 성공"));
-//    }
-
 
     // 질문글 생성 기능
     @PostMapping
@@ -175,6 +160,7 @@ public class QuestionController {
         return ResponseEntity.created(uri).build();
     }
 
+    // 답변 페이징 기능
     @GetMapping("/{question-id}/answers")
     public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(@PathVariable("question-id")Long questionId,
                                            @RequestParam(defaultValue = "1") int page
