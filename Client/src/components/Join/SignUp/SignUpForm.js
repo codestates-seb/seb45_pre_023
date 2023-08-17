@@ -1,48 +1,64 @@
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { Link } from 'react-router-dom';
 import { RouteConst } from '../../../Interface/RouteConst';
+import { useDispatch, useSelector } from 'react-redux';
+import { google, github, kakao } from '../../../redux/createSlice/OAuthSlice';
+import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
+import CodeBox from './CodeBox';
+import { useNavigate } from 'react-router-dom';
 import {
   handleGoogleLogin,
   handleGithubLogin,
   handleKakaoLogin,
 } from '../../../OAuth/OAuth';
-import { useState } from 'react';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { google, github, kakao } from '../../../redux/createSlice/oauthSlice';
+import {
+  email,
+  password,
+  nickname,
+  checkedsend,
+  checkedrobot,
+} from '../../../redux/createSlice/SignUpInfoSlice';
 
 export default function SignUpForm() {
-  const [isErrorMessage, setErrorMessage] = useState('');
-  const [SignUpInfo, setSignUpInfo] = useState({
-    email: '',
-    nickname: '',
-    password: '',
-  });
+  const SignUpInfo = useSelector((state) => state.signupinfo.value);
+  const ErrorMessage = useSelector((state) => state.errmsg.value);
+  const CheckedOption = useSelector((state) => state.signupinfo.checkedoption);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSignUp = () => {
     if (!SignUpInfo.nickname || !SignUpInfo.email || !SignUpInfo.password) {
-      return setErrorMessage('Please enter all information.');
+      return dispatch(errmsg('Please enter all information.'));
+    } else if (!CheckedOption.robot) {
+      return dispatch(errmsg(`Please check the box.`));
     }
-    axios
+    return axios
       .post(
         'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/signup',
         SignUpInfo
       )
       .then((res) => {
-        console.log(res.data);
+        navigate(RouteConst.Login);
       })
       .catch((err) => {
         console.log(err.response.data);
-        setErrorMessage('SignUp is failed');
+        dispatch(errmsg('SignUp is failed'));
       });
   };
 
-  const handleSignUpInfo = (key) => (e) => {
-    setSignUpInfo({ ...SignUpInfo, [key]: e.target.value });
+  const handleSendEmail = () => {
+    return axios
+      .post(
+        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/members/email',
+        { email: SignUpInfo.email }
+      )
+      .then((res) =>
+        dispatch(errmsg('A verification code has been sent to your email.'))
+      )
+      .catch((err) => dispatch(errmsg('SignUp is failed')));
   };
-
-  const dispatch = useDispatch();
 
   return (
     <div className="flex flex-col items-center">
@@ -50,7 +66,7 @@ export default function SignUpForm() {
         <li
           className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(google);
+            dispatch(github);
             handleGoogleLogin();
           }}
         >
@@ -64,7 +80,7 @@ export default function SignUpForm() {
         <li
           className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(google);
+            dispatch(kakao);
             handleGithubLogin();
           }}
         >
@@ -87,15 +103,15 @@ export default function SignUpForm() {
         </li>
       </ul>
 
-      <div className="flex flex-col justify-center items-center w-80 h-180 mt-3 bg-white border border-solid border-gray rounded-md shadow-xss">
-        <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col justify-center items-center w-80 mt-3 bg-white border border-solid border-gray rounded-md shadow-xss">
+        <div className="flex flex-col justify-center items-center mt-4">
           <span className="mt-2 w-68 text-left text-md font-semibold">
             Display name
           </span>
           <input
-            className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
+            className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="text"
-            onChange={handleSignUpInfo('nickname')}
+            onChange={(e) => dispatch(nickname(e.target.value))}
           ></input>
         </div>
 
@@ -103,21 +119,35 @@ export default function SignUpForm() {
           <span className="mt-2 w-68 text-left text-md font-semibold">
             Email
           </span>
-          <input
-            className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
-            type="text"
-            onChange={handleSignUpInfo('email')}
-          ></input>
+          <div className="flex flex-row justify-between items-center w-68 h-9">
+            <input
+              className="my-1 w-52 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
+              type="text"
+              placeholder="ex) test@google.com"
+              onChange={(e) => dispatch(email(e.target.value))}
+            ></input>
+            <button
+              className="w-14 h-9 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
+              onClick={() => {
+                dispatch(checkedsend(true));
+                handleSendEmail();
+              }}
+            >
+              Send
+            </button>
+          </div>
         </div>
+
+        {CheckedOption.send && <CodeBox />}
 
         <div className="flex flex-col justify-center items-center">
           <span className="mt-2 w-68 text-left text-md font-semibold">
             Password
           </span>
           <input
-            className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-xs"
+            className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="password"
-            onChange={handleSignUpInfo('password')}
+            onChange={(e) => dispatch(password(e.target.value))}
           ></input>
           <span className="w-68 text-xs text-gray-400">
             Passwords must contain at least eight characters, including at least
@@ -128,7 +158,11 @@ export default function SignUpForm() {
         <div className="flex flex-col justify-center items-center w-68 h-44 my-3 bg-gray-200 rounded-sm">
           <div className="flex flex-col justify-start items-center w-40 h-36 bg-gray-100 rounded-sm shadow-xss">
             <div className="flex flex-row justify-center items-center my-8">
-              <input className="w-7 h-7" type="checkbox"></input>
+              <input
+                className="w-7 h-7"
+                type="checkbox"
+                onClick={(e) => dispatch(checkedrobot(e.target.checked))}
+              ></input>
               <span className="ml-2 text-sm">I'm not a robot</span>
             </div>
 
@@ -151,16 +185,17 @@ export default function SignUpForm() {
           </span>
         </div>
 
-        <div className="mt-2 text-sm text-red-500">{isErrorMessage}</div>
+        <div className="mt-2 text-sm text-red-500">{ErrorMessage}</div>
 
-        <div
+        <button
           className="flex flex-col justify-center items-center w-68 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
           onClick={handleSignUp}
+          disabled={false}
         >
           Sign up
-        </div>
+        </button>
 
-        <div className="w-66 mt-6 text-xs">
+        <div className="w-66 my-6 text-xs">
           By clicking “Sign up”, you agree to our{' '}
           <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
             terms of service

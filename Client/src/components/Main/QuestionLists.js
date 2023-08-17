@@ -7,9 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setQuestions } from '../../redux/createSlice/QuestionSlice';
 import { Link } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
+import { RouteConst } from '../../Interface/RouteConst';
+
 export default function QuestionList() {
   const [isData, setIsData] = useState([]);
+
   const dispatch = useDispatch();
+
 
   useEffect(() => {
     axios
@@ -39,6 +44,7 @@ export default function QuestionList() {
               Asked Question
             </button>
           </Link>
+
         </div>
 
         <div className="w-full flex justify-between my-6 ml-6">

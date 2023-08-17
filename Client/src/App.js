@@ -13,16 +13,16 @@ import MemberDelete from './pages/Member/Settings/Delete';
 import MemberMain from './pages/Member/memberMain';
 import LeftSidebar from './components/SideBar/LeftSidebar';
 import RightSidebar from './components/SideBar/RightSidebar';
-import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
 
+
+import axios from 'axios';
+import { oauthtoken } from './redux/createSlice/OAuthSlice';
 
 function App() {
-  const [isLogin, setIsLogin] = useState(false);
-  const [accessToken, setAccessToken] = useState('');
-
-  const provider = useSelector(state => state.oauth.value)
+  const dispatch = useDispatch();
+  const provider = useSelector((state) => state.oauth.provider);
 
   const getAccessToken = async (authorizationCode) => {
     return axios
@@ -30,9 +30,7 @@ function App() {
         `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/oauth?provider=${provider}&code=${authorizationCode}`
       )
       .then((res) => {
-        console.log(res);
-        // setAccessToken(res.data.accessToken);
-        // setIsLogin(true);
+        dispatch(oauthtoken(res.headers.Authorization));
       })
       .catch((err) => {
         console.log(err.response.data);
@@ -43,28 +41,29 @@ function App() {
     const url = new URL(window.location.href);
     const authorizationCode = url.searchParams.get('code');
     if (authorizationCode) {
+      console.log(authorizationCode);
       getAccessToken(authorizationCode); // getAccessToken 함수 호출로 바꾸기
     }
   }, []);
 
   return (
     <BrowserRouter>
-      <Header isLogin={isLogin} />
-      <div className="flex">
-        <LeftSidebar />
-        <Routes>
-          <Route path={RouteConst.Login} element={<Login />} />
-          <Route path={RouteConst.Main} element={<Main />} />
-          <Route path={RouteConst.SignUp} element={<SignUp />} />
-          <Route path={RouteConst.Question} element={<Question />} />
-          <Route path={RouteConst.Ask} element={<Ask />} />
-          <Route path={RouteConst.memberMain} element={<MemberMain />} />
-          <Route path={RouteConst.memberProfile} element={<MemberProfile />} />
-          <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
-          <Route path={RouteConst.memberDelete} element={<MemberDelete />} />
-        </Routes>
-        <RightSidebar />
-      </div>
+      <Header />
+      {/* <div className="flex ml-40 h-[80rem]"> */}
+      {/* <LeftSidebar /> */}
+      <Routes>
+        <Route path={RouteConst.Login} element={<Login />} />
+        <Route path={RouteConst.SignUp} element={<SignUp />} />
+        <Route path={RouteConst.Main} element={<Main />} />
+        <Route path={RouteConst.Question} element={<Question />} />
+        <Route path={RouteConst.Ask} element={<Ask />} />
+        <Route path={RouteConst.memberMain} element={<MemberMain />} />
+        <Route path={RouteConst.memberProfile} element={<MemberProfile />} />
+        <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
+        <Route path={RouteConst.memberDelete} element={<MemberDelete />} />
+      </Routes>
+      {/* <RightSidebar /> */}
+      {/* </div> */}
       <Footer />
     </BrowserRouter>
   );

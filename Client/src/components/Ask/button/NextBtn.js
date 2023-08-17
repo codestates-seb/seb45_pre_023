@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { next } from '../../../redux/createSlice/tipboxSlice';
+import { next } from '../../../redux/createSlice/TipboxSlice';
 
 export default function NextBtn() {
   const dispatch = useDispatch();
