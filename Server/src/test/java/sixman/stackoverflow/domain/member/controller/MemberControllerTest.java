@@ -146,6 +146,9 @@ class MemberControllerTest extends ControllerTest {
                         fieldWithPath("data.nickname").description("회원 nickname"),
                         fieldWithPath("data.image").description("회원 이미지 url"),
                         fieldWithPath("data.myIntro").description("회원 소개글"),
+                        fieldWithPath("data.title").description("회원 소개 title"),
+                        fieldWithPath("data.location").description("회원 주소"),
+                        fieldWithPath("data.accounts").description("account 정보"),
                         fieldWithPath("data.authority").description(generateLinkCode(Authority.class)),
                         fieldWithPath("data.question").description("회원 질문"),
                         fieldWithPath("data.question.questions[]").description("회원이 작성한 질문 리스트"),
@@ -313,6 +316,9 @@ class MemberControllerTest extends ControllerTest {
         MemberUpdateApiRequest request = MemberUpdateApiRequest.builder()
                 .nickname("update nickname")
                 .myIntro("update myIntro")
+                .title("update title")
+                .location("update location")
+                .accounts(List.of("account1", "account2"))
                 .build();
 
         //인증값
@@ -346,7 +352,10 @@ class MemberControllerTest extends ControllerTest {
                 ),
                 requestFields(
                         fieldWithPath("nickname").description("수정할 회원의 nickname").optional().attributes(getConstraint("nickname")),
-                        fieldWithPath("myIntro").description("수정할 회원의 소개글").optional().attributes(getConstraint("myIntro"))
+                        fieldWithPath("myIntro").description("수정할 회원의 소개글").optional().attributes(getConstraint("myIntro")),
+                        fieldWithPath("title").description("수정할 회원의 소개 제목").optional().attributes(getConstraint("title")),
+                        fieldWithPath("location").description("수정할 회원의 지역").optional().attributes(getConstraint("location")),
+                        fieldWithPath("accounts").description("수정할 회원의 SNS 계정").optional().attributes(getConstraint("accounts"))
                 )
         ));
     }
@@ -1245,6 +1254,9 @@ class MemberControllerTest extends ControllerTest {
                 .nickname("nickname")
                 .image("https://sixman-images-test.s3.ap-northeast-2.amazonaws.com/test.png")
                 .myIntro("hi! im test")
+                .title("title")
+                .location("location")
+                .accounts(List.of("account1", "account2"))
                 .authority(Authority.ROLE_USER)
                 .question(memberQuestionPageResponse())
                 .answer(memberAnswerPageResponse())

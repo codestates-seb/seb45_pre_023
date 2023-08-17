@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
+import sixman.stackoverflow.domain.question.controller.dto.QuestionSortRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionUpdateApiRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
@@ -136,6 +137,7 @@ public class QuestionControllerTest extends ControllerTest {
                 get("/questions")
                         .accept(APPLICATION_JSON)
                         .param("page", String.valueOf(page))
+                        .param("sort", "CREATED_DATE")
         );
 
         //then
@@ -148,7 +150,8 @@ public class QuestionControllerTest extends ControllerTest {
         actions.andDo(
                 documentHandler.document(
                         requestParameters(
-                                parameterWithName("page").description("페이지 번호")
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("sort").description(generateLinkCode(QuestionSortRequest.class))
                         ),
                         responseFields(
                                 fieldWithPath("data").description("질문 목ㄺ"),
