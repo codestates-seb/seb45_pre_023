@@ -25,8 +25,7 @@ public class QuestionDetailResponse {
     private String expect;
     private MemberInfo member;
     private Integer views;
-    private Integer upvoteCount;
-    private Integer downvoteCount;
+    private Integer recommend;
     private TypeEnum recommendType;
     private List<QuestionTagResponse> tags;
     private QuestionAnswer answer;
@@ -50,8 +49,7 @@ public class QuestionDetailResponse {
                 .expect(question.getExpect())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
-                .upvoteCount(question.getUpvoteCount())
-                .downvoteCount(question.getDownvoteCount())
+                .recommend(question.getRecommend())
                 .tags(QuestionTagResponse.of(question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList())))
                 .answer(answer)
                 .createdDate(question.getCreatedDate())
