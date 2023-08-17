@@ -15,11 +15,10 @@ import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
 import { logintoken } from '../../../redux/createSlice/LoginInfoSlice';
 
 export default function LoginForm() {
-  const LoginInfo = useSelector((state) => state.logininfo.value);
-  const ErrorMessage = useSelector((state) => state.errmsg.value);
   const dispatch = useDispatch();
   const nevigate = useNavigate();
-
+  const LoginInfo = useSelector((state) => state.logininfo.value);
+  const ErrorMessage = useSelector((state) => state.errmsg.value);
   const handleLogin = () => {
     if (!LoginInfo.email || !LoginInfo.password) {
       return dispatch(errmsg('Please enter all information.'));
