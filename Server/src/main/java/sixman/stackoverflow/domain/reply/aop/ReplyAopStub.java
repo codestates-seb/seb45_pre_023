@@ -14,7 +14,7 @@ import sixman.stackoverflow.global.response.ApiSingleResponse;
 
 import java.time.LocalDateTime;
 
-@Component
+//@Component
 @Aspect
 public class ReplyAopStub {
 
