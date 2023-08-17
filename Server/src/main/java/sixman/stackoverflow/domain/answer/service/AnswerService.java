@@ -69,7 +69,7 @@ public class AnswerService {
 
 
     public Page<AnswerResponse> findAnswers(Long questionId, Pageable pageable) {
-        Page<Answer> answers = answerRepository.findAllBy(questionId, pageable);
+        Page<Answer> answers = answerRepository.findAllByQuestion(questionId, pageable);
 
         Page<AnswerResponse> answerResponses = answers.map(answer -> {
             Page<Reply> replyPage = replyRepository.findByAnswer(answer, pageable);
