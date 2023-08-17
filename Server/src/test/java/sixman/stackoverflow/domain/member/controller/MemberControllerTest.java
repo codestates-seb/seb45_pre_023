@@ -351,7 +351,7 @@ class MemberControllerTest extends ControllerTest {
                         headerWithName("Authorization").description("accessToken")
                 ),
                 requestFields(
-                        fieldWithPath("nickname").description("수정할 회원의 nickname").optional().attributes(getConstraint("nickname")),
+                        fieldWithPath("nickname").description("수정할 회원의 nickname").attributes(getConstraint("nickname")),
                         fieldWithPath("myIntro").description("수정할 회원의 소개글").optional().attributes(getConstraint("myIntro")),
                         fieldWithPath("title").description("수정할 회원의 소개 제목").optional().attributes(getConstraint("title")),
                         fieldWithPath("location").description("수정할 회원의 지역").optional().attributes(getConstraint("location")),
