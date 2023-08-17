@@ -1,9 +1,12 @@
 import Buttons from '../../components/Members/Buttons';
 import MemberInfo from '../../components/Members/MemberInfo';
+import LeftSidebar from '../../components/SideBar/LeftSidebar';
+import RightSidebar from '../../components/SideBar/RightSidebar';
 
 export default function MemberProfile() {
   return (
-    <>
+    <div className='flex min-h-[70rem]'>
+      <LeftSidebar/>
       <div className="flex flex-col p-6">
         <MemberInfo />
         <Buttons />
@@ -47,6 +50,7 @@ export default function MemberProfile() {
           </div>
         </div>
       </div>
-    </>
+      <RightSidebar/>
+    </div>
   );
 }

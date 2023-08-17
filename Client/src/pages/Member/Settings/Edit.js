@@ -2,10 +2,13 @@ import { Link } from 'react-router-dom';
 import Buttons from '../../../components/Members/Buttons';
 import MemberInfo from '../../../components/Members/MemberInfo';
 import { RouteConst } from '../../../Interface/RouteConst';
+import RightSidebar from '../../../components/SideBar/RightSidebar';
+import LeftSidebar from '../../../components/SideBar/LeftSidebar';
 
 export default function MemberEdit() {
   return (
-    <>
+    <div className="flex min-h-[70rem]">
+      <LeftSidebar />
       <div className="flex flex-col p-6">
         <MemberInfo />
         <Buttons />
@@ -79,12 +82,13 @@ export default function MemberEdit() {
                 Save profile
               </button>
               <button className="w-16 h-8 mx-1 px-2 bg-sky-100 hover:bg-sky-200 rounded-md text-xs text-sky-600 mb-8">
-                Cancel
+                <Link to={RouteConst.memberMain}>Cancel</Link>
               </button>
             </div>
           </div>
         </div>
       </div>
-    </>
+      <RightSidebar />
+    </div>
   );
 }
