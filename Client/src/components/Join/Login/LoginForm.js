@@ -1,27 +1,28 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { RouteConst } from '../../../Interface/RouteConst';
 import {
   handleGoogleLogin,
   handleGithubLogin,
   handleKakaoLogin,
 } from '../../../OAuth/OAuth';
-import { useState } from 'react';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { google, github, kakao } from '../../../redux/createSlice/oauthSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { google, github, kakao } from '../../../redux/createSlice/OAuthSlice';
+import { email, password } from '../../../redux/createSlice/LoginInfoSlice';
+import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
+import { logintoken } from '../../../redux/createSlice/LoginInfoSlice';
 
 export default function LoginForm() {
-  const [isErrorMessage, setErrorMessage] = useState('');
-  const [LoginInfo, setLoginInfo] = useState({
-    email: '',
-    password: '',
-  });
+  const LoginInfo = useSelector((state) => state.logininfo.value);
+  const ErrorMessage = useSelector((state) => state.errmsg.value);
+  const dispatch = useDispatch();
+  const nevigate = useNavigate();
 
   const handleLogin = () => {
     if (!LoginInfo.email || !LoginInfo.password) {
-      return setErrorMessage('Please enter all information.');
+      return dispatch(errmsg('Please enter all information.'));
     }
     return axios
       .post(
@@ -29,21 +30,15 @@ export default function LoginForm() {
         LoginInfo
       )
       .then((res) => {
-        console.log(res.headers.authorization);
-        console.log(res.headers.refresh); // Login 됐다는 useState 설정하기.
-        setErrorMessage('');
+        dispatch(logintoken(res.headers.authorization));
+        console.log(res.headers.authorization)
+        dispatch(errmsg(''));
+        nevigate(RouteConst.Main);
       })
       .catch((err) => {
-        console.log(err);
-        setErrorMessage('Login is failed');
+        dispatch(errmsg('Login is failed'));
       });
   };
-
-  const handleLoginInfo = (key) => (e) => {
-    setLoginInfo({ ...LoginInfo, [key]: e.target.value });
-  };
-
-  const dispatch = useDispatch();
 
   return (
     <div className="flex flex-col items-center">
@@ -101,7 +96,7 @@ export default function LoginForm() {
           <input
             className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="text"
-            onChange={handleLoginInfo('email')}
+            onChange={(e) => dispatch(email(e.target.value))}
           ></input>
         </div>
 
@@ -117,11 +112,11 @@ export default function LoginForm() {
           <input
             className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
             type="password"
-            onChange={handleLoginInfo('password')}
+            onChange={(e) => dispatch(password(e.target.value))}
           ></input>
         </div>
 
-        <div className="mt-2 text-sm text-red-500">{isErrorMessage}</div>
+        <div className="mt-2 text-sm text-red-500">{ErrorMessage}</div>
 
         <button
           className="flex flex-col justify-center items-center w-58 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
