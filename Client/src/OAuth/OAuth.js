@@ -1,4 +1,5 @@
-const redirectUrl = 'http://localhost:3000';
+const redirectUrl =
+  'http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com'; //'http://localhost:3000';
 const Google_CLIENT_ID =
   '690166915653-paa941cs02li19r4b778hldnjbaldp1h.apps.googleusercontent.com';
 const Github_CLIENT_ID = '482acf418bf96174b896';
