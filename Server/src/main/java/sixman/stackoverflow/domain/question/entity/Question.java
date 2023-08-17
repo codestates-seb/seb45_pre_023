@@ -9,6 +9,7 @@ import sixman.stackoverflow.global.entity.BaseEntity;
 import sixman.stackoverflow.global.entity.TypeEnum;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +26,15 @@ public class Question extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    @Lob
     @Column(nullable = false)
     private String detail;
 
+    @Lob
     @Column(nullable = false)
     private String expect;
 
-    private Integer views;
+    private int views;
 
     private int recommend;
 
@@ -63,6 +66,10 @@ public class Question extends BaseEntity {
 
     public void setViews(Integer views) {
         this.views = views;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate){
+        this.createdDate = createdDate;
     }
 
     public void setQuestionTags(List<QuestionTag> questionTags) {

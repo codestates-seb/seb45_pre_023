@@ -17,9 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
+import sixman.stackoverflow.domain.answer.service.AnswerService;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
+import sixman.stackoverflow.domain.question.repository.QuestionRepository;
+import sixman.stackoverflow.domain.question.service.QuestionService;
 import sixman.stackoverflow.module.aws.service.S3Service;
 import sixman.stackoverflow.module.email.service.MailService;
 import sixman.stackoverflow.module.redis.service.RedisService;
@@ -36,6 +39,9 @@ public abstract class ServiceTest {
     @MockBean protected S3Service s3Service;
     @MockBean protected RedisService redisService;
     @MockBean protected JavaMailSender emailSender;
+    @Autowired protected AnswerService answerService;
+    @Autowired protected QuestionService questionService;
+    @Autowired protected QuestionRepository questionRepository;
     @Autowired protected PasswordEncoder passwordEncoder;
     @Autowired protected EntityManager em;
 

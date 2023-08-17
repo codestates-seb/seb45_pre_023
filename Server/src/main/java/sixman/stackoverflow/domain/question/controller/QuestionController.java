@@ -21,8 +21,8 @@ import sixman.stackoverflow.domain.question.service.QuestionService;
 import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
-import sixman.stackoverflow.global.exception.businessexception.questionexception.InvalidPageParameterException;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
@@ -53,11 +53,12 @@ public class QuestionController {
     @GetMapping
     public ResponseEntity<ApiPageResponse<QuestionResponse>> getQuestions(
             @RequestParam(defaultValue = "1") @Positive int page,
-            @RequestParam(defaultValue = "10") @Positive int size) {
+            @RequestParam(defaultValue = "10") @Positive int size,
+            @RequestParam(defaultValue = "createdDate") String sort) {
 
         int adjustedPage = page - 1;
 
-        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by(sort).descending());
         Page<QuestionResponse> questions = questionService.getLatestQuestions(pageable);
 
 
@@ -80,6 +81,10 @@ public class QuestionController {
             @RequestBody @Valid QuestionCreateApiRequest questionCreateApiRequest) {
 
         Long memberId = SecurityUtil.getCurrentId();
+
+        if (memberId == null) {
+            throw new MemberBadCredentialsException();
+        }
 
         Optional<Member> optionalMember = memberRepository.findById(memberId);
 
@@ -162,11 +167,14 @@ public class QuestionController {
 
     // 답변 페이징 기능
     @GetMapping("/{question-id}/answers")
-    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(@PathVariable("question-id")Long questionId,
-                                           @RequestParam(defaultValue = "1") int page
-                                           ) {
+    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(
+                                           @PathVariable("question-id")Long questionId,
+                                           @RequestParam(defaultValue = "1") int page,
+                                           @RequestParam(defaultValue = "createdDate") String sort) {
 
-        Page<AnswerResponse> answers = answerService.findAnswers(questionId, PageRequest.of(page - 1, 5));
+        Pageable pageable = PageRequest.of(page-1,5,Sort.by(sort).descending());
+
+        Page<AnswerResponse> answers = answerService.findAnswers(questionId, pageable);
 
         return ResponseEntity.ok(ApiPageResponse.ok(answers));
     }
