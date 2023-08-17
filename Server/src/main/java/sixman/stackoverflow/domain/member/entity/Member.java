@@ -7,7 +7,6 @@ import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.questionrecommend.entity.QuestionRecommend;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.global.entity.BaseEntity;
-import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -80,9 +79,12 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    public void updateMember(String nickname, String myIntro) {
+    public void updateMember(String nickname) {
         if(nickname != null) this.nickname = nickname;
-        this.myInfo.updateMyIntro(myIntro);
+    }
+
+    public void updateMyInfo(String myIntro, String title, String location, List<String> accounts){
+        this.myInfo.updateMyInfo(myIntro, title, location, accounts);
     }
 
     public void updatePassword(String newPassword) {

@@ -1,11 +1,11 @@
 package sixman.stackoverflow.domain.member.entity;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class MyInfoTest {
 
@@ -23,17 +23,49 @@ class MyInfoTest {
     }
 
     @Test
-    @DisplayName("myIntro 를 받아 MyInfo 객체를 수정한다.")
+    @DisplayName("myIntro, title, location, accounts 를 받아 MyInfo 객체를 수정한다.")
     void updateMyIntro() {
         //given
         MyInfo myInfo = createMyInfoDefault();
+        String myIntro = "myIntro";
+        String title = "title";
+        String location = "location";
+        List<String> accounts = List.of("account1", "account2");
+
 
         //when
-        myInfo.updateMyIntro("new myIntro");
+        myInfo.updateMyInfo(myIntro, title, location, accounts);
 
         //then
-        assertThat(myInfo.getMyIntro()).isEqualTo("new myIntro");
+        assertThat(myInfo.getMyIntro()).isEqualTo(myIntro);
+        assertThat(myInfo.getTitle()).isEqualTo(title);
+        assertThat(myInfo.getLocation()).isEqualTo(location);
+        assertThat(myInfo.getAccounts()).isEqualTo(accounts);
+    }
 
+    @Test
+    @DisplayName("MyInfo 객체를 수정할 때 값이 null 이면 수정하지 않는다.")
+    void updateMyIntroNullcheck() {
+        //given
+        String myIntro = "myIntro";
+        String title = "title";
+        String location = "location";
+        List<String> accounts = List.of("account1", "account2");
+        MyInfo myInfo = createMyInfo(myIntro, title, location, accounts);
+
+        String newMyIntro = null;
+        String newTitle = null;
+        String newLocation = null;
+        List<String> newAccounts = null;
+
+        //when
+        myInfo.updateMyInfo(newMyIntro, newTitle, newLocation, newAccounts);
+
+        //then
+        assertThat(myInfo.getMyIntro()).isEqualTo(myIntro);
+        assertThat(myInfo.getTitle()).isEqualTo(title);
+        assertThat(myInfo.getLocation()).isEqualTo(location);
+        assertThat(myInfo.getAccounts()).isEqualTo(accounts);
     }
 
     @Test
@@ -52,6 +84,15 @@ class MyInfoTest {
 
     private MyInfo createMyInfoDefault() {
         return MyInfo.builder()
+                .build();
+    }
+
+    private MyInfo createMyInfo(String myIntro, String title, String location, List<String> accounts) {
+        return MyInfo.builder()
+                .myIntro(myIntro)
+                .title(title)
+                .location(location)
+                .accounts(accounts)
                 .build();
     }
 }

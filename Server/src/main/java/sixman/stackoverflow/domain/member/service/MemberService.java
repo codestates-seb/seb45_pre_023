@@ -98,7 +98,7 @@ public class MemberService {
 
         Member member = verifiedMember(loginMemberId);
 
-        member.updateMember(request.getNickname(), request.getMyIntro());
+        updateMember(member, request);
     }
 
     @Transactional
@@ -218,6 +218,18 @@ public class MemberService {
     private Member verifiedMember(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
+    }
+
+    private void updateMember(Member member, MemberUpdateServiceRequest request) {
+
+        member.updateMember(request.getNickname());
+
+        member.updateMyInfo(
+                request.getMyIntro(),
+                request.getTitle(),
+                request.getLocation(),
+                request.getAccounts()
+        );
     }
 
     private MemberResponse.MemberQuestionPageResponse getMemberQuestionPageResponse(Long memberId, Integer page, Integer size) {

@@ -116,7 +116,7 @@ class MemberServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("nickname, myIntro 를 받아서 member 객체를 수정한다.")
+    @DisplayName("nickname, myIntro, title, location, accounts 를 받아서 member 객체를 수정한다.")
     void updateMember() {
         //given
         Member member = createMember();
@@ -127,6 +127,9 @@ class MemberServiceTest extends ServiceTest {
                 .updateMemberId(member.getMemberId())
                 .nickname("new nickname")
                 .myIntro("new myIntro")
+                .title("new title")
+                .location("new location")
+                .accounts(List.of("account1", "account2"))
                 .build();
 
         //when
@@ -136,6 +139,9 @@ class MemberServiceTest extends ServiceTest {
         Member updatedMember = memberRepository.findById(member.getMemberId()).orElseThrow();
         assertThat(updatedMember.getNickname()).isEqualTo(request.getNickname());
         assertThat(updatedMember.getMyInfo().getMyIntro()).isEqualTo(request.getMyIntro());
+        assertThat(updatedMember.getMyInfo().getTitle()).isEqualTo(request.getTitle());
+        assertThat(updatedMember.getMyInfo().getLocation()).isEqualTo(request.getLocation());
+        assertThat(updatedMember.getMyInfo().getAccounts()).hasSize(2);
     }
 
     @Test
@@ -357,6 +363,9 @@ class MemberServiceTest extends ServiceTest {
         assertThat(response.getEmail()).isEqualTo(member.getEmail());
         assertThat(response.getNickname()).isEqualTo(member.getNickname());
         assertThat(response.getMyIntro()).isEqualTo(member.getMyInfo().getMyIntro());
+        assertThat(response.getTitle()).isEqualTo(member.getMyInfo().getTitle());
+        assertThat(response.getLocation()).isEqualTo(member.getMyInfo().getLocation());
+        assertThat(response.getAccounts()).isEqualTo(member.getMyInfo().getAccounts());
         assertThat(response.getQuestion().getQuestions()).hasSize(5);
         assertThat(response.getQuestion().getPageInfo().getPage()).isEqualTo(1);
         assertThat(response.getQuestion().getPageInfo().getSize()).isEqualTo(5);

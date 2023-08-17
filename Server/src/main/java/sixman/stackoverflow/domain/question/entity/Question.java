@@ -64,13 +64,11 @@ public class Question extends BaseEntity {
         this.expect = expect;
     }
 
-    public void setViews(Integer views) {
+    public void setViews(int views) {
         this.views = views;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate){
-        this.createdDate = createdDate;
-    }
+
 
     public void setQuestionTags(List<QuestionTag> questionTags) {
         this.questionTags.clear();
