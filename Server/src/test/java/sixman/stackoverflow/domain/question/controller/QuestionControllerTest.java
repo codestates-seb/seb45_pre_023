@@ -33,7 +33,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -93,7 +92,7 @@ public class QuestionControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("질문 목록 조회 API")
-    void getQuestions() throws Exception{
+    void getQuestions() throws Exception {
         //given
         Integer page = 1;
 
@@ -154,7 +153,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 parameterWithName("sort").description(generateLinkCode(QuestionSortRequest.class))
                         ),
                         responseFields(
-                                fieldWithPath("data").description("질문 목ㄺ"),
+                                fieldWithPath("data").description("질문 목록"),
                                 fieldWithPath("data[].questionId").description("질문 ID"),
                                 fieldWithPath("data[].title").description("질문 제목"),
                                 fieldWithPath("data[].detail").description("질문 내용"),
@@ -452,5 +451,27 @@ public class QuestionControllerTest extends ControllerTest {
                         )
                 )
         );
+    }
+
+    @Test
+    @DisplayName("태그 삭제 API")
+    void removeTagsFromQuestion() throws Exception {
+
+        //given
+        Long questionId = 1L;
+        List<String> tagNames = List.of("tag1", "tag2");
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                delete("/questions/{questionId}/tags", questionId)
+                        .header("Authorization", "Bearer abc.def.ghi")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagNames))
+        );
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
     }
 }
