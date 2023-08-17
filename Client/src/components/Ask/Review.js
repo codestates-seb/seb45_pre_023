@@ -1,16 +1,18 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import ReviewBtn from './button/ReviewBtn';
 import TipReview from './Tips/TipReview';
+import { useSelector, useDispatch } from 'react-redux';
+// import { title } from '../../redux/createSlice/AskSlice';
+import { tipbox } from '../../redux/createSlice/TipboxSlice';
 
-export default function Review({ isSelected, setisSelected }) {
+export default function Review() {
+  const dispatch = useDispatch();
+  const Next = useSelector((state) => state.tipbox.position);
+  const tipboxName = useSelector((state) => state.tipbox.tipboxName);
+
   const [isOpen, setisopen] = useState(false);
-
-  const tipboxNum = useSelector((state) => {
-    return state.tipbox.value; // store 안에 reducer가 저장되어 있는 Slice의 이름
-  });
 
   return (
     <div className="relative flex flex-col my-2 px-6 py-5 w-212 bg-white border-2 border-solid border-gray rounded-md">
@@ -29,7 +31,7 @@ export default function Review({ isSelected, setisSelected }) {
         className="flex flex-row justify-between items-center mt-4 py-2 px-2 text-base text-gray-500 bg-gray-100 border-2 border-solid border-gray rounded-t-md active:border-black"
         onClick={() => {
           setisopen(!isOpen);
-          setisSelected(5);
+          dispatch(tipbox('review'));
         }}
       >
         <div>Do any of these posts answer your question?</div>
@@ -45,8 +47,8 @@ export default function Review({ isSelected, setisSelected }) {
         </div>
       )}
 
-      {tipboxNum === 5 ? <ReviewBtn /> : null}
-      {isSelected === 5 && <TipReview />}
+      {Next === 5 ? <ReviewBtn /> : null}
+      {tipboxName === 'review' && <TipReview />}
     </div>
   );
 }

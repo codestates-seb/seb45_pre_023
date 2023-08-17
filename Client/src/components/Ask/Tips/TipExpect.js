@@ -1,4 +1,4 @@
-export default function TipTry() {
+export default function TipExpect() {
   return (
     <div className="absolute top-0 left-216 flex flex-col justify-center items-center border border-solid border-gray-300 rounded-md shadow-xss">
       <div className="w-84 h-11 py-2 pl-3 bg-gray-100 border border-solid border-b-gray-300 rounded-t-md">

@@ -4,8 +4,13 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import QuestionData from './QuestionData';
 
+import { useNavigate } from 'react-router-dom';
+import { RouteConst } from '../../Interface/RouteConst';
+
 export default function QuestionList() {
   const [isData, setIsData] = useState([]);
+
+  const navigate = useNavigate();
 
   // 엔드포인트로 페이지 번호 보내는데,, 이걸 어떻게 보내지?
   // /page=${isPage}
@@ -29,7 +34,7 @@ export default function QuestionList() {
         {/* 최상단 ask 버튼 */}
         <div className="w-full flex justify-between my-6 ml-6">
           <h1 className="text-3xl">ALL Questions</h1>
-          <button className="w-[150px] h-[50px] text-[white] rounded-2xl bg-[#2196F3] ">
+          <button className="w-[150px] h-[50px] text-[white] rounded-2xl bg-[#2196F3]" onClick={() => navigate(RouteConst.Ask)}>
             Asked Question
           </button>
         </div>

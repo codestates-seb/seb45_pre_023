@@ -1,10 +1,10 @@
 import NextBtn from './button/NextBtn';
-import TipDetail from './Tips/TipDetail';
+import TipExpect from './Tips/TipExpect';
 import { useSelector, useDispatch } from 'react-redux';
-import { detail } from '../../redux/createSlice/AskSlice';
+import { expect } from '../../redux/createSlice/AskSlice';
 import { tipbox } from '../../redux/createSlice/TipboxSlice';
 
-export default function DetailProbelm() {
+export default function Try() {
   const dispatch = useDispatch();
   const Next = useSelector((state) => state.tipbox.position);
   const tipboxName = useSelector((state) => state.tipbox.tipboxName);
@@ -13,28 +13,30 @@ export default function DetailProbelm() {
 
   return (
     <div className="relative flex flex-col my-2 px-6 py-5 w-212 bg-white border-2 border-solid border-gray rounded-md">
-      <div className="font-semibold">What are the details of your problem?</div>
+      <div className="font-semibold">
+        What did you try and what were you expecting?
+      </div>
 
       <div className="my-1 text-xs">
-        Introduce the problem and expand on what you put in the title. Minimum
-        20 characters.
+        Describe what you tried, what you expected to happen, and what actually
+        resulted. Minimum 20 characters.
       </div>
 
       <textarea
         className="my-1 py-1.5 pl-2 h-60 text-sm bg-white border-2 border-solid border-gray rounded-md"
-        value={InputValue.detail}
+        value={InputValue.expect}
         onChange={(e) => {
-          dispatch(detail(e.target.value));
+          dispatch(expect(e.target.value));
         }}
         onFocus={() => {
-          dispatch(tipbox('detail'));
+          dispatch(tipbox('expect'));
         }}
       ></textarea>
 
-      <div className='my-1 text-xs text-red-500'>{ErrorMsg.detail}</div>
+      <div className='my-1 text-xs text-red-500'>{ErrorMsg.expect}</div>
 
-      {Next === 2 && <NextBtn />} 
-      {tipboxName === 'detail' && <TipDetail />}
+      {Next === 3 ? <NextBtn /> : null}
+      {tipboxName === 'expect' && <TipExpect />}
     </div>
   );
 }

@@ -1,4 +1,9 @@
+import { useDispatch } from 'react-redux';
+import { initValue } from '../../../redux/createSlice/AskSlice';
+
 export default function DiscardModal({ handlerDiscardModal }) {
+  const dispatch = useDispatch();
+
   return (
     <div
       className="fixed top-0 left-0 flex flex-col justify-center items-center w-screen h-screen z-20 bg-black/20"
@@ -23,7 +28,13 @@ export default function DiscardModal({ handlerDiscardModal }) {
           Are you sure you want to discard this question? This cannot be undone.
         </div>
         <div className="flex flex-row">
-          <button className="ml-6 w-32 h-9 text-smm bg-red-500 hover:bg-red-400 text-white rounded-md">
+          <button
+            className="ml-6 w-32 h-9 text-smm bg-red-500 hover:bg-red-400 text-white rounded-md"
+            onClick={() => {
+              dispatch(initValue());
+              handlerDiscardModal();
+            }}
+          >
             Discard question
           </button>
           <button
