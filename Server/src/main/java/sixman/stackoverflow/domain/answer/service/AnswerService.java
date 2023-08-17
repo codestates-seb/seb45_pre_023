@@ -62,8 +62,8 @@ public class AnswerService {
     }
     @Transactional(readOnly = true)
     public AnswerResponse findAnswer(long answerId) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
         return AnswerResponse.createAnswerResponse(answer);
     }
@@ -102,8 +102,8 @@ public class AnswerService {
 
     public void deleteAnswer(long answerId) {
         Long memberId = SecurityUtil.getCurrentId();
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
         checkAccessAuthority(answer.getMember().getMemberId(), memberId);
         answerRepository.deleteById(answerId);

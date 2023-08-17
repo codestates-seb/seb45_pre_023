@@ -43,7 +43,7 @@ public class ReplyService {
     }
 
     public Long createReply(ReplyCreateServiceRequest request, Long answerId) {
-        Long memberId = SecurityUtil.getCurrentId();
+        Long memberId = SecurityUtil.getCurrentId(); // 사실 인증만 하고, 멤버 id는 밑에 값에서 넣어야 더 깔끔할 것 같다.
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException());
@@ -51,7 +51,7 @@ public class ReplyService {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerNotFoundException());
 
-        Reply reply = postReply(request, member, answer);
+        Reply reply = postReply(request, answer, member);
         replyRepository.save(reply);
 
         return reply.getReplyId();
@@ -133,9 +133,9 @@ public class ReplyService {
     }
 
 
-    private Reply postReply(ReplyCreateServiceRequest request, Member member, Answer answer) {
+    private Reply postReply(ReplyCreateServiceRequest request, Answer answer, Member member) {
         return Reply.createReply(
-                request.getContent(), member, answer
+                request.getContent(), answer, member
         );
     }
 
