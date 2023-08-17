@@ -88,7 +88,7 @@ public class OAuthService {
         String accessToken = tokenProvider.generateAccessToken(authentication, AuthConstant.ACCESS_TOKEN_EXPIRE_TIME);
         String refreshToken = tokenProvider.generateRefreshToken(authentication, AuthConstant.ACCESS_TOKEN_EXPIRE_TIME);
 
-        return new Token(accessToken, refreshToken);
+        return new Token(accessToken, refreshToken, member.getMemberId());
     }
 
     private Member getMember(MemberProfile memberProfile) {

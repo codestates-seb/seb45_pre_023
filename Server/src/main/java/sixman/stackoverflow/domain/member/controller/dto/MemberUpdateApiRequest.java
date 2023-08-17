@@ -8,6 +8,7 @@ import sixman.stackoverflow.domain.member.service.dto.request.MemberUpdateServic
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -18,12 +19,18 @@ public class MemberUpdateApiRequest {
     @NotBlank(message = "{validation.member.nickname}")
     private String nickname;
     private String myIntro;
+    private String title;
+    private String location;
+    private List<String> accounts;
 
     public MemberUpdateServiceRequest toServiceRequest(Long updateMemberId) {
         return MemberUpdateServiceRequest.builder()
                 .updateMemberId(updateMemberId)
                 .nickname(nickname)
                 .myIntro(myIntro)
+                .title(title)
+                .location(location)
+                .accounts(accounts)
                 .build();
     }
 }

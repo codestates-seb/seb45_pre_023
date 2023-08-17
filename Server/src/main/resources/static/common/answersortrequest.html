@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>답변 추천 API</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,82 +436,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script>
-    function ready(callbackFunc) {
-        if (document.readyState !== 'loading') {
-            // Document is already ready, call the callback directly
-            callbackFunc();
-        } else if (document.addEventListener) {
-            // All modern browsers to register DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', callbackFunc);
-        } else {
-            // Old IE browsers
-            document.attachEvent('onreadystatechange', function () {
-                if (document.readyState === 'complete') {
-                    callbackFunc();
-                }
-            });
-        }
-    }
-
-    function openPopup(event) {
-
-        const target = event.target;
-        if (target.className !== "popup") {
-            return;
-        }
-
-        event.preventDefault();
-        const screenX = event.screenX;
-        const screenY = event.screenY;
-        window.open(target.href, target.text, `left=${screenX}, top=${screenY}, width=500, height=600, status=no, menubar=no, toolbar=no, resizable=no`);
-    }
-
-    ready(function () {
-        const el = document.getElementById("content");
-        el.addEventListener("click", event => openPopup(event), false);
-    });
-</script>
 </head>
-<body id="recommendAnswer" class="book toc2 toc-left">
+<body class="book">
 <div id="header">
-<h1>답변 추천 API</h1>
-<div class="details">
-<span id="revnumber">version 0.0.1-SNAPSHOT</span>
-</div>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_답변_추천">답변 추천</a>
-<ul class="sectlevel2">
-<li><a href="#_http_request">HTTP Request</a></li>
-<li><a href="#_http_response">HTTP Response</a></li>
-</ul>
-</li>
-<li><a href="#_답변_비추천">답변 비추천</a>
-<ul class="sectlevel2">
-<li><a href="#_http_request_2">HTTP Request</a></li>
-<li><a href="#_http_response_2">HTTP Response</a></li>
-</ul>
-</li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_답변_추천"><a class="link" href="#_답변_추천">답변 추천</a></h2>
+<div id="preamble">
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_http_request"><a class="link" href="#_http_request">HTTP Request</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">PATCH /answers/1/upvote HTTP/1.1
-Authorization: Bearer abc.def.ghi
-Host: localhost:8080</code></pre>
+<div id="authority" class="paragraph">
+<p>AnswerSortRequest</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_request_headers"><a class="link" href="#_request_headers">Request Headers</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -519,114 +453,27 @@ Host: localhost:8080</code></pre>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Enum Name</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">accessToken</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RECOMMEND</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">추천순</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CREATED_DATE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">최신순</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="_request_path_parameters"><a class="link" href="#_request_path_parameters">Request Path Parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /answers/{answer-id}/upvote</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>answer-id</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">추천할 답변 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_http_response"><a class="link" href="#_http_response">HTTP Response</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 204 No Content</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_답변_비추천"><a class="link" href="#_답변_비추천">답변 비추천</a></h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_http_request_2"><a class="link" href="#_http_request_2">HTTP Request</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">PATCH /answers/1/downvote HTTP/1.1
-Authorization: Bearer abc.def.ghi
-Host: localhost:8080</code></pre>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_request_headers_2"><a class="link" href="#_request_headers_2">Request Headers</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">accessToken</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_request_path_parameters_2"><a class="link" href="#_request_path_parameters_2">Request Path Parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. /answers/{answer-id}/downvote</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>answer-id</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">비추천할 답변 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_http_response_2"><a class="link" href="#_http_response_2">HTTP Response</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 204 No Content</code></pre>
-</div>
-</div>
+<div class="ulist">
+<ul>
+<li>
+<p>미 설정 시 기본 값 : CREATED_DATE</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -637,8 +484,5 @@ Version 0.0.1-SNAPSHOT<br>
 Last updated 2023-08-17 16:08:42 +0900
 </div>
 </div>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
-<script>hljs.initHighlighting()</script>
 </body>
 </html>

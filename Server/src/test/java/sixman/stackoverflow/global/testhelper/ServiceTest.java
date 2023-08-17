@@ -29,6 +29,7 @@ import sixman.stackoverflow.module.redis.service.RedisService;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
+import java.util.List;
 
 @Transactional
 @SpringBootTest
@@ -51,7 +52,13 @@ public abstract class ServiceTest {
                 .nickname("test")
                 .password(passwordEncoder.encode("1234abcd!"))
                 .authority(Authority.ROLE_USER)
-                .myInfo(MyInfo.builder().image("images/test.png").build())
+                .myInfo(MyInfo.builder()
+                        .myIntro("test intro")
+                        .title("title")
+                        .location("location")
+                        .accounts(List.of("account1", "account2"))
+                        .image("images/test.png")
+                        .build())
                 .enabled(true)
                 .build();
     }

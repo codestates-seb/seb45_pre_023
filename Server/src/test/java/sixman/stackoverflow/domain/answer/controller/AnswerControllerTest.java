@@ -13,6 +13,7 @@ import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
+import sixman.stackoverflow.domain.question.controller.dto.AnswerSortRequest;
 import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.response.ApiPageResponse;
@@ -110,6 +111,7 @@ class AnswerControllerTest extends ControllerTest {
                 get("/questions/{question-id}/answers", questionId)
                         .accept(APPLICATION_JSON)
                         .param("page", page.toString())
+                        .param("sort", "CREATED_DATE")
         );
 
         //then
@@ -125,7 +127,8 @@ class AnswerControllerTest extends ControllerTest {
                                 parameterWithName("question-id").description("질문 ID")
                         ),
                         requestParameters(
-                                parameterWithName("page").description("페이지 번호")
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("sort").description(generateLinkCode(AnswerSortRequest.class))
                         ),
                         responseFields(
                                 fieldWithPath("data").description("질문 답변 정보"),
