@@ -17,9 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
+import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.module.aws.service.S3Service;
 import sixman.stackoverflow.module.email.service.MailService;
 import sixman.stackoverflow.module.redis.service.RedisService;
@@ -92,5 +94,18 @@ public abstract class ServiceTest {
                 notSavedmember.getPassword(),
                 Collections.singleton(grantedAuthority)
         );
+    }
+
+    protected Question createquestion(Long questionId) {
+        return Question.builder()
+                .questionId(questionId)
+                .build();
+
+    }
+
+    protected Answer createanswer(Long answerId) {
+        return Answer.builder()
+                .answerId(answerId)
+                .build();
     }
 }
