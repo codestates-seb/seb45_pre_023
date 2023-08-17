@@ -32,9 +32,9 @@ public class MDCLoggingFilter implements Filter {
         long duration = endTime - startTime;
 
         String method = ((HttpServletRequest) request).getMethod();
-        String url = ((HttpServletRequest) request).getRequestURI();
+        String url = ((HttpServletRequest) request).getRequestURI().split("/")[1];
 
-        log.info("[{}:{}] duration: {} ms", method, url, duration);
+        log.info("{} {}{} duration: {} ms", method, "/", url, duration);
 
         MDC.clear();
     }
