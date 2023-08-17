@@ -34,7 +34,6 @@ export default function SignUpForm() {
     } else if (!CheckedOption.robot) {
       return dispatch(errmsg(`Please check the box.`));
     }
-    console.log(SignUpInfo);
     return axios
       .post(
         'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/signup',

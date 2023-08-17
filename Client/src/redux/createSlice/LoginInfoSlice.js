@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const LoginInfoSlice = createSlice({
   name: 'LoginInfo', // action 이름
-  initialState: { value: { email: '', password: '' }, token: '' }, // 초기값
+  initialState: { value: { email: '', password: '' }, token: '', myid: '' }, // 초기값
   reducers: {
     // reducer들 모음
     email: (state, action) => {
@@ -13,6 +13,9 @@ const LoginInfoSlice = createSlice({
     },
     logintoken: (state, action) => {
       state.token = action.payload;
+    },
+    myid: (state, action) => {
+      state.myid = action.payload;
     },
   },
 });

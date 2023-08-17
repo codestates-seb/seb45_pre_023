@@ -30,8 +30,8 @@ export default function LoginForm() {
         LoginInfo
       )
       .then((res) => {
+        console.log(res);
         dispatch(logintoken(res.headers.authorization));
-        console.log(res.headers.authorization)
         dispatch(errmsg(''));
         nevigate(RouteConst.Main);
       })
