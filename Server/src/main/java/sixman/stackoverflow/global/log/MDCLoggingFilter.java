@@ -34,7 +34,7 @@ public class MDCLoggingFilter implements Filter {
         String method = ((HttpServletRequest) request).getMethod();
         String url = ((HttpServletRequest) request).getRequestURI();
 
-        log.info("[{}:{}][duration : {} ms]", method, url, duration);
+        log.info("[{}:{}] duration: {} ms", method, url, duration);
 
         MDC.clear();
     }
