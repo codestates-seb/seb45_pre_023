@@ -9,6 +9,7 @@ import sixman.stackoverflow.global.entity.BaseEntity;
 import sixman.stackoverflow.global.entity.TypeEnum;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,15 +26,17 @@ public class Question extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    @Lob
     @Column(nullable = false)
     private String detail;
 
+    @Lob
     @Column(nullable = false)
     private String expect;
 
-    private Integer views;
+    private int views;
 
-    private int recommendCount;
+    private int recommend;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionRecommend> questionRecommends = new ArrayList<>();
@@ -48,6 +51,7 @@ public class Question extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -60,6 +64,11 @@ public class Question extends BaseEntity {
         this.expect = expect;
     }
 
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+
     public void setQuestionTags(List<QuestionTag> questionTags) {
         this.questionTags.clear();
         if (questionTags != null) {
@@ -69,9 +78,9 @@ public class Question extends BaseEntity {
 
     public void applyRecommend(TypeEnum type) {
         if (type == TypeEnum.UPVOTE) {
-            this.recommendCount++;
+            this.recommend++;
         } else {
-            this.recommendCount--;
+            this.recommend--;
         }
     }
 

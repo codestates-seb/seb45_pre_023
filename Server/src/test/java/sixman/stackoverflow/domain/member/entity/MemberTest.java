@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,17 +32,16 @@ class MemberTest {
     }
     
     @Test
-    @DisplayName("nickname, myIntro 를 받아서 Member 객체를 수정한다.")
+    @DisplayName("nickname 를 받아서 Member 객체를 수정한다.")
     void updateMember() {
         //given
         Member member = createMemberDefault();
     
         //when
-        member.updateMember("new nickname", "new myIntro");
+        member.updateMember("new nickname");
 
         //then
         assertThat(member.getNickname()).isEqualTo("new nickname");
-        assertThat(member.getMyInfo().getMyIntro()).isEqualTo("new myIntro");
     }
 
     @Test
@@ -50,10 +51,30 @@ class MemberTest {
         Member member = createMemberDefault();
 
         //when
-        member.updateMember(null, "new myIntro");
+        member.updateMember(null);
 
         //then
         assertThat(member.getNickname()).isEqualTo("test");
+    }
+
+    @Test
+    @DisplayName("member 의 myInfo 정보(title, location, accounts, myIntro) 를 수정할 수 있다.")
+    void updateMyInfo() {
+        //given
+        Member member = createMemberDefault();
+        String myIntro = "new myIntro";
+        String title = "new title";
+        String location = "new location";
+        List<String> accounts = List.of("account1", "account2");
+
+        //when
+        member.updateMyInfo(myIntro, title, location, accounts);
+
+        //then
+        assertThat(member.getMyInfo().getMyIntro()).isEqualTo(myIntro);
+        assertThat(member.getMyInfo().getTitle()).isEqualTo(title);
+        assertThat(member.getMyInfo().getLocation()).isEqualTo(location);
+        assertThat(member.getMyInfo().getAccounts()).isEqualTo(accounts);
     }
 
     @Test

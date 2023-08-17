@@ -40,7 +40,7 @@ public class QuestionDetailResponse {
             private PageInfo pageInfo;
     }
 
-    public static QuestionDetailResponse of(Question question, QuestionAnswer answer, TypeEnum typeEnum) {
+    public static QuestionDetailResponse of(Question question, QuestionAnswer answer) {
 
         return QuestionDetailResponse.builder()
                 .questionId(question.getQuestionId())
@@ -49,8 +49,7 @@ public class QuestionDetailResponse {
                 .expect(question.getExpect())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
-                .recommend(question.getRecommendCount())
-                .recommendType(typeEnum)
+                .recommend(question.getRecommend())
                 .tags(QuestionTagResponse.of(question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList())))
                 .answer(answer)
                 .createdDate(question.getCreatedDate())

@@ -45,12 +45,10 @@ import java.util.Collections;
 
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @AutoConfigureRestDocs
@@ -90,7 +88,8 @@ class AuthControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Authorization"))
-                .andExpect(header().exists("Refresh"));
+                .andExpect(header().exists("Refresh"))
+                .andExpect(jsonPath("memberId").exists());
 
         //restDocs
         actions.andDo(
@@ -104,6 +103,9 @@ class AuthControllerTest {
                         responseHeaders(
                                 headerWithName("Authorization").description("accessToken"),
                                 headerWithName("Refresh").description("refreshToken")
+                        ),
+                        responseFields(
+                                fieldWithPath("memberId").description("로그인한 회원의 ID")
                         )
                 )
         );
@@ -115,8 +117,9 @@ class AuthControllerTest {
         //given
         String provider = "GOOGLE";
         String code = "DNIL345AS21GN34";
+        Long memberId = 1L;
 
-        Token token = new Token("Bearer accessToken", "Bearer refreshToken");
+        Token token = new Token("Bearer accessToken", "Bearer refreshToken", memberId);
         given(oAuthService.login(any(Provider.class), anyString())).willReturn(token);
 
         //when
@@ -128,9 +131,10 @@ class AuthControllerTest {
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isNoContent())
+                .andExpect(status().isOk())
                 .andExpect(header().exists("Authorization"))
-                .andExpect(header().exists("Refresh"));
+                .andExpect(header().exists("Refresh"))
+                .andExpect(jsonPath("memberId").value(memberId));
 
         //restDocs
         actions.andDo(
@@ -144,6 +148,9 @@ class AuthControllerTest {
                         responseHeaders(
                                 headerWithName("Authorization").description("accessToken"),
                                 headerWithName("Refresh").description("refreshToken")
+                        ),
+                        responseFields(
+                                fieldWithPath("memberId").description("로그인한 회원의 ID")
                         )
                 )
         );

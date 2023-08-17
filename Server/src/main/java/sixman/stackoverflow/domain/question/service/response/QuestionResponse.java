@@ -37,7 +37,7 @@ public class QuestionResponse {
                 .answerCount(question.getAnswers().size())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
-                .recommend(question.getRecommendCount())
+                .recommend(question.getRecommend())
                 .tags(QuestionTagResponse.of(question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList())))
                 .createdDate(question.getCreatedDate())
                 .updatedDate(question.getModifiedDate())

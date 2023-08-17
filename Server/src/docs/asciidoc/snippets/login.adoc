@@ -23,6 +23,10 @@ include::{snippets}/auth/login/request-fields.adoc[]
 include::{snippets}/auth/login/http-response.adoc[]
 ==== Response Header
 include::{snippets}/auth/login/response-headers.adoc[]
+==== Response Body
+include::{snippets}/auth/login/response-body.adoc[]
+==== Response Fields
+include::{snippets}/auth/login/response-fields.adoc[]
 
 == OAuth login
 === HTTP Request
@@ -33,6 +37,10 @@ include::{snippets}/auth/oauth/request-parameters.adoc[]
 include::{snippets}/auth/oauth/http-response.adoc[]
 ==== Response Header
 include::{snippets}/auth/oauth/response-headers.adoc[]
+==== Response Body
+include::{snippets}/auth/oauth/response-body.adoc[]
+==== Response Fields
+include::{snippets}/auth/oauth/response-fields.adoc[]
 
 
 
