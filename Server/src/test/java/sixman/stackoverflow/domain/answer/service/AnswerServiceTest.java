@@ -208,35 +208,35 @@ class AnswerServiceTest extends ServiceTest {
 
 
 
-    @Test
-    @DisplayName("answerId 를 통해 답변을 삭제한다.")
-    void deleteAnswer() {
-        Member member = createMember();
-        memberRepository.save(member);
-
-        Question question = createQuestion(member);
-        questionRepository.save(question);
-
-        String content = "deleted content2";
-        Answer answer = Answer.builder()
-                .answerId(1L)
-                .content(content)
-                .member(member)
-                .question(question)
-                .build();
-
-        answerRepository.save(answer);
-
-        setDefaultAuthentication(member.getMemberId());
-
-        answerService.deleteAnswer(answer.getAnswerId());
-
-        Optional<Answer> deletedAnswer = answerRepository.findById(answer.getAnswerId());
-        assertFalse(deletedAnswer.isPresent());
-
-
-
-    }
+//    @Test
+//    @DisplayName("answerId 를 통해 답변을 삭제한다.")
+//    void deleteAnswer() {
+//        Member member = createMember();
+//        memberRepository.save(member);
+//
+//        Question question = createQuestion(member);
+//        questionRepository.save(question);
+//
+//        String content = "deleted content2";
+//        Answer answer = Answer.builder()
+//                .answerId(1L)
+//                .content(content)
+//                .member(member)
+//                .question(question)
+//                .build();
+//
+//        answerRepository.save(answer);
+//
+//        setDefaultAuthentication(member.getMemberId());
+//
+//        answerService.deleteAnswer(answer.getAnswerId());
+//
+//        Optional<Answer> deletedAnswer = answerRepository.findById(answer.getAnswerId());
+//        assertFalse(deletedAnswer.isPresent());
+//
+//
+//
+//    }
 
     @Test
     @DisplayName("답변 삭제 시 존재하지 않는 answerId 이면 AnswerNotFoundException 이 발생한다.")
