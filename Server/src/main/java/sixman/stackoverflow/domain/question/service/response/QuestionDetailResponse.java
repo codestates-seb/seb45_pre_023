@@ -49,8 +49,12 @@ public class QuestionDetailResponse {
                 .expect(question.getExpect())
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
+<<<<<<< Updated upstream
                 .recommend(question.getRecommendCount())
                 .recommendType(typeEnum)
+=======
+                .recommend(question.getUpvoteCount() - question.getDownvoteCount())
+>>>>>>> Stashed changes
                 .tags(QuestionTagResponse.of(question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList())))
                 .answer(answer)
                 .createdDate(question.getCreatedDate())
