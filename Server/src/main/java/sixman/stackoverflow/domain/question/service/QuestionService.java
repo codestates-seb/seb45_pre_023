@@ -52,7 +52,7 @@ public class QuestionService {
     }
 
     public Page<QuestionResponse> getLatestQuestions(Pageable pageable) {
-        Page<Question> questions = questionRepository.findAllBy(pageable);
+        Page<Question> questions = questionRepository.findAll(pageable);
         return questions.map(QuestionResponse::of);
     }
 

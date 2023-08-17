@@ -69,7 +69,6 @@ public class Question extends BaseEntity {
     }
 
 
-
     public void setQuestionTags(List<QuestionTag> questionTags) {
         this.questionTags.clear();
         if (questionTags != null) {
