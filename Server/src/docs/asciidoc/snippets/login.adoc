@@ -1,0 +1,46 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[Login]]
+= 로그인 API
+
+IMPORTANT: 로그아웃은 브라우저에서 토큰 삭제로 구현합니다.
+
+
+== 일반 login
+=== HTTP Request
+include::{snippets}/auth/login/http-request.adoc[]
+==== Request Body
+include::{snippets}/auth/login/request-body.adoc[]
+==== Request Fields
+include::{snippets}/auth/login/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/auth/login/http-response.adoc[]
+==== Response Header
+include::{snippets}/auth/login/response-headers.adoc[]
+==== Response Body
+include::{snippets}/auth/login/response-body.adoc[]
+==== Response Fields
+include::{snippets}/auth/login/response-fields.adoc[]
+
+== OAuth login
+=== HTTP Request
+include::{snippets}/auth/oauth/http-request.adoc[]
+==== Request Query Parameter
+include::{snippets}/auth/oauth/request-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/auth/oauth/http-response.adoc[]
+==== Response Header
+include::{snippets}/auth/oauth/response-headers.adoc[]
+==== Response Body
+include::{snippets}/auth/oauth/response-body.adoc[]
+==== Response Fields
+include::{snippets}/auth/oauth/response-fields.adoc[]
+
+
+
