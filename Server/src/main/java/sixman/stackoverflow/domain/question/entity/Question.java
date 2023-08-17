@@ -61,7 +61,9 @@ public class Question extends BaseEntity {
         this.expect = expect;
     }
 
-    public void setViews(Integer views) { this.views = views; }
+    public void setViews(Integer views) {
+        this.views = views;
+    }
 
     public void setQuestionTags(List<QuestionTag> questionTags) {
         this.questionTags.clear();
