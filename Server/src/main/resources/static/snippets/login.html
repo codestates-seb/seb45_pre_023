@@ -589,14 +589,20 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJpZCI6MiwiZXhwIjoxNjkyMjcwNzQzfQ.pabk63J_Ai9y_UNuRZWDxO2mbFbaOy6J4dNuCX_1cI2ksM3QXVUm_TWoHUZ5d8fH7T3De799QwHfc2aj9-u3DQ
-Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImlkIjoyLCJleHAiOjE2OTI4MDM1NDN9.JvMLyd8pa3rDbHxuB3WxULdlQxBp8ZO2S79_5A_SZ0ME_aNVfCSIJNPxQjJdEL8UiHhrNottLQh-qphIS7YXvw
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJpZCI6MiwiZXhwIjoxNjkyMzI2MTQ2fQ.2XC5QO_XOUBz-OZIQkwFDP6h4L1hkZ_UbeuwyOfh62ABi-WBSJIJWdpNXxMzQE0BZeLkr4WQsk6LQ1qJOG-FHw
+Refresh: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsImlkIjoyLCJleHAiOjE2OTI4NTg5NDZ9.FJCF5hrWcnD_rMjqN0ifO_lvZWRIpHdMbnDgn5fysD1TWeZ6JdnYTrngu1keQMdu4DXEF6lqhkMLAU_-lYgdOg
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
-X-Frame-Options: DENY</code></pre>
+X-Frame-Options: DENY
+Content-Length: 22
+
+{
+  "memberId" : 2
+}</code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -620,6 +626,40 @@ X-Frame-Options: DENY</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Refresh</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">refreshToken</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_response_body"><a class="link" href="#_response_body">Response Body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+  "memberId" : 2
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_response_fields"><a class="link" href="#_response_fields">Response Fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>memberId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">로그인한 회원의 ID</p></td>
 </tr>
 </tbody>
 </table>
@@ -668,18 +708,24 @@ Host: localhost:8080</code></pre>
 <h3 id="_http_response_2"><a class="link" href="#_http_response_2">HTTP Response</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 204 No Content
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Authorization: Bearer Bearer accessToken
 Refresh: Bearer Bearer refreshToken
+Content-Type: text/plain;charset=UTF-8
+Content-Length: 22
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
-X-Frame-Options: DENY</code></pre>
+X-Frame-Options: DENY
+
+{
+  "memberId" : 1
+}</code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -707,6 +753,40 @@ X-Frame-Options: DENY</code></pre>
 </tbody>
 </table>
 </div>
+<div class="sect3">
+<h4 id="_response_body_2"><a class="link" href="#_response_body_2">Response Body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+  "memberId" : 1
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_response_fields_2"><a class="link" href="#_response_fields_2">Response Fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>memberId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">로그인한 회원의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -714,7 +794,7 @@ X-Frame-Options: DENY</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-08-16 01:36:34 +0900
+Last updated 2023-08-17 15:35:06 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
