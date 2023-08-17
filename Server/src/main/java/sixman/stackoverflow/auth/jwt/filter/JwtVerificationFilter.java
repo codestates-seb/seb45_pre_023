@@ -3,6 +3,7 @@ package sixman.stackoverflow.auth.jwt.filter;
 import io.jsonwebtoken.Claims;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +35,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         try{
             Claims claims = verifyTokenClaims(request);
             setAuthenticationToContext(claims);
+            MDC.put("email", claims.getSubject());
 
         }catch(BusinessException exception){
             request.setAttribute("businessException", exception);

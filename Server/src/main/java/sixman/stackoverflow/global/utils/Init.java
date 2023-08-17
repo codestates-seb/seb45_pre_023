@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 
 @Component
 @RequiredArgsConstructor
-@Profile(value = {"production"})
+@Profile({"production"})
 public class Init {
 
     private final InitService initService;
