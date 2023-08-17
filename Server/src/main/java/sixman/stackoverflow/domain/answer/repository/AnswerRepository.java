@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 
 public interface AnswerRepository extends JpaRepository<Answer,Long> {
-    Page<Answer> findAllByQuestionId(Long questionId, Pageable pageable);
+    Page<Answer> findAllByQuestion(Long questionId, Pageable pageable);
 }
 
