@@ -112,6 +112,7 @@ public class QuestionControllerTest extends ControllerTest {
             QuestionResponse response = QuestionResponse.builder()
                     .questionId((long) i)
                     .title("title")
+                    .detail("detail")
                     .answerCount(5)
                     .member(MemberInfo.of(createMember(1L)))
                     .views(100)
@@ -153,6 +154,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("data").description("질문 목ㄺ"),
                                 fieldWithPath("data[].questionId").description("질문 ID"),
                                 fieldWithPath("data[].title").description("질문 제목"),
+                                fieldWithPath("data[].detail").description("질문 내용"),
                                 fieldWithPath("data[].answerCount").description("질문의 답변 개수"),
                                 fieldWithPath("data[].member").description("질문 작성자 정보"),
                                 fieldWithPath("data[].member.memberId").description("질문 작성자 ID"),

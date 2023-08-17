@@ -3,8 +3,7 @@ package sixman.stackoverflow.domain.question.service;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
-import sixman.stackoverflow.domain.answer.entitiy.Answer;
-import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
+import sixman.stackoverflow.domain.answer.service.AnswerService;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
@@ -20,8 +19,11 @@ import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.domain.tag.repository.TagRepository;
 import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionAlreadyVotedException;
+import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
+import sixman.stackoverflow.global.response.PageInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,43 +37,49 @@ public class QuestionService {
     private final QuestionRecommendRepository questionRecommendRepository;
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
-    private final AnswerRepository answerRepository;
+    private final AnswerService answerService;
 
     public QuestionService(QuestionRepository questionRepository,
                            QuestionRecommendRepository questionRecommendRepository,
                            MemberRepository memberRepository,
                            TagRepository tagRepository,
-                           AnswerRepository answerRepository) {
+                           AnswerService answerService) {
         this.questionRepository = questionRepository;
         this.questionRecommendRepository = questionRecommendRepository;
         this.memberRepository = memberRepository;
         this.tagRepository = tagRepository;
-        this.answerRepository = answerRepository;
+        this.answerService = answerService;
     }
 
     public Page<QuestionResponse> getLatestQuestions(Pageable pageable) {
-
-//        return questionRepository.findAllByOrderByCreatedDateDesc(pageable);
-        return null;
+        Page<Question> questions = questionRepository.findAllByOrderByCreatedDateDesc(pageable);
+        return questions.map(QuestionResponse::of);
     }
 
     public QuestionDetailResponse getQuestionById(Long questionId) {
-        /*return questionRepository.findById(questionId)
-                .orElse(null);*/
+        Optional<Question> optionalQuestion = questionRepository.findByQuestionId(questionId);
 
-        return null;
+        if (optionalQuestion.isPresent()) {
+            Question question = optionalQuestion.get();
+
+            // 조회수 증가 로직 추가
+            question.setViews(question.getViews() + 1);
+            questionRepository.save(question);
+
+            Page<AnswerResponse> pagedAnswers = answerService.findAnswers(questionId, PageRequest.of(0, 5));
+            List<AnswerResponse> answerResponses = pagedAnswers.getContent();
+
+            QuestionDetailResponse.QuestionAnswer questionAnswer = QuestionDetailResponse.QuestionAnswer.builder()
+                    .answers(answerResponses)
+                    .pageInfo(PageInfo.of(pagedAnswers))
+                    .build();
+
+            return QuestionDetailResponse.of(question, questionAnswer);
+        }else {
+            throw new QuestionNotFoundException();
+        }
     }
 
-    public Page<AnswerResponse> getAnswerResponsesForQuestion(Question question, Pageable pageable) {
-//        Page<Answer> answers = answerRepository.findByQuestion(question, pageable);
-//        List<AnswerResponse> answerResponses = answers.getContent().stream()
-//                .map(answer -> AnswerResponse.answerfrom(answer))// answerfrom() 메서드 구현
-//                .collect(Collectors.toList());
-//
-//        return new PageImpl<>(answerResponses, pageable, answers.getTotalElements());
-
-        return null;
-    }
 
     public List<QuestionTagResponse> getQuestionTags(Long questionId) {
         Question question = questionRepository.findById(questionId)
@@ -103,6 +111,13 @@ public class QuestionService {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow();
 
+        Long loggedInUserId = SecurityUtil.getCurrentId();
+        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
+
+        if (!loggedInUserId.equals(questionAuthorId)) {
+            throw new MemberAccessDeniedException();
+        }
+
         existingQuestion.setTitle(title);
         existingQuestion.setDetail(detail);
         existingQuestion.setExpect(expect);
@@ -113,6 +128,13 @@ public class QuestionService {
     public void updateTags(Long questionId, List<String> tagNames) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow();
+
+        Long loggedInUserId = SecurityUtil.getCurrentId();
+        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
+
+        if (!loggedInUserId.equals(questionAuthorId)) {
+            throw new MemberAccessDeniedException();
+        }
 
         List<QuestionTag> newQuestionTags = new ArrayList<>();
         for (String tagName : tagNames) {
@@ -128,6 +150,13 @@ public class QuestionService {
     public void deleteQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow();
+
+        Long loggedInUserId = SecurityUtil.getCurrentId();
+        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
+
+        if (!loggedInUserId.equals(questionAuthorId)) {
+            throw new MemberAccessDeniedException();
+        }
         questionRepository.delete(question);
     }
 
@@ -145,25 +174,39 @@ public class QuestionService {
 
     public void addQuestionRecommend(Long questionId, TypeEnum type) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
-        String currentEmail = SecurityUtil.getCurrentEmail();
+                .orElseThrow(QuestionNotFoundException::new);
 
-        Member currentMember = memberRepository.findByEmail(currentEmail)
+        Long currentId = SecurityUtil.getCurrentId();
+
+        Member currentMember = memberRepository.findById(currentId)
                 .orElseThrow(MemberNotFoundException::new);
 
         if (question.hasRecommendationFrom(currentMember)) {
-            throw new QuestionAlreadyVotedException();
+            Optional<QuestionRecommend> existingRecommend = questionRecommendRepository.findByMemberAndQuestionAndType(currentMember, question, type);
+            if (existingRecommend.isPresent()) {
+                // 이미 추천한 경우
+                if (existingRecommend.get().getType() == type) {
+                    // 이미 같은 타입의 추천이면 추천 취소
+                    questionRecommendRepository.delete(existingRecommend.get());
+                    existingRecommend.get().applyRecommend(); // 추천 취소 적용
+                } else {
+                    throw new QuestionAlreadyVotedException();
+                }
+            } else {
+                throw new QuestionAlreadyVotedException();
+            }
+        } else {
+            // 추천 또는 비추천 추가
+            QuestionRecommend newRecommend = QuestionRecommend.builder()
+                    .type(type)
+                    .member(currentMember)
+                    .question(question)
+                    .build();
+            newRecommend.applyRecommend(); // 추천 또는 비추천 적용
+            questionRecommendRepository.save(newRecommend);
         }
 
-        QuestionRecommend recommend = QuestionRecommend.builder()
-                .type(type)
-                .member(currentMember)
-                .question(question)
-                .build();
-
-        recommend.applyRecommend();
         questionRepository.save(question);
-        questionRecommendRepository.save(recommend);
     }
 
     private Tag createOrGetTag(String tagName) {
@@ -177,4 +220,6 @@ public class QuestionService {
                 .build();
         return tagRepository.save(tag);
     }
+
+
 }

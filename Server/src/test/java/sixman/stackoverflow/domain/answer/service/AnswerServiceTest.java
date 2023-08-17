@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.answer.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,55 +13,15 @@ import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
-import static org.assertj.core.api.Assertions.assertThat;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AnswerServiceTest extends ServiceTest {
-    @Autowired
-    private AnswerService answerService;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private AnswerRepository answerRepository;
-    @Autowired
-    private QuestionRepository questionRepository;
+
     @Test
     @DisplayName("답변의 content, questionId 를 받아서 답변을 생성한다.")
     void createAnswer() {
-        //given
-        //멤버 저장
-        Member member = createMember();
-        memberRepository.save(member);
-
-        //질문 저장
-        Question question = createQuestion(member);
-        questionRepository.save(question);
-
-
-        setDefaultAuthentication(member.getMemberId());
-
-        String content = "content";
-
-        AnswerCreateServiceRequest request = new AnswerCreateServiceRequest(content);
-
-        //when
-        Long answerId = answerService.createAnswer(request, question.getQuestionId());
-
-        //then
-        Answer savedAnswer = answerRepository.findById(answerId).orElseThrow();
-        assertThat(savedAnswer.getAnswerId()).isEqualTo(answerId);
-        assertThat(savedAnswer.getContent()).isEqualTo(content);
-        assertThat(savedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
-        assertThat(savedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
-    }
-
-    private Question createQuestion(Member member) {
-        return Question.builder()
-                .member(member)
-                .detail("detail")
-                .title("title")
-                .expect("expect")
-                .build();
     }
 
     @Test

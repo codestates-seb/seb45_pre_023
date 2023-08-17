@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+//@Component
 @Aspect
 public class QuestionAopStub {
 
@@ -53,6 +53,7 @@ public class QuestionAopStub {
             QuestionResponse response = QuestionResponse.builder()
                     .questionId((long) i)
                     .title("title")
+                    .detail("detail")
                     .answerCount(5)
                     .member(MemberInfo.of(createMember(1L)))
                     .views(100)
