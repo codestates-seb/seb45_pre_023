@@ -25,6 +25,9 @@ public class MemberResponse {
     private String nickname;
     private String image;
     private String myIntro;
+    private String title;
+    private String location;
+    private List<String> accounts;
     private Authority authority;
     private MemberQuestionPageResponse question;
     private MemberAnswerPageResponse answer;
@@ -41,6 +44,9 @@ public class MemberResponse {
                 .nickname(member.getNickname())
                 .image(imageUrl)
                 .myIntro(member.getMyInfo().getMyIntro())
+                .title(member.getMyInfo().getTitle())
+                .location(member.getMyInfo().getLocation())
+                .accounts(member.getMyInfo().getAccounts())
                 .authority(member.getAuthority())
                 .question(question)
                 .answer(answer)

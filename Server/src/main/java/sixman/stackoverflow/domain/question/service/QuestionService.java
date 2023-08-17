@@ -20,8 +20,8 @@ import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.domain.tag.repository.TagRepository;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
-import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionAlreadyVotedException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
 import sixman.stackoverflow.global.response.PageInfo;
 
@@ -52,7 +52,7 @@ public class QuestionService {
     }
 
     public Page<QuestionResponse> getLatestQuestions(Pageable pageable) {
-        Page<Question> questions = questionRepository.findAllByOrderByCreatedDateDesc(pageable);
+        Page<Question> questions = questionRepository.findAll(pageable);
         return questions.map(QuestionResponse::of);
     }
 
@@ -112,6 +112,9 @@ public class QuestionService {
                 .orElseThrow();
 
         Long loggedInUserId = SecurityUtil.getCurrentId();
+        if(loggedInUserId==null){
+            throw new MemberBadCredentialsException();
+        }
         Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
 
         if (!loggedInUserId.equals(questionAuthorId)) {
@@ -152,6 +155,9 @@ public class QuestionService {
                 .orElseThrow();
 
         Long loggedInUserId = SecurityUtil.getCurrentId();
+        if(loggedInUserId==null){
+            throw new MemberBadCredentialsException();
+        }
         Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
 
         if (!loggedInUserId.equals(questionAuthorId)) {
@@ -177,24 +183,31 @@ public class QuestionService {
                 .orElseThrow(QuestionNotFoundException::new);
 
         Long currentId = SecurityUtil.getCurrentId();
+        if(currentId==null){
+            throw new MemberBadCredentialsException();
+        }
 
         Member currentMember = memberRepository.findById(currentId)
                 .orElseThrow(MemberNotFoundException::new);
 
         if (question.hasRecommendationFrom(currentMember)) {
             Optional<QuestionRecommend> existingRecommend = questionRecommendRepository.findByMemberAndQuestionAndType(currentMember, question, type);
-            if (existingRecommend.isPresent()) {
-                // 이미 추천한 경우
                 if (existingRecommend.get().getType() == type) {
                     // 이미 같은 타입의 추천이면 추천 취소
                     questionRecommendRepository.delete(existingRecommend.get());
                     existingRecommend.get().applyRecommend(); // 추천 취소 적용
                 } else {
-                    throw new QuestionAlreadyVotedException();
+                    // 같은 타입이 아니라면 취소후 반대 타입 추천 적용
+                    questionRecommendRepository.delete(existingRecommend.get());
+
+                    QuestionRecommend newRecommend = QuestionRecommend.builder()
+                            .type(type)
+                            .member(currentMember)
+                            .question(question)
+                            .build();
+                    newRecommend.applyRecommend(); // 추천 또는 비추천 적용
+                    questionRecommendRepository.save(newRecommend);
                 }
-            } else {
-                throw new QuestionAlreadyVotedException();
-            }
         } else {
             // 추천 또는 비추천 추가
             QuestionRecommend newRecommend = QuestionRecommend.builder()

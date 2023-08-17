@@ -7,6 +7,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.auth.jwt.dto.Token;
+import sixman.stackoverflow.auth.jwt.service.TokenProvider;
 import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
@@ -30,7 +31,7 @@ public class AuthController {
     }
 
     @GetMapping("/oauth")
-    public ResponseEntity<Void> login(Provider provider, String code) {
+    public ResponseEntity<String> login(Provider provider, String code) {
         
         Token token = oAuthService.login(provider, code);
 
@@ -39,7 +40,9 @@ public class AuthController {
         map.put("Refresh", Collections.singletonList("Bearer " + token.getRefreshToken()));
         HttpHeaders tokenHeader = new HttpHeaders(map);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).headers(tokenHeader).body(null);
+        String jsonResponse = "{\"memberId\":" + token.getMemberId() + "}";
+
+        return ResponseEntity.ok().headers(tokenHeader).body(jsonResponse);
     }
 
     @PostMapping("/signup")

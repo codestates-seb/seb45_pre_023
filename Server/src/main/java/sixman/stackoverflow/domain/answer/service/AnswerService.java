@@ -70,14 +70,22 @@ public class AnswerService {
 
 
     public Page<AnswerResponse> findAnswers(Long questionId, Pageable pageable) {
-        Page<Answer> answers = answerRepository.findByQuestionQuestionIdOrderByCreatedDateAsc(questionId, pageable);
+        Optional<Question> optionalQuestion = questionRepository.findByQuestionId(questionId);
 
-        Page<AnswerResponse> answerResponses = answers.map(answer -> {
-            Page<Reply> replyPage = replyRepository.findByAnswer(answer, pageable);
-            return AnswerResponse.of(answer, replyPage);
-        });
+        if (optionalQuestion.isPresent()) {
+            Question question = optionalQuestion.get();
 
-        return answerResponses;
+            Page<Answer> answers = answerRepository.findAllByQuestion(question, pageable);
+
+            Page<AnswerResponse> answerResponses = answers.map(answer -> {
+                Page<Reply> replyPage = replyRepository.findByAnswer(answer, pageable);
+                return AnswerResponse.of(answer, replyPage);
+            });
+
+            return answerResponses;
+        }else{
+            throw new QuestionNotFoundException();
+        }
     }
 
     public Answer updateAnswer(Long answerId, String newContent) {

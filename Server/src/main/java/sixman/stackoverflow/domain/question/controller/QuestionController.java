@@ -14,7 +14,9 @@ import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.question.controller.dto.AnswerSortRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
+import sixman.stackoverflow.domain.question.controller.dto.QuestionSortRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionUpdateApiRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.service.QuestionService;
@@ -53,11 +55,12 @@ public class QuestionController {
     @GetMapping
     public ResponseEntity<ApiPageResponse<QuestionResponse>> getQuestions(
             @RequestParam(defaultValue = "1") @Positive int page,
-            @RequestParam(defaultValue = "10") @Positive int size) {
+            @RequestParam(defaultValue = "10") @Positive int size,
+            @RequestParam(defaultValue = "CREATED_DATE") QuestionSortRequest sort) { //createdDate, recommend, views
 
         int adjustedPage = page - 1;
 
-        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by(sort.getValue()).descending());
         Page<QuestionResponse> questions = questionService.getLatestQuestions(pageable);
 
 
@@ -162,11 +165,14 @@ public class QuestionController {
 
     // 답변 페이징 기능
     @GetMapping("/{question-id}/answers")
-    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(@PathVariable("question-id")Long questionId,
-                                           @RequestParam(defaultValue = "1") int page
-                                           ) {
+    public ResponseEntity<ApiPageResponse<AnswerResponse>> getAnswers(
+                            @PathVariable("question-id")Long questionId,
+                            @RequestParam(defaultValue = "1") int page,
+                            @RequestParam(defaultValue = "CREATED_DATE") AnswerSortRequest sort) { //createdDate, recommend
 
-        Page<AnswerResponse> answers = answerService.findAnswers(questionId, PageRequest.of(page - 1, 5));
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by(sort.getValue()).descending());
+
+        Page<AnswerResponse> answers = answerService.findAnswers(questionId, pageable);
 
         return ResponseEntity.ok(ApiPageResponse.ok(answers));
     }

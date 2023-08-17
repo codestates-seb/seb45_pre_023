@@ -8,7 +8,8 @@ import sixman.stackoverflow.domain.question.entity.Question;
 import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    Page<Question> findAllByOrderByCreatedDateDesc(Pageable pageable);
+
+    Page<Question> findAll(Pageable pageable);
     Optional<Question> findByQuestionId(Long questionId);
 
     default Long findMemberIdByQuestionId(Long questionId) {

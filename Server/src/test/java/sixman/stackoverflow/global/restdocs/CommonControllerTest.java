@@ -8,6 +8,8 @@ import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.web.servlet.ResultActions;
 import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.domain.member.entity.Authority;
+import sixman.stackoverflow.domain.question.controller.dto.AnswerSortRequest;
+import sixman.stackoverflow.domain.question.controller.dto.QuestionSortRequest;
 import sixman.stackoverflow.global.common.CommonController;
 import sixman.stackoverflow.global.entity.BaseEnum;
 import sixman.stackoverflow.global.entity.TypeEnum;
@@ -150,7 +152,9 @@ public class CommonControllerTest extends ControllerTest {
         List<String> enumValues = creatEnumRequest(
                 Authority.class,
                 TypeEnum.class,
-                Provider.class
+                Provider.class,
+                QuestionSortRequest.class,
+                AnswerSortRequest.class
         );
 
         String content = objectMapper.writeValueAsString(enumValues);

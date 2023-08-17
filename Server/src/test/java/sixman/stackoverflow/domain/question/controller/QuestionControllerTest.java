@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionCreateApiRequest;
+import sixman.stackoverflow.domain.question.controller.dto.QuestionSortRequest;
 import sixman.stackoverflow.domain.question.controller.dto.QuestionUpdateApiRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
@@ -32,7 +33,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -92,7 +92,7 @@ public class QuestionControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("질문 목록 조회 API")
-    void getQuestions() throws Exception{
+    void getQuestions() throws Exception {
         //given
         Integer page = 1;
 
@@ -136,6 +136,7 @@ public class QuestionControllerTest extends ControllerTest {
                 get("/questions")
                         .accept(APPLICATION_JSON)
                         .param("page", String.valueOf(page))
+                        .param("sort", "CREATED_DATE")
         );
 
         //then
@@ -148,10 +149,11 @@ public class QuestionControllerTest extends ControllerTest {
         actions.andDo(
                 documentHandler.document(
                         requestParameters(
-                                parameterWithName("page").description("페이지 번호")
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("sort").description(generateLinkCode(QuestionSortRequest.class))
                         ),
                         responseFields(
-                                fieldWithPath("data").description("질문 목ㄺ"),
+                                fieldWithPath("data").description("질문 목록"),
                                 fieldWithPath("data[].questionId").description("질문 ID"),
                                 fieldWithPath("data[].title").description("질문 제목"),
                                 fieldWithPath("data[].detail").description("질문 내용"),
@@ -449,5 +451,27 @@ public class QuestionControllerTest extends ControllerTest {
                         )
                 )
         );
+    }
+
+    @Test
+    @DisplayName("태그 삭제 API")
+    void removeTagsFromQuestion() throws Exception {
+
+        //given
+        Long questionId = 1L;
+        List<String> tagNames = List.of("tag1", "tag2");
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                delete("/questions/{questionId}/tags", questionId)
+                        .header("Authorization", "Bearer abc.def.ghi")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagNames))
+        );
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
     }
 }

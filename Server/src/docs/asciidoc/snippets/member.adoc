@@ -61,7 +61,7 @@ include::{snippets}/member/updatepassword/request-fields.adoc[]
 === HTTP Response
 include::{snippets}/member/updatepassword/http-response.adoc[]
 
-== 회원정보(닉네임, 자기 소개) 수정
+== 회원정보 수정
 === HTTP Request
 include::{snippets}/member/updatemember/http-request.adoc[]
 ==== Request Header
