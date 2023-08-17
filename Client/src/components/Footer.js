@@ -3,7 +3,7 @@ import logo from '../images/logo1.png';
 export default function Footer() {
   return (
     <>
-    <footer className="w-full h-[400px] flex justify-around bg-[#222629] text-white">
+    <footer className="w-full mt-16 flex justify-around bg-[#222629] text-white">
       <img src={logo} alt="logo" className="w-[50px] h-[50px] mt-2" />
       {/* STACK OVERFLOW */}
       <div className="w-[300px] h-[400px] text-[#B0BEC5]" >
