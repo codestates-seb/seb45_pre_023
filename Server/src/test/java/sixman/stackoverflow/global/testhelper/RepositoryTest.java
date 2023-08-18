@@ -7,6 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
+import sixman.stackoverflow.domain.question.entity.Question;
+import sixman.stackoverflow.domain.tag.entity.Tag;
 
 import javax.persistence.EntityManager;
 
@@ -24,6 +26,22 @@ public abstract class RepositoryTest {
                 .authority(Authority.ROLE_USER)
                 .myInfo(MyInfo.builder().build())
                 .enabled(true)
+                .build();
+    }
+
+    protected Question createQuestion(Member member) {
+        return Question.builder()
+                .title("title")
+                .detail("detail")
+                .expect("expect")
+                .member(member)
+                .build();
+    }
+
+    protected Tag createTag(String tagName) {
+        return Tag.builder()
+                .tagName(tagName)
+                .tagDetail(tagName + " : tagDetail")
                 .build();
     }
 }

@@ -126,15 +126,6 @@ class MemberRepositoryTest extends RepositoryTest {
                 .extracting("tagName").containsExactly("tag1", "tag2");
     }
 
-    private Question createQuestion(Member member) {
-        return Question.builder()
-                .title("title")
-                .detail("detail")
-                .expect("expect")
-                .member(member)
-                .build();
-    }
-
     private List<Question> createQuestions(Member member, int count){
         List<Question> questions = new ArrayList<>();
         for(int i = 0; i < count; i++) {
@@ -164,12 +155,6 @@ class MemberRepositoryTest extends RepositoryTest {
                 .member(member)
                 .answer(answer)
                 .type(TypeEnum.UPVOTE)
-                .build();
-    }
-
-    private Tag createTag(String name){
-        return Tag.builder()
-                .tagName(name)
                 .build();
     }
 

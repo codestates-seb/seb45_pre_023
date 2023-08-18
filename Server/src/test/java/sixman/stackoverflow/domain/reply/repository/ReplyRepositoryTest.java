@@ -64,15 +64,6 @@ class ReplyRepositoryTest extends RepositoryTest {
 
     }
 
-    private Question createQuestion(Member member) {
-        return Question.builder()
-                .member(member)
-                .detail("detail")
-                .title("title")
-                .expect("expect")
-                .build();
-    }
-
     private Answer createAnswer(Question question) {
         return Answer.builder()
                 .content("dasdasd")

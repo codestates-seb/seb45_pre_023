@@ -85,20 +85,4 @@ class TagRepositoryTest extends RepositoryTest {
                 );
 
     }
-
-    private Question createQuestion(Member member) {
-        return Question.builder()
-                .title("title")
-                .detail("detail")
-                .expect("expect")
-                .member(member)
-                .build();
-    }
-
-    private Tag createTag(String tagName) {
-        return Tag.builder()
-                .tagName(tagName)
-                .build();
-    }
-
 }
