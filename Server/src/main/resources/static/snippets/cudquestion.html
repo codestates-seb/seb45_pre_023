@@ -514,13 +514,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /questions HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: Bearer abc.def.ghi
-Content-Length: 73
+Content-Length: 97
 Host: localhost:8080
 
 {
   "title" : "title",
   "detail" : "detail",
-  "expect" : "expect"
+  "expect" : "expect",
+  "tagIds" : [ 1, 2 ]
 }</code></pre>
 </div>
 </div>
@@ -552,7 +553,8 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
   "title" : "title",
   "detail" : "detail",
-  "expect" : "expect"
+  "expect" : "expect",
+  "tagIds" : [ 1, 2 ]
 }</code></pre>
 </div>
 </div>
@@ -596,6 +598,13 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">질문 내용2</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">[NotBlank : 내용을 입력해주세요.]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tagIds</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 태그</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[NotNull : 태그를 선택해주세요.]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
 </tr>
 </tbody>
@@ -644,13 +653,14 @@ Location: /questions/1</code></pre>
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">PATCH /questions/1 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: Bearer abc.def.ghi
-Content-Length: 94
+Content-Length: 121
 Host: localhost:8080
 
 {
   "title" : "update title",
   "detail" : "update detail",
-  "expect" : "update expect"
+  "expect" : "update expect",
+  "tagIds" : [ 1, 2, 3 ]
 }</code></pre>
 </div>
 </div>
@@ -704,7 +714,8 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
   "title" : "update title",
   "detail" : "update detail",
-  "expect" : "update expect"
+  "expect" : "update expect",
+  "tagIds" : [ 1, 2, 3 ]
 }</code></pre>
 </div>
 </div>
@@ -748,6 +759,13 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">질문 내용2</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">[NotBlank : 내용을 입력해주세요.]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tagIds</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 태그 ID 목록</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[NotNull : 태그를 선택해주세요.]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
 </tr>
 </tbody>

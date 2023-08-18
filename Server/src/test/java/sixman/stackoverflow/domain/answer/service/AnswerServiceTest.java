@@ -152,6 +152,7 @@ class AnswerServiceTest extends ServiceTest {
     void findAnswers() { // 정우님이랑 이야기
     }
 
+
     @Test
     @DisplayName("answerId, content 를 통해 답변을 수정한다.") // o
     void updateAnswer() {
@@ -182,6 +183,8 @@ class AnswerServiceTest extends ServiceTest {
         assertThat(updatedAnswer).isNotNull();
         assertThat(updatedAnswer.getContent()).isEqualTo(newContent);
     }
+
+
 
     @Test
     @DisplayName("답변 수정 시 존재하지 않는 answerId 이면 AnswerNotFoundException 이 발생한다.") //o
