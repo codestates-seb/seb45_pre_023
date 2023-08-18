@@ -103,9 +103,27 @@ public abstract class ServiceTest {
 
     }
 
+    protected Question createquestion(Member member) {
+        return Question.builder()
+                .member(member)
+                .detail("test")
+                .title("test")
+                .expect("test")
+                .build();
+
+    }
+
     protected Answer createanswer(Long answerId) {
         return Answer.builder()
                 .answerId(answerId)
+                .build();
+    }
+
+    protected Answer createanswer(Member member, Question question) {
+        return Answer.builder()
+                .member(member)
+                .content("test")
+                .question(question)
                 .build();
     }
 }

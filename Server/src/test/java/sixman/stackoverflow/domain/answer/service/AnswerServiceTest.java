@@ -41,8 +41,6 @@ class AnswerServiceTest extends ServiceTest {
     private AnswerService answerService;
     @Autowired
     private AnswerRepository answerRepository;
-    @Autowired
-    private QuestionService questionService;
 
     @Test
     @DisplayName("답변의 content, questionId 를 받아서 답변을 생성한다.") // o
@@ -226,10 +224,24 @@ class AnswerServiceTest extends ServiceTest {
     @Test
     @DisplayName("답변 수정 시 다른 사람의 answer 를 수정하려고 하면 MemberAccessDeniedException 이 발생한다.") // x
     void updateAnswerMemberException() {
+        //given
+        Member myMember = createMember();
+        Member otherMember = createMember();
+        Question question = createQuestion(otherMember);
+        Answer answer = createanswer(otherMember, question);
 
+        memberRepository.save(myMember);
+        memberRepository.save(otherMember);
+        questionRepository.save(question);
+        answerRepository.save(answer);
 
+        setDefaultAuthentication(myMember.getMemberId()); //myMember 로 로그인
 
-
+        //when
+        assertThatThrownBy(
+                () -> answerService.updateAnswer(answer.getAnswerId(), "new content"))
+                .isInstanceOf(MemberAccessDeniedException.class)
+                .hasMessage("접근 권한이 없습니다.");
     }
 
 
