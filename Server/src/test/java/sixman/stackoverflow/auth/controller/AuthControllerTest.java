@@ -26,6 +26,8 @@ import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
 import sixman.stackoverflow.auth.jwt.service.TokenProvider;
 import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
+import sixman.stackoverflow.domain.member.controller.dto.MemberMailAuthApiRequest;
+import sixman.stackoverflow.domain.member.controller.dto.MemberMailConfirmApiRequest;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
@@ -33,6 +35,7 @@ import sixman.stackoverflow.domain.member.entity.MyInfo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -189,6 +192,8 @@ class AuthControllerTest {
                 )
         );
     }
+
+
 
     private Member createMember(String email, String password) {
 

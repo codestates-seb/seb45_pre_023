@@ -2,18 +2,19 @@ package sixman.stackoverflow.auth.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.auth.jwt.dto.Token;
-import sixman.stackoverflow.auth.jwt.service.TokenProvider;
 import sixman.stackoverflow.auth.oauth.service.Provider;
 import sixman.stackoverflow.auth.oauth.service.OAuthService;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberFindPasswordApiRequest;
+import sixman.stackoverflow.domain.member.controller.dto.MemberMailAuthApiRequest;
+import sixman.stackoverflow.domain.member.controller.dto.MemberMailConfirmApiRequest;
 import sixman.stackoverflow.domain.member.service.MemberService;
+import sixman.stackoverflow.global.response.ApiSingleResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -63,6 +64,18 @@ public class AuthController {
         memberService.findPassword(request.toServiceRequest());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/email")
+    public ResponseEntity<Void> sendEmail(@RequestBody @Valid MemberMailAuthApiRequest request) {
+        memberService.sendFindPasswordCodeToEmail(request.getEmail());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/email/confirm")
+    public ResponseEntity<ApiSingleResponse<Boolean>> confirmEmail(@RequestBody @Valid MemberMailConfirmApiRequest request) {
+        boolean result = memberService.checkCode(request.getEmail(), request.getCode());
+        return ResponseEntity.ok(ApiSingleResponse.ok(result));
     }
 
     @GetMapping("/error")

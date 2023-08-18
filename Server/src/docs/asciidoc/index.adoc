@@ -15,9 +15,10 @@ include::common/overview.adoc[]
 === Auth API
 * link:snippets/login.html[로그인 API, window=_blank]
 * link:snippets/signup.html[회원가입 API, window=_blank]
+* link:snippets/email.html[회원 가입 이메일 인증 API, window=_blank]
 * link:snippets/findpassword.html[비밀번호 찾기 API, window=_blank]
+* link:snippets/findpasswordemail.html[비밀번호 찾기 이메일 인증 API, window=_blank]
 * link:snippets/refreshtoken.html[토큰 재발급 API, window=_blank]
-* link:snippets/email.html[이메일 인증 API, window=_blank]
 
 === Member API
 * link:snippets/member.html[회원 정보 API, window=_blank]
