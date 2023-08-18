@@ -97,12 +97,12 @@ public class QuestionControllerTest extends ControllerTest {
         Integer page = 1;
 
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
-                .questionTagId(1L)
+                .tagId(1L)
                 .tagName("tag1")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
-                .questionTagId(2L)
+                .tagId(2L)
                 .tagName("tag2")
                 .build();
 
@@ -191,12 +191,12 @@ public class QuestionControllerTest extends ControllerTest {
     void getQuestionById() throws Exception {
         //given
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
-                .questionTagId(1L)
+                .tagId(1L)
                 .tagName("tag1")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
-                .questionTagId(2L)
+                .tagId(2L)
                 .tagName("tag2")
                 .build();
 
