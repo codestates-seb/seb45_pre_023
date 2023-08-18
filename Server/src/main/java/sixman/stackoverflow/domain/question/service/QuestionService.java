@@ -53,7 +53,8 @@ public class QuestionService {
 
     public Page<QuestionResponse> getLatestQuestions(Pageable pageable) {
         Page<Question> questions = questionRepository.findAll(pageable);
-        return questions.map(QuestionResponse::of);
+        Long totalQuestionCount = questionRepository.count();
+        return questions.map(question -> QuestionResponse.of(question, totalQuestionCount));
     }
 
     public QuestionDetailResponse getQuestionById(Long questionId) {
