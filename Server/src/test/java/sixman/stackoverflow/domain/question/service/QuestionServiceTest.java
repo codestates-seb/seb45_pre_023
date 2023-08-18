@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.question.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,10 @@ import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionTagResponse;
+import sixman.stackoverflow.domain.questiontag.QuestionTagRepository;
 import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.domain.tag.entity.Tag;
+import sixman.stackoverflow.domain.tag.repository.TagRepository;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
@@ -44,9 +47,15 @@ public class QuestionServiceTest extends ServiceTest {
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
+    private TagRepository tagRepository;
+    @Autowired
     private AnswerService answerService;
     @Autowired
     private AnswerRepository answerRepository;
+    @Autowired
+    private QuestionService questionService;
+    @Autowired
+    private QuestionTagRepository questionTagRepository;
 
 
     @Test
@@ -57,36 +66,107 @@ public class QuestionServiceTest extends ServiceTest {
 
 
 
-//    @Test
-//    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
-//    public void getQuestionById(){
-//        // given
-//        Member member = createMember();
-//        memberRepository.save(member);
-//
-//        Question question = createQuestion(member);
-//
-//        Answer answer = createanswer(member,question);
-//        answerRepository.save(answer);
-//
-//
-//
-//
-//
-//        questionRepository.save(question);
-//
-//    }
+    @Test
+    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
+    public void getQuestionById(){
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+
+        Answer answer = createanswer(member,question);
+        answerRepository.save(answer);
+
+
+
+
+
+        questionRepository.save(question);
+
+    }
 
 
     @Test
     @DisplayName("생성된 question의 questionId를 반환한다.")
-    public void createQuestionTest(){
+    void createQuestionTest(){
+        //given
+        Member member = createMember();
+        Tag tag1 = createTag("tag1");
+        Tag tag2 = createTag("tag2");
+        memberRepository.save(member);
+        tagRepository.save(tag1);
+        tagRepository.save(tag2);
 
+        Question question = createQuestion(member);
+        List<Long> tagsId = List.of(tag1.getTagId(), tag2.getTagId());
+
+        //when
+        Long questionId = questionService.createQuestion(question, tagsId);
+
+        //then
+        Question findQuestion = questionRepository.findById(questionId).orElseThrow();
+        assertThat(findQuestion.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(findQuestion.getTitle()).isEqualTo(question.getTitle());
+        assertThat(findQuestion.getDetail()).isEqualTo(question.getDetail());
+        assertThat(findQuestion.getExpect()).isEqualTo(question.getExpect());
+        assertThat(findQuestion.getViews()).isEqualTo(0);
+        assertThat(findQuestion.getRecommend()).isEqualTo(0);
+        assertThat(findQuestion.getQuestionTags()).hasSize(2);
     }
 
     @Test
     @DisplayName("questionId와 해당 질문글의 내용을 받아서 내용을 수정한다.")
     public void updateQuestion(){
+        //given
+        Member member = createMember();
+        Tag tag1 = createTag("tag1");
+        Tag tag2 = createTag("tag2");
+        Tag tag3 = createTag("tag3");
+        Question question = createQuestion(member);
+
+        QuestionTag questionTag1 = QuestionTag.builder()
+                .question(question)
+                .tag(tag1)
+                .build();
+
+        QuestionTag questionTag2 = QuestionTag.builder()
+                .question(question)
+                .tag(tag2)
+                .build();
+
+        question.setQuestionTags(List.of(questionTag1, questionTag2));
+
+        memberRepository.save(member);
+        tagRepository.save(tag1);
+        tagRepository.save(tag2);
+        tagRepository.save(tag3);
+        questionRepository.save(question);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        String updateTitle = "updateTitle";
+        String updateDetail = "updateDetail";
+        String updateExpect = "updateExpect";
+        List<Long> updateTagsId = List.of(tag2.getTagId(), tag3.getTagId());
+
+        //when
+        questionService.updateQuestion(
+                question.getQuestionId(),
+                updateTitle,
+                updateDetail,
+                updateExpect,
+                updateTagsId);
+
+        //then
+        Question findQuestion = questionRepository.findById(question.getQuestionId()).orElseThrow();
+        assertThat(findQuestion.getTitle()).isEqualTo(updateTitle);
+        assertThat(findQuestion.getDetail()).isEqualTo(updateDetail);
+        assertThat(findQuestion.getExpect()).isEqualTo(updateExpect);
+        assertThat(findQuestion.getQuestionTags().stream().map(
+                questionTag -> questionTag.getTag().getTagId()
+        )).containsAll(updateTagsId);
+
 
     }
 
@@ -114,6 +194,7 @@ public class QuestionServiceTest extends ServiceTest {
                 .detail("detail")
                 .title("title")
                 .expect("expect")
+                .questionTags(new ArrayList<>())
                 .build();
     }
 

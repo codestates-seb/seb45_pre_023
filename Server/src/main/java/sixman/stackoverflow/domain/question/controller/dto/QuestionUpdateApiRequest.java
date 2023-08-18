@@ -24,6 +24,6 @@ public class QuestionUpdateApiRequest {
     private String expect;
 
     @NotNull(message = "{validation.question.tag}")
-    private List<Integer> tagIds;
+    private List<Long> tagIds;
 
 }

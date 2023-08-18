@@ -89,17 +89,22 @@ public class QuestionService {
         return QuestionTagResponse.of(tags);
     }
 
-    public Long createQuestion(Question question, List<Integer> tagIds) {
+    public Long createQuestion(Question question, List<Long> tagIds) {
 
-        List<QuestionTag> tags = tagRepository.findAllByTagIdIn(tagIds);
-        question.setQuestionTags(tags);
+        List<Tag> tags = tagRepository.findAllByTagIdIn(tagIds);
+
+        List<QuestionTag> questionTags = tags.stream()
+                .map(tag -> QuestionTag.createQuestionTag(question, tag))
+                .collect(Collectors.toList());
+
+        question.setQuestionTags(questionTags);
 
         Question savedQuestion = questionRepository.save(question);
         return savedQuestion.getQuestionId();
     }
 
 
-    public Question updateQuestion(Long questionId, String title, String detail, String expect, List<Integer> tagIds) {
+    public Question updateQuestion(Long questionId, String title, String detail, String expect, List<Long> tagIds) {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
@@ -117,7 +122,7 @@ public class QuestionService {
         List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
         List<QuestionTag> tagsToRemove = new ArrayList<>();
         for (QuestionTag tag : existingTags) {
-            if (!tagIds.contains(tag.getTag().getTagId().intValue())) {
+            if (!tagIds.contains(tag.getTag().getTagId())) {
                 tagsToRemove.add(tag);
             }
         }
@@ -125,9 +130,12 @@ public class QuestionService {
         existingTags.removeAll(tagsToRemove);
 
         // 새로운 태그들을 가져와서 추가할 수 있도록 처리
-        List<QuestionTag> newTags = tagRepository.findAllByTagIdIn(tagIds);
-        existingTags.addAll(newTags);
-
+        List<Tag> newTags = tagRepository.findAllByTagIdIn(tagIds);
+        List<QuestionTag> newQuestionTags = newTags.stream()
+                .filter(tag -> existingTags.stream().noneMatch(questionTag -> questionTag.getTag().equals(tag)))
+                .map(tag -> QuestionTag.createQuestionTag(existingQuestion, tag))
+                .collect(Collectors.toList());
+        existingTags.addAll(newQuestionTags);
 
         existingQuestion.setTitle(title);
         existingQuestion.setDetail(detail);
