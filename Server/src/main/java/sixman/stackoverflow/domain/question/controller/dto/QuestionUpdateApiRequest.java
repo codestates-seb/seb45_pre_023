@@ -6,6 +6,9 @@ import lombok.Setter;
 import sixman.stackoverflow.domain.question.entity.Question;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -20,11 +23,7 @@ public class QuestionUpdateApiRequest {
     @NotBlank(message = "{validation.question.content}")
     private String expect;
 
-    // 업데이트 메서드
-    public Question updateEntity(Question question) {
-        question.setTitle(this.title);
-        question.setDetail(this.detail);
-        question.setExpect(this.expect);
-        return question;
-    }
+    @NotNull(message = "{validation.question.tag}")
+    private List<Integer> tagIds;
+
 }

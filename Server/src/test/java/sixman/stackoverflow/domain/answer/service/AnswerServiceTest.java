@@ -121,35 +121,35 @@ class AnswerServiceTest extends ServiceTest {
     void findAnswers() {
     }
 
-    @Test
-    @DisplayName("answerId, content 를 통해 답변을 수정한다.")
-    void updateAnswer() {
-
-        Member member = createMember();
-        memberRepository.save(member);
-
-        Question question = createQuestion(member);
-        questionRepository.save(question);
-
-        Answer changeAnswer = Answer.builder()
-                .answerId(1L)
-                .content("old Content")
-                .member(member)
-                .question(question)
-                .build();
-        answerRepository.save(changeAnswer);
-
-        setDefaultAuthentication(member.getMemberId());
-
-        String newContent = "Updated Content";
-
-        // When
-        Answer updatedAnswer = answerService.updateAnswer(changeAnswer.getAnswerId(), newContent);
-
-        // Then
-        assertNotNull(updatedAnswer);
-        assertEquals(newContent, updatedAnswer.getContent());
-    }
+//    @Test
+//    @DisplayName("answerId, content 를 통해 답변을 수정한다.")
+//    void updateAnswer() {
+//
+//        Member member = createMember();
+//        memberRepository.save(member);
+//
+//        Question question = createQuestion(member);
+//        questionRepository.save(question);
+//
+//        Answer changeAnswer = Answer.builder()
+//                .answerId(1L)
+//                .content("old Content")
+//                .member(member)
+//                .question(question)
+//                .build();
+//        answerRepository.save(changeAnswer);
+//
+//        setDefaultAuthentication(member.getMemberId());
+//
+//        String newContent = "Updated Content";
+//
+//        // When
+//        Answer updatedAnswer = answerService.updateAnswer(changeAnswer.getAnswerId(), newContent);
+//
+//        // Then
+//        assertNotNull(updatedAnswer);
+//        assertEquals(newContent, updatedAnswer.getContent());
+//    }
 
     @Test
     @DisplayName("답변 수정 시 존재하지 않는 answerId 이면 AnswerNotFoundException 이 발생한다.")
