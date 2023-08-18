@@ -21,7 +21,6 @@ public class QuestionResponse {
     private String title;
     private String detail;
     private Integer answerCount;
-    private Long totalQuestionCount;
     private MemberInfo member;
     private Integer views;
     private Integer recommend;
@@ -29,14 +28,13 @@ public class QuestionResponse {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
-    public static QuestionResponse of(Question question, Long totalQuestionCount) {
+    public static QuestionResponse of(Question question) {
 
         return QuestionResponse.builder()
                 .questionId(question.getQuestionId())
                 .title(question.getTitle())
                 .detail(question.getDetail())
                 .answerCount(question.getAnswers().size())
-                .totalQuestionCount(totalQuestionCount)
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
                 .recommend(question.getRecommend())
