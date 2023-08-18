@@ -118,7 +118,7 @@ class ReplyControllerTest extends ControllerTest {
                                 parameterWithName("answer-id").description("답변 ID")
                         ),
                         requestParameters(
-                                parameterWithName("page").description("페이지 번호")
+                                parameterWithName("page").description("페이지 번호").optional()
                         ),
                         responseFields(
                                 fieldWithPath("data").description("댓글 목록"),

@@ -127,8 +127,8 @@ class AnswerControllerTest extends ControllerTest {
                                 parameterWithName("question-id").description("질문 ID")
                         ),
                         requestParameters(
-                                parameterWithName("page").description("페이지 번호"),
-                                parameterWithName("sort").description(generateLinkCode(AnswerSortRequest.class))
+                                parameterWithName("page").description("페이지 번호").optional(),
+                                parameterWithName("sort").description(generateLinkCode(AnswerSortRequest.class)).optional()
                         ),
                         responseFields(
                                 fieldWithPath("data").description("질문 답변 정보"),

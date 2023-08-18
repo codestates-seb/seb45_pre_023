@@ -225,7 +225,7 @@ class MemberControllerTest extends ControllerTest {
                                 parameterWithName("memberId").description("회원 ID")
                         ),
                         requestParameters(
-                                parameterWithName("page").description("요청 페이지")
+                                parameterWithName("page").description("요청 페이지").optional()
                         ),
                         responseFields(
                                 fieldWithPath("data[]").description("회원이 작성한 질문 리스트"),
@@ -281,7 +281,7 @@ class MemberControllerTest extends ControllerTest {
                                 parameterWithName("memberId").description("회원 ID")
                         ),
                         requestParameters(
-                                parameterWithName("page").description("요청 페이지")
+                                parameterWithName("page").description("요청 페이지").optional()
                         ),
                         responseFields(
                                 fieldWithPath("data[]").description("회원이 작성한 답변 리스트"),
