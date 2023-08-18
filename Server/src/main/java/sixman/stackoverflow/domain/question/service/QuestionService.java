@@ -91,7 +91,7 @@ public class QuestionService {
 
     public Long createQuestion(Question question, List<Integer> tagIds) {
 
-        List<QuestionTag> tags = tagRepository.findAllById(tagIds);
+        List<QuestionTag> tags = tagRepository.findAllByTagIdIn(tagIds);
         question.setQuestionTags(tags);
 
         Question savedQuestion = questionRepository.save(question);
@@ -113,34 +113,27 @@ public class QuestionService {
             throw new MemberAccessDeniedException();
         }
 
+        // 기존에 연결된 태그들을 가져와서 삭제할 수 있도록 처리
+        List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
+        List<QuestionTag> tagsToRemove = new ArrayList<>();
+        for (QuestionTag tag : existingTags) {
+            if (!tagIds.contains(tag.getTag().getTagId().intValue())) {
+                tagsToRemove.add(tag);
+            }
+        }
+
+        existingTags.removeAll(tagsToRemove);
+
+        // 새로운 태그들을 가져와서 추가할 수 있도록 처리
+        List<QuestionTag> newTags = tagRepository.findAllByTagIdIn(tagIds);
+        existingTags.addAll(newTags);
+
+
         existingQuestion.setTitle(title);
         existingQuestion.setDetail(detail);
         existingQuestion.setExpect(expect);
 
         return questionRepository.save(existingQuestion);
-    }
-
-    public void updateTags(Long questionId, List<Integer> tagIds) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(QuestionNotFoundException::new);
-
-        Long loggedInUserId = SecurityUtil.getCurrentId();
-        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
-
-        if (!loggedInUserId.equals(questionAuthorId)) {
-            throw new MemberAccessDeniedException();
-        }
-
-        List<QuestionTag> newQuestionTags = new ArrayList<>();
-        //todo : 다시 구현
-//        for (String tagName : tagNames) {
-//            Tag tag = createOrGetTag(tagName);
-//            QuestionTag questionTag = QuestionTag.createQuestionTag(question, tag);
-//            newQuestionTags.add(questionTag);
-//        }
-
-        question.setQuestionTags(newQuestionTags);
-        questionRepository.save(question);
     }
 
     public void deleteQuestion(Long questionId) {
