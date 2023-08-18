@@ -96,7 +96,7 @@ class AnswerServiceTest extends ServiceTest {
 //
 //        // When, Then
 //        assertThrows(AnswerNotFoundException.class, () -> {
-//            answerService.findAnswer(answerId);
+//            answerService.findquestion(answerId);
 //        });
 
 
@@ -290,7 +290,7 @@ class AnswerServiceTest extends ServiceTest {
         Answer answerToDelete = Answer.builder()
                 .member(Member.builder().memberId(memberId).build())
                 .build();
-
+        //퀘스천을 멤버 1에 아이디로 만들고 멤버 2의
         when(answerRepository.findById(answerId)).thenReturn(Optional.of(answerToDelete));
 
         // When, Then
