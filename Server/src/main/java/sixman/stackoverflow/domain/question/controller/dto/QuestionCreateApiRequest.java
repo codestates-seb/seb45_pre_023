@@ -7,6 +7,7 @@ import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.question.entity.Question;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class QuestionCreateApiRequest {
     @NotBlank(message = "{validation.question.content}")
     private String expect;
 
-    private List<Integer> tagIds = new ArrayList<>();
+    @NotNull(message = "{validation.question.tag}")
+    private List<Integer> tagIds;
 
     // 생성 메서드
     public Question toEntity(Member member) {
