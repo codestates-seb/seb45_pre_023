@@ -511,18 +511,21 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 227
+Content-Length: 329
 
 {
   "data" : [ {
     "tagId" : 1,
-    "tagName" : "tag1"
+    "tagName" : "tag1",
+    "tagDetail" : "tag1 detail"
   }, {
     "tagId" : 2,
-    "tagName" : "tag2"
+    "tagName" : "tag2",
+    "tagDetail" : "tag2 detail"
   }, {
     "tagId" : 3,
-    "tagName" : "tag3"
+    "tagName" : "tag3",
+    "tagDetail" : "tag3 detail"
   } ],
   "code" : 200,
   "status" : "OK",
@@ -537,13 +540,16 @@ Content-Length: 227
 <pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
   "data" : [ {
     "tagId" : 1,
-    "tagName" : "tag1"
+    "tagName" : "tag1",
+    "tagDetail" : "tag1 detail"
   }, {
     "tagId" : 2,
-    "tagName" : "tag2"
+    "tagName" : "tag2",
+    "tagDetail" : "tag2 detail"
   }, {
     "tagId" : 3,
-    "tagName" : "tag3"
+    "tagName" : "tag3",
+    "tagDetail" : "tag3 detail"
   } ],
   "code" : 200,
   "status" : "OK",
@@ -577,6 +583,11 @@ Content-Length: 227
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>data[].tagName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">태그 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data[].tagDetail</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">태그 설명</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>

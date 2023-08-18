@@ -1,6 +1,7 @@
 package sixman.stackoverflow.domain.tag.repository;
 
 import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,45 @@ class TagRepositoryTest extends RepositoryTest {
 
         //then
         assertThat(allByTagIdIn).hasSize(2)
-                .extracting("tagName")
-                .containsExactlyInAnyOrder(tag1.getTagName(), tag2.getTagName());
+                .extracting("tagId", "tagName")
+                .containsExactlyInAnyOrder(
+                        Tuple.tuple(tag1.getTagId(), tag1.getTagName()),
+                        Tuple.tuple(tag2.getTagId(), tag2.getTagName())
+                );
+    }
+
+    @Test
+    @DisplayName("tagName 리스트로 tag list 를 조회한다.")
+    void findAllByTagNameIn() {
+        //given
+        Member member = createMember();
+
+        Question question = createQuestion(member);
+
+        Tag tag1 = createTag("tag1");
+        Tag tag2 = createTag("tag2");
+
+        QuestionTag.createQuestionTag(question, tag1);
+        QuestionTag.createQuestionTag(question, tag2);
+
+        em.persist(member);
+        em.persist(question);
+        em.persist(tag1);
+        em.persist(tag2);
+        em.flush();
+        em.clear();
+
+        //when
+        List<Tag> allByTagIdIn = tagRepository.findAllByTagNameIn(List.of(tag1.getTagName(), tag2.getTagName()));
+
+        //then
+        assertThat(allByTagIdIn).hasSize(2)
+                .extracting("tagId","tagName")
+                .containsExactlyInAnyOrder(
+                        Tuple.tuple(tag1.getTagId(), tag1.getTagName()),
+                        Tuple.tuple(tag2.getTagId(), tag2.getTagName())
+                );
+
     }
 
     private Question createQuestion(Member member) {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -57,7 +58,7 @@ public class ApiSingleResponse<T> {
                 exception.getMessage());
     }
 
-    public static ApiSingleResponse<List<ErrorResponse>> fail(MethodArgumentNotValidException exception) {
+    public static ApiSingleResponse<List<ErrorResponse>> fail(BindException exception) {
         return new ApiSingleResponse<>(
                 ErrorResponse.of(exception.getFieldErrors()),
                 HttpStatus.BAD_REQUEST.value(),

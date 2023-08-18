@@ -514,14 +514,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /questions HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: Bearer abc.def.ghi
-Content-Length: 97
+Content-Length: 110
 Host: localhost:8080
 
 {
   "title" : "title",
   "detail" : "detail",
   "expect" : "expect",
-  "tagIds" : [ 1, 2 ]
+  "tagNames" : [ "java", "mysql" ]
 }</code></pre>
 </div>
 </div>
@@ -554,7 +554,7 @@ Host: localhost:8080
   "title" : "title",
   "detail" : "detail",
   "expect" : "expect",
-  "tagIds" : [ 1, 2 ]
+  "tagNames" : [ "java", "mysql" ]
 }</code></pre>
 </div>
 </div>
@@ -601,9 +601,9 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tagIds</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tagNames</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">질문 태그</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 태그 이름</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">[NotNull : 태그를 선택해주세요.]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
 </tr>
@@ -653,14 +653,14 @@ Location: /questions/1</code></pre>
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">PATCH /questions/1 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: Bearer abc.def.ghi
-Content-Length: 121
+Content-Length: 141
 Host: localhost:8080
 
 {
   "title" : "update title",
   "detail" : "update detail",
   "expect" : "update expect",
-  "tagIds" : [ 1, 2, 3 ]
+  "tagNames" : [ "java", "mysql", "spring" ]
 }</code></pre>
 </div>
 </div>
@@ -715,7 +715,7 @@ Host: localhost:8080
   "title" : "update title",
   "detail" : "update detail",
   "expect" : "update expect",
-  "tagIds" : [ 1, 2, 3 ]
+  "tagNames" : [ "java", "mysql", "spring" ]
 }</code></pre>
 </div>
 </div>
@@ -762,9 +762,9 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tagIds</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tagNames</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">질문 태그 ID 목록</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 태그 이름 목록</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">[NotNull : 태그를 선택해주세요.]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수</p></td>
 </tr>

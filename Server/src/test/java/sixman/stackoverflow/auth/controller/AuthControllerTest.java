@@ -193,6 +193,30 @@ class AuthControllerTest {
         );
     }
 
+    @Test
+    @DisplayName("OAuth 로그인 API Validation - provider 가 null 이면 400 에러가 발생한다.")
+    void oauthLoginValidation() throws Exception {
+        //given
+        String provider = "";
+        String code = "DNIL345AS21GN34";
+        Long memberId = 1L;
+
+        Token token = new Token("Bearer accessToken", "Bearer refreshToken", memberId);
+        given(oAuthService.login(any(Provider.class), anyString())).willReturn(token);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/auth/oauth")
+                        .param("provider", provider)
+                        .param("code", code));
+
+        //then
+        actions.andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data[0].field").value("provider"))
+                .andExpect(jsonPath("$.data[0].value").value("null"))
+                .andExpect(jsonPath("$.data[0].reason").value("OAuth 인증을 선택해주세요."));
+    }
 
 
     private Member createMember(String email, String password) {

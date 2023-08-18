@@ -99,10 +99,10 @@ public class QuestionServiceTest extends ServiceTest {
         tagRepository.save(tag2);
 
         Question question = createQuestion(member);
-        List<Long> tagsId = List.of(tag1.getTagId(), tag2.getTagId());
+        List<String> tagNames = List.of(tag1.getTagName(), tag2.getTagName());
 
         //when
-        Long questionId = questionService.createQuestion(question, tagsId);
+        Long questionId = questionService.createQuestion(question, tagNames);
 
         //then
         Question findQuestion = questionRepository.findById(questionId).orElseThrow();
@@ -148,7 +148,7 @@ public class QuestionServiceTest extends ServiceTest {
         String updateTitle = "updateTitle";
         String updateDetail = "updateDetail";
         String updateExpect = "updateExpect";
-        List<Long> updateTagsId = List.of(tag2.getTagId(), tag3.getTagId());
+        List<String> updateTagNames = List.of(tag2.getTagName(), tag3.getTagName());
 
         //when
         questionService.updateQuestion(
@@ -156,7 +156,7 @@ public class QuestionServiceTest extends ServiceTest {
                 updateTitle,
                 updateDetail,
                 updateExpect,
-                updateTagsId);
+                updateTagNames);
 
         //then
         Question findQuestion = questionRepository.findById(question.getQuestionId()).orElseThrow();
@@ -164,8 +164,8 @@ public class QuestionServiceTest extends ServiceTest {
         assertThat(findQuestion.getDetail()).isEqualTo(updateDetail);
         assertThat(findQuestion.getExpect()).isEqualTo(updateExpect);
         assertThat(findQuestion.getQuestionTags().stream().map(
-                questionTag -> questionTag.getTag().getTagId()
-        )).containsAll(updateTagsId);
+                questionTag -> questionTag.getTag().getTagName()
+        )).containsAll(updateTagNames);
 
 
     }

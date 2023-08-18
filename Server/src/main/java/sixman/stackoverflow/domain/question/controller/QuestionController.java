@@ -92,7 +92,7 @@ public class QuestionController {
 
         Member member = optionalMember.get();
         Question question = questionCreateApiRequest.toEntity(member);
-        Long questionId = questionService.createQuestion(question, questionCreateApiRequest.getTagIds());
+        Long questionId = questionService.createQuestion(question, questionCreateApiRequest.getTagNames());
 
         URI uri = URI.create("/questions/" + questionId);
 
@@ -125,7 +125,7 @@ public class QuestionController {
                 request.getTitle(),
                 request.getDetail(),
                 request.getExpect(),
-                request.getTagIds()
+                request.getTagNames()
         );
 
         return ResponseEntity.noContent().build();

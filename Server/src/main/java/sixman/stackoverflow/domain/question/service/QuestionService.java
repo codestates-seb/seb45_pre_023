@@ -89,9 +89,9 @@ public class QuestionService {
         return QuestionTagResponse.of(tags);
     }
 
-    public Long createQuestion(Question question, List<Long> tagIds) {
+    public Long createQuestion(Question question, List<String> tagNames) {
 
-        List<Tag> tags = tagRepository.findAllByTagIdIn(tagIds);
+        List<Tag> tags = tagRepository.findAllByTagNameIn(tagNames);
 
         List<QuestionTag> questionTags = tags.stream()
                 .map(tag -> QuestionTag.createQuestionTag(question, tag))
@@ -104,7 +104,7 @@ public class QuestionService {
     }
 
 
-    public Question updateQuestion(Long questionId, String title, String detail, String expect, List<Long> tagIds) {
+    public Question updateQuestion(Long questionId, String title, String detail, String expect, List<String> tagNames) {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
@@ -122,7 +122,7 @@ public class QuestionService {
         List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
         List<QuestionTag> tagsToRemove = new ArrayList<>();
         for (QuestionTag tag : existingTags) {
-            if (!tagIds.contains(tag.getTag().getTagId())) {
+            if (!tagNames.contains(tag.getTag().getTagName())) {
                 tagsToRemove.add(tag);
             }
         }
@@ -130,7 +130,7 @@ public class QuestionService {
         existingTags.removeAll(tagsToRemove);
 
         // 새로운 태그들을 가져와서 추가할 수 있도록 처리
-        List<Tag> newTags = tagRepository.findAllByTagIdIn(tagIds);
+        List<Tag> newTags = tagRepository.findAllByTagNameIn(tagNames);
         List<QuestionTag> newQuestionTags = newTags.stream()
                 .filter(tag -> existingTags.stream().noneMatch(questionTag -> questionTag.getTag().equals(tag)))
                 .map(tag -> QuestionTag.createQuestionTag(existingQuestion, tag))
