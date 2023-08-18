@@ -90,7 +90,12 @@ public class QuestionService {
     }
 
     public Long createQuestion(Question question, List<Integer> tagIds) {
-        return questionRepository.save(question).getQuestionId();
+
+        List<QuestionTag> tags = tagRepository.findAllById(tagIds);
+        question.setQuestionTags(tags);
+
+        Question savedQuestion = questionRepository.save(question);
+        return savedQuestion.getQuestionId();
     }
 
     public void addTagsToQuestion(Long questionId, List<QuestionTagCreateApiRequest> tagCreateRequests) {
