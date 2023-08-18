@@ -140,14 +140,6 @@ public class QuestionController {
         return ResponseEntity.noContent().build();
     }
 
-    // 태그 삭제 기능
-    @DeleteMapping("/{questionId}/tags")
-    public ResponseEntity<ApiSingleResponse<Void>> removeTagsFromQuestion(
-            @PathVariable Long questionId,
-            @RequestBody List<String> tagNames) {
-        questionService.removeTagsFromQuestion(questionId, tagNames);
-        return ResponseEntity.noContent().build();
-    }
 
     @PostMapping("/{question-id}/answers")
     public ResponseEntity<Void> createAnswer(@PathVariable("question-id")Long questionId,
