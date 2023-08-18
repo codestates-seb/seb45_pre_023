@@ -22,6 +22,7 @@ import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
 import sixman.stackoverflow.domain.question.entity.Question;
+import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.module.aws.service.S3Service;
 import sixman.stackoverflow.module.email.service.MailService;
 import sixman.stackoverflow.module.redis.service.RedisService;
@@ -103,9 +104,33 @@ public abstract class ServiceTest {
 
     }
 
+    protected Question createquestion(Member member) {
+        return Question.builder()
+                .member(member)
+                .detail("test")
+                .title("test")
+                .expect("test")
+                .build();
+
+    }
+
     protected Answer createanswer(Long answerId) {
         return Answer.builder()
                 .answerId(answerId)
+                .build();
+    }
+
+    protected Answer createanswer(Member member, Question question) {
+        return Answer.builder()
+                .member(member)
+                .content("test")
+                .question(question)
+                .build();
+    }
+
+    protected Tag createTag(String name){
+        return Tag.builder()
+                .tagName(name)
                 .build();
     }
 }

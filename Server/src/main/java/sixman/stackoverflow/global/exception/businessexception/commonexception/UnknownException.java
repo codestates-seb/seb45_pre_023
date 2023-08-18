@@ -10,4 +10,8 @@ public class UnknownException extends CommonException {
     public UnknownException() {
         super(CODE, HttpStatus.INTERNAL_SERVER_ERROR, MESSAGE);
     }
+
+    public UnknownException(String message) {
+        super(CODE, HttpStatus.INTERNAL_SERVER_ERROR, MESSAGE + ":" + message);
+    }
 }

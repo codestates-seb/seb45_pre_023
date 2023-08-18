@@ -46,7 +46,7 @@ class AnswerServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("답변의 content, questionId 를 받아서 답변을 생성한다.") // o
-    void createAnswer() {
+    void createAnswerBy() {
         //given
 
         Member member = createMember();
@@ -89,15 +89,15 @@ class AnswerServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("답변 생성 시 존재하지 않는 questionId 이면 QuestionNotFoundException 이 발생한다.") // o
-    void createAnswerException() { // 정우님이랑 이야기
+    void createAnswerException() {
 
-//        // Given
-//        long answerId = 1234566L;
-//
-//        // When, Then
-//        assertThrows(AnswerNotFoundException.class, () -> {
-//            answerService.findAnswer(answerId);
-//        });
+        // Given
+        long questionId = 1234566L;
+
+        // When, Then
+        assertThrows(QuestionNotFoundException.class, () -> {
+            questionService.getQuestionById(questionId);
+        });
 
 
     }
@@ -152,26 +152,27 @@ class AnswerServiceTest extends ServiceTest {
     void findAnswers() { // 정우님이랑 이야기
     }
 
+
     @Test
     @DisplayName("answerId, content 를 통해 답변을 수정한다.") // o
     void updateAnswer() {
 
         //given
-        Member member = createMember();
-        memberRepository.save(member);
+        Member memberForUpdate = createMember();
+        memberRepository.save(memberForUpdate);
 
-        Question question = createQuestion(member);
-        questionRepository.save(question);
+        Question questionForUpdate = createQuestion(memberForUpdate);
+        questionRepository.save(questionForUpdate);
 
         Answer changeAnswer = Answer.builder()
                 .answerId(1L)
                 .content("old Content")
-                .member(member)
-                .question(question)
+                .member(memberForUpdate)
+                .question(questionForUpdate)
                 .build();
         answerRepository.save(changeAnswer);
 
-        setDefaultAuthentication(member.getMemberId());
+        setDefaultAuthentication(memberForUpdate.getMemberId());
 
         String newContent = "Updated Content";
 
@@ -182,6 +183,8 @@ class AnswerServiceTest extends ServiceTest {
         assertThat(updatedAnswer).isNotNull();
         assertThat(updatedAnswer.getContent()).isEqualTo(newContent);
     }
+
+
 
     @Test
     @DisplayName("답변 수정 시 존재하지 않는 answerId 이면 AnswerNotFoundException 이 발생한다.") //o
@@ -224,12 +227,26 @@ class AnswerServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("답변 수정 시 다른 사람의 answer 를 수정하려고 하면 MemberAccessDeniedException 이 발생한다.") // x
+    @DisplayName("답변 수정 시 다른 사람의 answer 를 수정하려고 하면 MemberAccessDeniedException 이 발생한다.") // ㅇ
     void updateAnswerMemberException() {
+        //given
+        Member myMember = createMember();
+        Member otherMember = createMember();
+        Question question = createQuestion(otherMember);
+        Answer answer = createanswer(otherMember, question);
 
+        memberRepository.save(myMember);
+        memberRepository.save(otherMember);
+        questionRepository.save(question);
+        answerRepository.save(answer);
 
+        setDefaultAuthentication(myMember.getMemberId()); //myMember 로 로그인
 
-
+        //when
+        assertThatThrownBy(
+                () -> answerService.updateAnswer(answer.getAnswerId(), "new content"))
+                .isInstanceOf(MemberAccessDeniedException.class)
+                .hasMessage("접근 권한이 없습니다.");
     }
 
 
@@ -280,25 +297,30 @@ class AnswerServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("답변 삭제 시 다른 사람의 answer를 삭제하려고 하면 MemberAccessDeniedException 이 발생한다.") //x
+    @DisplayName("답변 삭제 시 다른 사람의 answer를 삭제하려고 하면 MemberAccessDeniedException 이 발생한다.") //ㅇ
     void deleteAnswerMemberException() {
 
-        // Given
-        Long answerId = 12345L;
-        Long memberId = 67890L; // 다른 멤버의 ID
+        /// given
+        Member myMemberForDelete = createMember();
+        Member otherMemberForDelete = createMember();
+        Question questionForDelete = createQuestion(myMemberForDelete);
+        Answer answerForDelete = createanswer(myMemberForDelete, questionForDelete);
 
-        Answer answerToDelete = Answer.builder()
-                .member(Member.builder().memberId(memberId).build())
-                .build();
+        memberRepository.save(myMemberForDelete);
+        memberRepository.save(otherMemberForDelete);
+        questionRepository.save(questionForDelete);
+        answerRepository.save(answerForDelete);
 
-        when(answerRepository.findById(answerId)).thenReturn(Optional.of(answerToDelete));
+        setDefaultAuthentication(otherMemberForDelete.getMemberId()); //myMember 로 로그인
 
-        // When, Then
-        assertThrows(MemberAccessDeniedException.class, () -> {
-            answerService.deleteAnswer(answerId);
-        });
-        }
+        // when, then
+        assertThatThrownBy(
+                () -> answerService.deleteAnswer(answerForDelete.getAnswerId()))
+                .isInstanceOf(MemberAccessDeniedException.class)
+                .hasMessage("접근 권한이 없습니다.");
     }
+}
+
 
 
 

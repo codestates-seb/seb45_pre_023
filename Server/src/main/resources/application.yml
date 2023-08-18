@@ -50,7 +50,7 @@ spring:
             user-name-attribute: id
 
 jwt:
-  access-token-expire-time: 72000000
+  access-token-expire-time: 7200000
   refresh-token-expire-time: 604800000
 
 #logging:

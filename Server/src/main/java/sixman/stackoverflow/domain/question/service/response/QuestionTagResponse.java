@@ -3,10 +3,8 @@ package sixman.stackoverflow.domain.question.service.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.domain.tag.entity.Tag;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class QuestionTagResponse {
 
-    private Long questionTagId;
+    private Long tagId;
     private String tagName;
 
     public static List<QuestionTagResponse> of(List<Tag> tags) {
@@ -23,7 +21,7 @@ public class QuestionTagResponse {
 
         for (Tag tag : tags) {
             questionTagResponses.add(QuestionTagResponse.builder()
-                    .questionTagId(tag.getTagId())
+                    .tagId(tag.getTagId())
                     .tagName(tag.getTagName())
                     .build());
         }

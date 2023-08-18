@@ -51,12 +51,13 @@ public class QuestionControllerTest extends ControllerTest {
                 .title("title")
                 .detail("detail")
                 .expect("expect")
+                .tagIds(Arrays.asList(1, 2))
                 .build();
 
         setDefaultAuthentication(1L);
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
-        given(questionService.createQuestion(any(Question.class))).willReturn(createdQuestionId);
+        given(questionService.createQuestion(any(Question.class), any(List.class))).willReturn(createdQuestionId);
 
         //when
         ResultActions actions = mockMvc.perform(
@@ -82,7 +83,8 @@ public class QuestionControllerTest extends ControllerTest {
                 requestFields(
                         fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
                         fieldWithPath("detail").description("질문 내용").attributes(getConstraint("detail")),
-                        fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect"))
+                        fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect")),
+                        fieldWithPath("tagIds").description("질문 태그").attributes(getConstraint("tagIds"))
                 ),
                 responseHeaders(
                         headerWithName("Location").description("생성된 질문의 URI")
@@ -97,12 +99,12 @@ public class QuestionControllerTest extends ControllerTest {
         Integer page = 1;
 
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
-                .questionTagId(1L)
+                .tagId(1L)
                 .tagName("tag1")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
-                .questionTagId(2L)
+                .tagId(2L)
                 .tagName("tag2")
                 .build();
 
@@ -165,7 +167,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("data[].views").description("조회수"),
                                 fieldWithPath("data[].recommend").description("추천수"),
                                 fieldWithPath("data[].tags").description("질문 태그 정보"),
-                                fieldWithPath("data[].tags[].questionTagId").description("질문 태그 ID"),
+                                fieldWithPath("data[].tags[].tagId").description("질문 태그 ID"),
                                 fieldWithPath("data[].tags[].tagName").description("질문 태그 이름"),
                                 fieldWithPath("data[].createdDate").description("질문 생성일"),
                                 fieldWithPath("data[].updatedDate").description("질문 수정일"),
@@ -191,12 +193,12 @@ public class QuestionControllerTest extends ControllerTest {
     void getQuestionById() throws Exception {
         //given
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
-                .questionTagId(1L)
+                .tagId(1L)
                 .tagName("tag1")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
-                .questionTagId(2L)
+                .tagId(2L)
                 .tagName("tag2")
                 .build();
 
@@ -252,7 +254,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("data.recommend").description("추천수"),
                                 fieldWithPath("data.recommendType").description(generateLinkCode(EnumType.class)),
                                 fieldWithPath("data.tags").description("질문 태그 정보"),
-                                fieldWithPath("data.tags[].questionTagId").description("질문 태그 ID"),
+                                fieldWithPath("data.tags[].tagId").description("질문 태그 ID"),
                                 fieldWithPath("data.tags[].tagName").description("질문 태그 이름"),
                                 fieldWithPath("data.createdDate").description("질문 생성일"),
                                 fieldWithPath("data.updatedDate").description("질문 수정일"),
@@ -312,6 +314,7 @@ public class QuestionControllerTest extends ControllerTest {
                 .title("update title")
                 .detail("update detail")
                 .expect("update expect")
+                .tagIds(Arrays.asList(1, 2, 3))
                 .build();
 
         Long questionId = 1L;
@@ -343,7 +346,8 @@ public class QuestionControllerTest extends ControllerTest {
                         requestFields(
                                 fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
                                 fieldWithPath("detail").description("질문 내용").attributes(getConstraint("detail")),
-                                fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect"))
+                                fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect")),
+                                fieldWithPath("tagIds").description("질문 태그 ID 목록").attributes(getConstraint("tagIds"))
                         )
                 )
         );
