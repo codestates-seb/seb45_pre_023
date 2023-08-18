@@ -17,6 +17,7 @@ import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotCompleteException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberDuplicateException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 import sixman.stackoverflow.module.email.service.MailService;
@@ -491,6 +492,39 @@ class MemberServiceTest extends ServiceTest {
         verify(redisService, times(1)).saveValues(anyString(), anyString(), any(Duration.class)); //저장 로직 호출
         verify(emailSender, times(1)).send(any(MimeMessage.class)); //이메일 전송 로직 호출
 
+    }
+
+    @Test
+    @DisplayName("비밀번호를 찾기 위해 이메일 인증을 시도하면 이메일로 인증 코드를 보내고 redis 에 저장한다.")
+    void sendFindPasswordCodeToEmail() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        given(emailSender.createMimeMessage())
+                .willReturn(new MimeMessage(Session.getInstance(new Properties())));
+
+        //when
+        memberService.sendFindPasswordCodeToEmail(member.getEmail());
+
+        //then
+        verify(redisService, times(1)).saveValues(anyString(), anyString(), any(Duration.class)); //저장 로직 호출
+        verify(emailSender, times(1)).send(any(MimeMessage.class)); //이메일 전송 로직 호출
+    }
+
+    @Test
+    @DisplayName("비밀번호를 찾기 위해 이메일 인증을 시도 시 이메일이 가입되어있지 않으면 MemberNotFoundException 이 발생한다.")
+    void sendFindPasswordCodeToEmailException() {
+        //given
+        String email = "notSavedEmail@test.com";
+
+        given(emailSender.createMimeMessage())
+                .willReturn(new MimeMessage(Session.getInstance(new Properties())));
+
+        //when & then
+        assertThatThrownBy(() -> memberService.sendFindPasswordCodeToEmail(email))
+                .isInstanceOf(MemberNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 회원입니다.");
     }
 
     @Test

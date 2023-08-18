@@ -161,6 +161,18 @@ public class MemberService {
         member.disable();
     }
 
+    public void sendFindPasswordCodeToEmail(String toEmail) {
+
+        verifiedMember(toEmail);
+
+        String authCode = mailService.sendAuthEmail(toEmail);
+
+        redisService.saveValues(
+                AUTH_CODE_PREFIX + toEmail,
+                authCode,
+                Duration.ofMillis(authCodeExpirationMillis));
+    }
+
     public void sendCodeToEmail(String toEmail) {
 
         checkDuplicateMember(toEmail);
