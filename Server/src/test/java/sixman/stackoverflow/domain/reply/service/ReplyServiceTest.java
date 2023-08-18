@@ -50,7 +50,7 @@ class ReplyServiceTest extends ServiceTest {
 
 
     @Test
-    @DisplayName("리플의 content와 answerId를 받아 댓글을 생성한다.") // o
+    @DisplayName("리플의 content와 answerId를 받아 댓글을 생성한다.") // o // 0
     void createReply() {
 
 
