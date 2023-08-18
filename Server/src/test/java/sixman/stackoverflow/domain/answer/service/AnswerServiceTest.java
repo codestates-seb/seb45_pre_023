@@ -186,22 +186,24 @@ class AnswerServiceTest extends ServiceTest {
     @Test
     @DisplayName("답변 수정 시 다른 사람의 answer 를 수정하려고 하면 MemberAccessDeniedException 이 발생한다.")
     void updateAnswerMemberException() {
-//        Long answerId = 12345L;
-//        String Content = "Updated content";
-//        Long newanswerId = 67890L;
-//        Long currentMemberId = 123L;
-//
-//        Answer answerToUpdate = Answer.builder()
-//                .member(Member.builder().memberId(newanswerId).build())
-//                .build();
-//
-//        when(answerRepository.findById(answerId)).thenReturn(Optional.of(answerToUpdate));
-//
-//
-//
-//        assertThrows(MemberAccessDeniedException.class, () -> {
-//            answerService.updateAnswer(answerId, Content);
-//        });
+        //given
+        Member myMember = createMember();
+        Member otherMember = createMember();
+        Question question = createQuestion(otherMember);
+        Answer answer = createanswer(otherMember, question);
+
+        memberRepository.save(myMember);
+        memberRepository.save(otherMember);
+        questionRepository.save(question);
+        answerRepository.save(answer);
+
+        setDefaultAuthentication(myMember.getMemberId()); //myMember 로 로그인
+
+        //when
+        assertThatThrownBy(
+                () -> answerService.updateAnswer(answer.getAnswerId(), "new content"))
+                .isInstanceOf(MemberAccessDeniedException.class)
+                .hasMessage("접근 권한이 없습니다.");
     }
 
 

@@ -56,7 +56,7 @@ public class QuestionControllerTest extends ControllerTest {
         setDefaultAuthentication(1L);
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
-        given(questionService.createQuestion(any(Question.class))).willReturn(createdQuestionId);
+        given(questionService.createQuestion(any(Question.class), any(List.class))).willReturn(createdQuestionId);
 
         //when
         ResultActions actions = mockMvc.perform(
