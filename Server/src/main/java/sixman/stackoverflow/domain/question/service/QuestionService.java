@@ -23,6 +23,7 @@ import sixman.stackoverflow.global.exception.businessexception.memberexception.M
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.tagexception.TagNotFoundException;
 import sixman.stackoverflow.global.response.PageInfo;
 
 import java.util.ArrayList;
@@ -51,11 +52,14 @@ public class QuestionService {
         this.answerService = answerService;
     }
 
-    public Page<QuestionResponse> getLatestQuestions(Pageable pageable, String tag) {
-        if (tag == null) {
+    public Page<QuestionResponse> getLatestQuestions(Pageable pageable, String tagName) {
+        if (tagName == null) {
             return questionRepository.findAll(pageable).map(QuestionResponse::of);
         }
-        Page<Question> questions = questionRepository.findAllByTag(pageable, tag);
+        tagRepository.findByTagName(tagName) //tag 가 존재하는지 확인
+                .orElseThrow(TagNotFoundException::new);
+
+        Page<Question> questions = questionRepository.findAllByTag(pageable, tagName); //tag 로 페이징
         return questions.map(QuestionResponse::of);
     }
 
