@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
@@ -38,12 +37,12 @@ public class QuestionAopStub {
         int page = (int) args[0];
 
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
-                .questionTagId(1L)
+                .tagId(1L)
                 .tagName("tag1")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
-                .questionTagId(2L)
+                .tagId(2L)
                 .tagName("tag2")
                 .build();
 
@@ -78,12 +77,12 @@ public class QuestionAopStub {
         Long questionId = (Long) args[0];
 
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
-                .questionTagId(1L)
+                .tagId(1L)
                 .tagName("tag1")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
-                .questionTagId(2L)
+                .tagId(2L)
                 .tagName("tag2")
                 .build();
 

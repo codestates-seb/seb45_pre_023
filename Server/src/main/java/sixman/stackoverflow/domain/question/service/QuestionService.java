@@ -89,7 +89,7 @@ public class QuestionService {
         return QuestionTagResponse.of(tags);
     }
 
-    public Long createQuestion(Question question) {
+    public Long createQuestion(Question question, List<Integer> tagIds) {
         return questionRepository.save(question).getQuestionId();
     }
 
@@ -128,7 +128,7 @@ public class QuestionService {
         return questionRepository.save(existingQuestion);
     }
 
-    public void updateTags(Long questionId, List<String> tagNames) {
+    public void updateTags(Long questionId, List<Integer> tagIds) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow();
 
@@ -140,11 +140,12 @@ public class QuestionService {
         }
 
         List<QuestionTag> newQuestionTags = new ArrayList<>();
-        for (String tagName : tagNames) {
-            Tag tag = createOrGetTag(tagName);
-            QuestionTag questionTag = QuestionTag.createQuestionTag(question, tag);
-            newQuestionTags.add(questionTag);
-        }
+        //todo : 다시 구현
+//        for (String tagName : tagNames) {
+//            Tag tag = createOrGetTag(tagName);
+//            QuestionTag questionTag = QuestionTag.createQuestionTag(question, tag);
+//            newQuestionTags.add(questionTag);
+//        }
 
         question.setQuestionTags(newQuestionTags);
         questionRepository.save(question);

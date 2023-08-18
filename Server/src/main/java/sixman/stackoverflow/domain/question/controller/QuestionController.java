@@ -92,7 +92,7 @@ public class QuestionController {
 
         Member member = optionalMember.get();
         Question question = questionCreateApiRequest.toEntity(member);
-        Long questionId = questionService.createQuestion(question);
+        Long questionId = questionService.createQuestion(question, questionCreateApiRequest.getTagIds());
 
         URI uri = URI.create("/questions/" + questionId);
 
@@ -125,15 +125,22 @@ public class QuestionController {
         return ResponseEntity.noContent().build();
     }
 
-    // 태그 수정 기능 -> 얘기해봐야 함
-    @PatchMapping("/{question-Id}/tags")
-    public ResponseEntity<ApiSingleResponse<Void>> updateTags(
-            @PathVariable("question-id") @Positive Long questionId,
-            @RequestBody List<String> tagNames) {
+    @GetMapping("/{question-Id}/tags")
+    public ResponseEntity<ApiSingleResponse<List<String>>> getTags() {
 
-        questionService.updateTags(questionId, tagNames);
-        ApiSingleResponse<Void> response = new ApiSingleResponse<>(null, 200, "Success", "OK");
-        return ResponseEntity.ok(response);
+//        List<String> tags = tagService.getTags();
+
+        return null;
+    }
+
+    // 태그 수정 기능 -> 얘기해봐야 함
+    @PatchMapping("/{question-id}/tags")
+    public ResponseEntity<Void> updateTags(
+            @PathVariable("question-id") @Positive Long questionId,
+            @RequestBody List<Integer> tagIds) {
+
+        questionService.updateTags(questionId, tagIds);
+        return ResponseEntity.noContent().build();
     }
     // 질문글 삭제 기능
     @DeleteMapping("/{question-id}")
