@@ -10,11 +10,11 @@ import { Link } from 'react-router-dom';
 import { RouteConst } from '../../Interface/RouteConst';
 import Search from './Search/Search';
 
-import DropdownProducts from '../Dropdown/DropdownProducts';
-import DropdownInbox from '../Dropdown/DropdownInbox';
-import DropdownAchievements from '../Dropdown/DropdownAchievements';
-import DropdownQuestion from '../Dropdown/DropdownQuestion';
-import DropdownMenu from '../Dropdown/DropdownMenu';
+import DropdownProducts from './Dropdown/DropdownProducts';
+import DropdownInbox from './Dropdown/DropdownInbox';
+import DropdownAchievements from './Dropdown/DropdownAchievements';
+import DropdownQuestion from './Dropdown/DropdownQuestion';
+import DropdownMenu from './Dropdown/DropdownMenu';
 import { useState } from 'react';
 
 export default function HeaderAfter() {

@@ -15,6 +15,7 @@ const AskSlice = createSlice({
       expect: '',
       tags: '',
     },
+    tagsdata: { tagslist: [], mode: false },
   },
   reducers: {
     title: (state, action) => {
@@ -27,9 +28,12 @@ const AskSlice = createSlice({
       state.value.expect = action.payload;
     },
     tags: (state, action) => {
-      state.value.tags = action.payload;
+      state.value.tags = [...action.payload];
     },
-    initValue: (state, action) => {
+    addtags: (state, action) => {
+      state.value.tags = [...state.value.tags, action.payload];
+    },
+    initValue: (state) => {
       state.value = { title: '', detail: '', expect: '', tags: [] };
     },
     titleError: (state, action) => {
@@ -44,8 +48,14 @@ const AskSlice = createSlice({
     tagsError: (state, action) => {
       state.errmsg.tags = action.payload;
     },
-    initError: (state, action) => {
+    initError: (state) => {
       state.errmsg = { title: '', detail: '', expect: '', tags: '' };
+    },
+    setTagList: (state, action) => {
+      state.tagsdata.tagslist = action.payload;
+    },
+    setTagMode: (state, action) => {
+      state.tagsdata.mode = action.payload;
     },
   },
 });
@@ -56,10 +66,13 @@ export const {
   detail,
   expect,
   tags,
+  addtags,
   initValue,
   titleError,
   detailError,
   expectError,
   tagsError,
-  initError
+  initError,
+  setTagList,
+  setTagMode,
 } = AskSlice.actions;

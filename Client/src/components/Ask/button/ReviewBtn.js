@@ -24,7 +24,7 @@ export default function ReviewBtn() {
       dispatch(detailError(''));
     }
     if (!AskData.expect) {
-      dispatch(expectError('Please enter what you expect.'));
+      dispatch(expectError('Please enter what you try and expect.'));
     } else {
       dispatch(expectError(''));
     }

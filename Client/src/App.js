@@ -13,9 +13,8 @@ import MemberDelete from './pages/Member/Settings/Delete';
 import MemberMain from './pages/Member/memberMain';
 import LeftSidebar from './components/SideBar/LeftSidebar';
 import RightSidebar from './components/SideBar/RightSidebar';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
 
 import axios from 'axios';
 import { oauthtoken } from './redux/createSlice/OAuthSlice';
@@ -41,7 +40,7 @@ function App() {
     const url = new URL(window.location.href);
     const authorizationCode = url.searchParams.get('code');
     if (authorizationCode) {
-      console.log(authorizationCode);
+      console.log('authorizationCode', authorizationCode);
       getAccessToken(authorizationCode); // getAccessToken 함수 호출로 바꾸기
     }
   }, []);

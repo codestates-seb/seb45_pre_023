@@ -6,7 +6,7 @@ import { tipbox } from '../../redux/createSlice/TipboxSlice';
 
 export default function Title() {
   const dispatch = useDispatch();
-  const Next = useSelector((state) => state.tipbox.position);
+  const Next = useSelector((state) => state.tipbox.nextbtn);
   const tipboxName = useSelector((state) => state.tipbox.tipboxName);
   const InputValue = useSelector((state) => state.ask.value);
   const ErrorMsg = useSelector((state) => state.ask.errmsg);
@@ -31,7 +31,7 @@ export default function Title() {
         }}
       />
 
-      <div className='my-1 text-xs text-red-500'>{ErrorMsg.title}</div>
+      <div className="my-1 text-xs text-red-500">{ErrorMsg.title}</div>
 
       {Next === 1 && <NextBtn />}
       {tipboxName === 'title' && <TipTitle />}

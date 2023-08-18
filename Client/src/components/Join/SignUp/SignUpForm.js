@@ -57,7 +57,7 @@ export default function SignUpForm() {
       .then((res) =>
         dispatch(errmsg('A verification code has been sent to your email.'))
       )
-      .catch((err) => dispatch(errmsg('SignUp is failed')));
+      .catch((err) => dispatch(errmsg('이미 가입된 이메일입니다.'))); // 에러코드에 따른 에러메시지 전달해야 함.
   };
 
   return (
@@ -189,7 +189,7 @@ export default function SignUpForm() {
 
         <button
           className="flex flex-col justify-center items-center w-68 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
-          onClick={handleSignUp}
+          onClick={handleSignUp} // sign-up 됐을때 에러메시지 초기화
           disabled={false}
         >
           Sign up

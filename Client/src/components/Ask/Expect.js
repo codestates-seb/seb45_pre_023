@@ -6,18 +6,18 @@ import { tipbox } from '../../redux/createSlice/TipboxSlice';
 
 export default function Try() {
   const dispatch = useDispatch();
-  const Next = useSelector((state) => state.tipbox.position);
+  const Next = useSelector((state) => state.tipbox.nextbtn);
   const tipboxName = useSelector((state) => state.tipbox.tipboxName);
   const InputValue = useSelector((state) => state.ask.value);
   const ErrorMsg = useSelector((state) => state.ask.errmsg);
 
   return (
     <div className="relative flex flex-col my-2 px-6 py-5 w-212 bg-white border-2 border-solid border-gray rounded-md">
-      <div className="font-semibold">
+      <div className={`font-semibold ${Next < 3 && 'text-gray-300'}`}>
         What did you try and what were you expecting?
       </div>
 
-      <div className="my-1 text-xs">
+      <div className={`my-1 text-xs ${Next < 3 && 'text-gray-300'}`}>
         Describe what you tried, what you expected to happen, and what actually
         resulted. Minimum 20 characters.
       </div>
@@ -31,6 +31,7 @@ export default function Try() {
         onFocus={() => {
           dispatch(tipbox('expect'));
         }}
+        disabled={Next < 3}
       ></textarea>
 
       <div className='my-1 text-xs text-red-500'>{ErrorMsg.expect}</div>

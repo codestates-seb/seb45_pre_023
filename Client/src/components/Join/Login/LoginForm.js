@@ -10,9 +10,14 @@ import {
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { google, github, kakao } from '../../../redux/createSlice/OAuthSlice';
-import { email, password, myid } from '../../../redux/createSlice/LoginInfoSlice';
+import {
+  email,
+  password,
+  logintoken,
+  myid,
+} from '../../../redux/createSlice/LoginInfoSlice';
 import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
-import { logintoken } from '../../../redux/createSlice/LoginInfoSlice';
+import { findmodemodal } from '../../../redux/createSlice/FindInfoSlice';
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -31,7 +36,7 @@ export default function LoginForm() {
       .then((res) => {
         console.log(res);
         dispatch(logintoken(res.headers.authorization));
-        dispatch(myid(res.data.memberId))
+        dispatch(myid(res.data.memberId));
         dispatch(errmsg(''));
         nevigate(RouteConst.Main);
       })
@@ -51,7 +56,7 @@ export default function LoginForm() {
         <li
           className="flex flex-row justify-center items-center w-70 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(google);
+            dispatch(google());
             handleGoogleLogin();
           }}
         >
@@ -65,7 +70,7 @@ export default function LoginForm() {
         <li
           className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(github);
+            dispatch(github());
             handleGithubLogin();
           }}
         >
@@ -75,7 +80,7 @@ export default function LoginForm() {
         <li
           className="flex felx-row justify-center items-center w-70 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(kakao);
+            dispatch(kakao());
             handleKakaoLogin();
           }}
         >
@@ -105,9 +110,12 @@ export default function LoginForm() {
             <span className="mt-2 w-58 text-left text-md font-semibold">
               Password
             </span>
-            <span className="mt-2 w-58 text-right text-xs text-sky-500 hover:text-sky-600 cursor-pointer">
+            <button
+              className="mt-2 w-58 text-right text-xs text-sky-500 hover:text-sky-600 cursor-pointer"
+              onClick={() => dispatch(findmodemodal(true))}
+            >
               Forget password?
-            </span>
+            </button>
           </div>
           <input
             className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
