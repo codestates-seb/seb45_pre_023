@@ -87,25 +87,24 @@ public class AnswerRecommendService {
         int currentRecommendCount = answer.getRecommend();
 
         if (existingRecommendation != null) {
-            if (existingRecommendation.getType() == recommendationType) { // 같은 값이 들어오면 취소
+            if (existingRecommendation.getType() == recommendationType) {
                 currentRecommendCount -= (recommendationType == TypeEnum.UPVOTE) ? 1 : -1;
                 answerRecommendRepository.delete(existingRecommendation);
-            }
-            //else {
-
-//                currentRecommendCount += (recommendationType == TypeEnum.UPVOTE) ? 2 : -2; // 변경 로직인데 어렵다
-//                existingRecommendation.setType(recommendationType);
-//                answerRecommendRepository.save(existingRecommendation);
-
-                if (existingRecommendation.getType() == TypeEnum.UPVOTE && recommendationType == TypeEnum.DOWNVOTE) {
-                    //추천 눌렀는데 비추 누를 시
-                    throw new RecommendationChangeNotAllowedException();
-                } else if (existingRecommendation.getType() == TypeEnum.DOWNVOTE && recommendationType == TypeEnum.UPVOTE) {
-                    //비추 눌렀는데 추천 누를 시
-                    throw new RecommendationChangeNotAllowedException();
+            } else {
+                if (recommendationType == TypeEnum.DOWNVOTE) {
+                    // 이미 추천한 상태에서 비추천을 요청할 경우 추천을 취소하고 비추천 증가
+                    currentRecommendCount -= 1;
+                    answerRecommendRepository.delete(existingRecommendation);
+                    existingRecommendation.setType(recommendationType);
+                    answerRecommendRepository.save(existingRecommendation);
+                } else if (recommendationType == TypeEnum.UPVOTE) {
+                    // 이미 비추천한 상태에서 추천을 요청할 경우 비추천을 취소하고 추천 증가
+                    currentRecommendCount += 1;
+                    answerRecommendRepository.delete(existingRecommendation);
+                }
             }
         } else {
-            currentRecommendCount += (recommendationType == TypeEnum.UPVOTE) ? 1 : -1; //처음 추천 OR 비추천
+            currentRecommendCount += (recommendationType == TypeEnum.UPVOTE) ? 1 : -1;
             AnswerRecommend answerRecommend = AnswerRecommend.builder()
                     .type(recommendationType)
                     .member(member)

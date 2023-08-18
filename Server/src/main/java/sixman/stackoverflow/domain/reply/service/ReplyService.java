@@ -64,6 +64,9 @@ public class ReplyService {
         Optional<Answer> answerOptional = answerRepository.findById(answerId);
         Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
+//        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+//                Sort.by("createdAt").descending());
+
 
         Page<Reply> repliesPage = replyRepository.findByAnswer(answer, pageable);
 
@@ -78,7 +81,6 @@ public class ReplyService {
 
         return replyResponsesPage;
     }
-
 
 
 
