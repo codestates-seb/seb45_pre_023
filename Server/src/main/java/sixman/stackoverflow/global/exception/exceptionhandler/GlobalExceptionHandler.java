@@ -9,8 +9,10 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import sixman.stackoverflow.global.exception.businessexception.BusinessException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
+import sixman.stackoverflow.global.exception.businessexception.requestexception.RequestTypeMismatchException;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
 import javax.validation.ConstraintViolationException;
@@ -32,6 +34,15 @@ public class GlobalExceptionHandler {
             ConstraintViolationException e) {
 
         return ResponseEntity.badRequest().body(ApiSingleResponse.fail(e));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiSingleResponse<Void>> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e) {
+
+        String value = (String) e.getValue();
+
+        return new ResponseEntity<>(ApiSingleResponse.fail(new RequestTypeMismatchException(value)), HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
