@@ -1,6 +1,7 @@
 package sixman.stackoverflow.global.exception.exceptionhandler;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +17,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -56,6 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiSingleResponse<Void>> handleException(Exception e) {
 
+        log.error("Unknown error happened: {}", e.getMessage());
         e.printStackTrace();
 
         return new ResponseEntity<>(ApiSingleResponse.fail(e), HttpStatus.INTERNAL_SERVER_ERROR);

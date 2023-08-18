@@ -43,12 +43,12 @@ public class MemberAuthenticationEntryPoint implements AuthenticationEntryPoint 
         logExceptionMessage(authException, exception);
 
         authException.printStackTrace();
-        AuthUtil.sendErrorResponse(response, new UnknownException());
+        AuthUtil.sendErrorResponse(response, new UnknownException(exception.getMessage()));
     }
 
     private void logExceptionMessage(AuthenticationException authException, Exception exception) {
         String message = exception != null ? exception.getMessage() : authException.getMessage();
-        log.warn("Unauthorized error happened: {}", message);
+        log.error("Unauthorized error happened: {}", message);
     }
 
 }
