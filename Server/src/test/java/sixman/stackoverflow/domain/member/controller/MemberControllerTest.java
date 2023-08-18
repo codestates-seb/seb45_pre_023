@@ -604,6 +604,86 @@ class MemberControllerTest extends ControllerTest {
 
     }
 
+    @Test
+    @DisplayName("비밀번호 찾기 이메일 인증 API - 인증 요청")
+    void sendFindPasswordEmail() throws Exception{
+        //given
+        MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                .email("test@google.com")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        willDoNothing()
+                .given(memberService)
+                .sendFindPasswordCodeToEmail(anyString());
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/auth/email")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //when
+        actions
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        //restDocs
+        setConstraintClass(MemberMailAuthApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 요청할 이메일").attributes(getConstraint("email"))
+                )
+        ));
+
+    }
+
+    @Test
+    @DisplayName("비밀번호 찾기 이메일 인증 API - 인증 확인")
+    void confirmFindPasswordEmail() throws Exception {
+        //given
+        MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                .email("test@google.com")
+                .code("123456")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        given(memberService.checkCode(anyString(), anyString()))
+                .willReturn(true);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/auth/email/confirm")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("true"));
+
+        //restDocs
+        setConstraintClass(MemberMailConfirmApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 확인할 이메일").attributes(getConstraint("email")),
+                        fieldWithPath("code").description("인증 코드").attributes(getConstraint("code"))
+                ),
+                responseFields(
+                        fieldWithPath("data").description("인증 결과 (true, false)"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("status").description("응답 상태"),
+                        fieldWithPath("message").description("응답 메시지")
+                )
+        ));
+
+    }
+
     @TestFactory
     @DisplayName("회원 가입 시 요청 값 validation 검증")
     Collection<DynamicTest> signupValidation() {
