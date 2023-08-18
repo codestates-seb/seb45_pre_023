@@ -83,33 +83,25 @@ public class QuestionService {
 
     public List<QuestionTagResponse> getQuestionTags(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
         List<Tag> tags = question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList());
 
         return QuestionTagResponse.of(tags);
     }
 
     public Long createQuestion(Question question, List<Integer> tagIds) {
-        return questionRepository.save(question).getQuestionId();
+
+        List<QuestionTag> tags = tagRepository.findAllByTagIdIn(tagIds);
+        question.setQuestionTags(tags);
+
+        Question savedQuestion = questionRepository.save(question);
+        return savedQuestion.getQuestionId();
     }
 
-    public void addTagsToQuestion(Long questionId, List<QuestionTagCreateApiRequest> tagCreateRequests) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow();
-
-        for (QuestionTagCreateApiRequest tagCreateRequest : tagCreateRequests) {
-            String tagName = tagCreateRequest.getTagName();
-            Tag tag = createOrGetTag(tagName);
-            QuestionTag questionTag = QuestionTag.createQuestionTag(question, tag);
-            question.getQuestionTags().add(questionTag);
-        }
-
-        questionRepository.save(question);
-    }
 
     public Question updateQuestion(Long questionId, String title, String detail, String expect, List<Integer> tagIds) {
         Question existingQuestion = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
 
         Long loggedInUserId = SecurityUtil.getCurrentId();
         if(loggedInUserId==null){
@@ -121,6 +113,22 @@ public class QuestionService {
             throw new MemberAccessDeniedException();
         }
 
+        // 기존에 연결된 태그들을 가져와서 삭제할 수 있도록 처리
+        List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
+        List<QuestionTag> tagsToRemove = new ArrayList<>();
+        for (QuestionTag tag : existingTags) {
+            if (!tagIds.contains(tag.getTag().getTagId().intValue())) {
+                tagsToRemove.add(tag);
+            }
+        }
+
+        existingTags.removeAll(tagsToRemove);
+
+        // 새로운 태그들을 가져와서 추가할 수 있도록 처리
+        List<QuestionTag> newTags = tagRepository.findAllByTagIdIn(tagIds);
+        existingTags.addAll(newTags);
+
+
         existingQuestion.setTitle(title);
         existingQuestion.setDetail(detail);
         existingQuestion.setExpect(expect);
@@ -128,32 +136,9 @@ public class QuestionService {
         return questionRepository.save(existingQuestion);
     }
 
-    public void updateTags(Long questionId, List<Integer> tagIds) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow();
-
-        Long loggedInUserId = SecurityUtil.getCurrentId();
-        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
-
-        if (!loggedInUserId.equals(questionAuthorId)) {
-            throw new MemberAccessDeniedException();
-        }
-
-        List<QuestionTag> newQuestionTags = new ArrayList<>();
-        //todo : 다시 구현
-//        for (String tagName : tagNames) {
-//            Tag tag = createOrGetTag(tagName);
-//            QuestionTag questionTag = QuestionTag.createQuestionTag(question, tag);
-//            newQuestionTags.add(questionTag);
-//        }
-
-        question.setQuestionTags(newQuestionTags);
-        questionRepository.save(question);
-    }
-
     public void deleteQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
 
         Long loggedInUserId = SecurityUtil.getCurrentId();
         if(loggedInUserId==null){
@@ -167,17 +152,7 @@ public class QuestionService {
         questionRepository.delete(question);
     }
 
-    public void removeTagsFromQuestion(Long questionId, List<String> tagNames) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow();
 
-        List<QuestionTag> updatedTags = question.getQuestionTags().stream()
-                .filter(questionTag -> !tagNames.contains(questionTag.getTag().getTagName()))
-                .collect(Collectors.toList());
-
-        question.setQuestionTags(updatedTags);
-        questionRepository.save(question);
-    }
 
     public void addQuestionRecommend(Long questionId, TypeEnum type) {
         Question question = questionRepository.findById(questionId)
@@ -222,18 +197,5 @@ public class QuestionService {
 
         questionRepository.save(question);
     }
-
-    private Tag createOrGetTag(String tagName) {
-        Optional<Tag> tagOptional = tagRepository.findByTagName(tagName);
-        return tagOptional.orElseGet(() -> createTag(tagName));
-    }
-
-    private Tag createTag(String tagName) {
-        Tag tag = Tag.builder()
-                .tagName(tagName)
-                .build();
-        return tagRepository.save(tag);
-    }
-
 
 }
