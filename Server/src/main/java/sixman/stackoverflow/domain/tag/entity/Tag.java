@@ -22,6 +22,9 @@ public class Tag extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String tagName;
 
+    @Lob
+    private String tagDetail;
+
     @OneToMany(mappedBy = "tag")
     private List<QuestionTag> questionTags = new ArrayList<>();
 

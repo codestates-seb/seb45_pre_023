@@ -50,6 +50,7 @@ class TagControllerTest extends ControllerTest {
                 responseFields(
                         fieldWithPath("data[].tagId").description("태그 ID"),
                         fieldWithPath("data[].tagName").description("태그 이름"),
+                        fieldWithPath("data[].tagDetail").description("태그 설명"),
                         fieldWithPath("code").description("응답 코드"),
                         fieldWithPath("status").description("응답 상태"),
                         fieldWithPath("message").description("응답 메시지")
@@ -64,6 +65,7 @@ class TagControllerTest extends ControllerTest {
             QuestionTagResponse questionTagResponse = QuestionTagResponse.builder()
                     .tagId((long) i)
                     .tagName("tag" + i)
+                    .tagDetail("tag" + i + " detail")
                     .build();
 
             reponse.add(questionTagResponse);

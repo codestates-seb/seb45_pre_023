@@ -51,7 +51,7 @@ public class QuestionControllerTest extends ControllerTest {
                 .title("title")
                 .detail("detail")
                 .expect("expect")
-                .tagIds(Arrays.asList(1L, 2L))
+                .tagNames(Arrays.asList("java", "mysql"))
                 .build();
 
         setDefaultAuthentication(1L);
@@ -84,7 +84,7 @@ public class QuestionControllerTest extends ControllerTest {
                         fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
                         fieldWithPath("detail").description("질문 내용").attributes(getConstraint("detail")),
                         fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect")),
-                        fieldWithPath("tagIds").description("질문 태그").attributes(getConstraint("tagIds"))
+                        fieldWithPath("tagNames").description("질문 태그 이름").attributes(getConstraint("tagNames"))
                 ),
                 responseHeaders(
                         headerWithName("Location").description("생성된 질문의 URI")
@@ -101,11 +101,13 @@ public class QuestionControllerTest extends ControllerTest {
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
                 .tagId(1L)
                 .tagName("tag1")
+                .tagDetail("tag1 detail")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
                 .tagId(2L)
                 .tagName("tag2")
+                .tagDetail("tag2 detail")
                 .build();
 
         List<QuestionResponse> responses = new ArrayList<>();
@@ -169,6 +171,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("data[].tags").description("질문 태그 정보"),
                                 fieldWithPath("data[].tags[].tagId").description("질문 태그 ID"),
                                 fieldWithPath("data[].tags[].tagName").description("질문 태그 이름"),
+                                fieldWithPath("data[].tags[].tagDetail").description("질문 태그 상세 내용"),
                                 fieldWithPath("data[].createdDate").description("질문 생성일"),
                                 fieldWithPath("data[].updatedDate").description("질문 수정일"),
                                 fieldWithPath("pageInfo").description("질문 페이징 정보"),
@@ -195,11 +198,13 @@ public class QuestionControllerTest extends ControllerTest {
         QuestionTagResponse tag1 = QuestionTagResponse.builder()
                 .tagId(1L)
                 .tagName("tag1")
+                .tagDetail("tag1 detail")
                 .build();
 
         QuestionTagResponse tag2 = QuestionTagResponse.builder()
                 .tagId(2L)
                 .tagName("tag2")
+                .tagDetail("tag2 detail")
                 .build();
 
         QuestionDetailResponse response = QuestionDetailResponse.builder()
@@ -256,6 +261,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("data.tags").description("질문 태그 정보"),
                                 fieldWithPath("data.tags[].tagId").description("질문 태그 ID"),
                                 fieldWithPath("data.tags[].tagName").description("질문 태그 이름"),
+                                fieldWithPath("data.tags[].tagDetail").description("질문 태그 상세 내용"),
                                 fieldWithPath("data.createdDate").description("질문 생성일"),
                                 fieldWithPath("data.updatedDate").description("질문 수정일"),
                                 fieldWithPath("data.answer").description("질문 답변 정보"),
@@ -314,7 +320,7 @@ public class QuestionControllerTest extends ControllerTest {
                 .title("update title")
                 .detail("update detail")
                 .expect("update expect")
-                .tagIds(Arrays.asList(1L, 2L, 3L))
+                .tagNames(Arrays.asList("java", "mysql", "spring"))
                 .build();
 
         Long questionId = 1L;
@@ -347,7 +353,7 @@ public class QuestionControllerTest extends ControllerTest {
                                 fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
                                 fieldWithPath("detail").description("질문 내용").attributes(getConstraint("detail")),
                                 fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect")),
-                                fieldWithPath("tagIds").description("질문 태그 ID 목록").attributes(getConstraint("tagIds"))
+                                fieldWithPath("tagNames").description("질문 태그 이름 목록").attributes(getConstraint("tagNames"))
                         )
                 )
         );

@@ -15,6 +15,7 @@ public class QuestionTagResponse {
 
     private Long tagId;
     private String tagName;
+    private String tagDetail;
 
     public static List<QuestionTagResponse> of(List<Tag> tags) {
         List<QuestionTagResponse> questionTagResponses = new ArrayList<>();
@@ -23,6 +24,7 @@ public class QuestionTagResponse {
             questionTagResponses.add(QuestionTagResponse.builder()
                     .tagId(tag.getTagId())
                     .tagName(tag.getTagName())
+                    .tagDetail(tag.getTagDetail())
                     .build());
         }
 
