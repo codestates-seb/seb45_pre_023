@@ -98,19 +98,6 @@ public class QuestionService {
         return savedQuestion.getQuestionId();
     }
 
-    public void addTagsToQuestion(Long questionId, List<QuestionTagCreateApiRequest> tagCreateRequests) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(QuestionNotFoundException::new);
-
-        for (QuestionTagCreateApiRequest tagCreateRequest : tagCreateRequests) {
-            String tagName = tagCreateRequest.getTagName();
-            Tag tag = createOrGetTag(tagName);
-            QuestionTag questionTag = QuestionTag.createQuestionTag(question, tag);
-            question.getQuestionTags().add(questionTag);
-        }
-
-        questionRepository.save(question);
-    }
 
     public Question updateQuestion(Long questionId, String title, String detail, String expect) {
         Question existingQuestion = questionRepository.findById(questionId)
@@ -172,17 +159,7 @@ public class QuestionService {
         questionRepository.delete(question);
     }
 
-    public void removeTagsFromQuestion(Long questionId, List<String> tagNames) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(QuestionNotFoundException::new);
 
-        List<QuestionTag> updatedTags = question.getQuestionTags().stream()
-                .filter(questionTag -> !tagNames.contains(questionTag.getTag().getTagName()))
-                .collect(Collectors.toList());
-
-        question.setQuestionTags(updatedTags);
-        questionRepository.save(question);
-    }
 
     public void addQuestionRecommend(Long questionId, TypeEnum type) {
         Question question = questionRepository.findById(questionId)
@@ -227,18 +204,5 @@ public class QuestionService {
 
         questionRepository.save(question);
     }
-
-    private Tag createOrGetTag(String tagName) {
-        Optional<Tag> tagOptional = tagRepository.findByTagName(tagName);
-        return tagOptional.orElseGet(() -> createTag(tagName));
-    }
-
-    private Tag createTag(String tagName) {
-        Tag tag = Tag.builder()
-                .tagName(tagName)
-                .build();
-        return tagRepository.save(tag);
-    }
-
 
 }
