@@ -56,12 +56,13 @@ public class QuestionController {
     public ResponseEntity<ApiPageResponse<QuestionResponse>> getQuestions(
             @RequestParam(defaultValue = "1") @Positive int page,
             @RequestParam(defaultValue = "10") @Positive int size,
-            @RequestParam(defaultValue = "CREATED_DATE") QuestionSortRequest sort) { //createdDate, recommend, views
+            @RequestParam(defaultValue = "CREATED_DATE") QuestionSortRequest sort, //createdDate, recommend, views
+            @RequestParam(required = false) String tag) {
 
         int adjustedPage = page - 1;
 
         Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by(sort.getValue()).descending());
-        Page<QuestionResponse> questions = questionService.getLatestQuestions(pageable);
+        Page<QuestionResponse> questions = questionService.getLatestQuestions(pageable, tag);
 
 
         return ResponseEntity.ok(ApiPageResponse.ok(questions, "질문 목록 조회 성공"));

@@ -51,7 +51,7 @@ public class QuestionService {
         this.answerService = answerService;
     }
 
-    public Page<QuestionResponse> getLatestQuestions(Pageable pageable) {
+    public Page<QuestionResponse> getLatestQuestions(Pageable pageable, String tag) {
         Page<Question> questions = questionRepository.findAll(pageable);
         return questions.map(QuestionResponse::of);
     }

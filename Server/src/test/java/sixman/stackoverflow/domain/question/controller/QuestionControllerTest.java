@@ -28,8 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -131,7 +130,7 @@ public class QuestionControllerTest extends ControllerTest {
 
         Page<QuestionResponse> questionResponses = new PageImpl<>(responses, PageRequest.of(page - 1, 10), 100);
 
-        given(questionService.getLatestQuestions(any(Pageable.class))).willReturn(questionResponses);
+        given(questionService.getLatestQuestions(any(Pageable.class), anyString())).willReturn(questionResponses);
 
         String result = objectMapper.writeValueAsString(ApiPageResponse.ok(questionResponses, "질문 목록 조회 성공"));
 
@@ -141,6 +140,7 @@ public class QuestionControllerTest extends ControllerTest {
                         .accept(APPLICATION_JSON)
                         .param("page", String.valueOf(page))
                         .param("sort", "CREATED_DATE")
+                        .param("tag", "tag1")
         );
 
         //then
@@ -153,8 +153,9 @@ public class QuestionControllerTest extends ControllerTest {
         actions.andDo(
                 documentHandler.document(
                         requestParameters(
-                                parameterWithName("page").description("페이지 번호"),
-                                parameterWithName("sort").description(generateLinkCode(QuestionSortRequest.class))
+                                parameterWithName("page").description("페이지 번호").optional(),
+                                parameterWithName("sort").description(generateLinkCode(QuestionSortRequest.class)).optional(),
+                                parameterWithName("tag").description("태그 이름").optional()
                         ),
                         responseFields(
                                 fieldWithPath("data").description("질문 목록"),
@@ -417,20 +418,6 @@ public class QuestionControllerTest extends ControllerTest {
                         )
                 )
         );
-    }
-
-    @Test
-    @DisplayName("태그 수정 API")
-    void updateTags() {
-        //given
-        Long questionId = 1L;
-        List<String> tagNames = Arrays.asList("tag1", "tag2", "tag3");
-
-        //when
-
-
-        //then
-
     }
 
     @Test
