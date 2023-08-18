@@ -83,7 +83,7 @@ public class QuestionService {
 
     public List<QuestionTagResponse> getQuestionTags(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
         List<Tag> tags = question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList());
 
         return QuestionTagResponse.of(tags);
@@ -95,7 +95,7 @@ public class QuestionService {
 
     public void addTagsToQuestion(Long questionId, List<QuestionTagCreateApiRequest> tagCreateRequests) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
 
         for (QuestionTagCreateApiRequest tagCreateRequest : tagCreateRequests) {
             String tagName = tagCreateRequest.getTagName();
@@ -109,7 +109,7 @@ public class QuestionService {
 
     public Question updateQuestion(Long questionId, String title, String detail, String expect) {
         Question existingQuestion = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
 
         Long loggedInUserId = SecurityUtil.getCurrentId();
         if(loggedInUserId==null){
@@ -130,7 +130,7 @@ public class QuestionService {
 
     public void updateTags(Long questionId, List<String> tagNames) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
 
         Long loggedInUserId = SecurityUtil.getCurrentId();
         Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
@@ -152,7 +152,7 @@ public class QuestionService {
 
     public void deleteQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
 
         Long loggedInUserId = SecurityUtil.getCurrentId();
         if(loggedInUserId==null){
@@ -168,7 +168,7 @@ public class QuestionService {
 
     public void removeTagsFromQuestion(Long questionId, List<String> tagNames) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow();
+                .orElseThrow(QuestionNotFoundException::new);
 
         List<QuestionTag> updatedTags = question.getQuestionTags().stream()
                 .filter(questionTag -> !tagNames.contains(questionTag.getTag().getTagName()))
