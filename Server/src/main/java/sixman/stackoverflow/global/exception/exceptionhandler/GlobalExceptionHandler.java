@@ -2,9 +2,11 @@ package sixman.stackoverflow.global.exception.exceptionhandler;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,9 +24,9 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiSingleResponse<List<ApiSingleResponse.ErrorResponse>>> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException e) {
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiSingleResponse<List<ApiSingleResponse.ErrorResponse>>> handleBindException(
+            BindException e) {
 
         return ResponseEntity.badRequest().body(ApiSingleResponse.fail(e));
     }
@@ -36,9 +38,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiSingleResponse.fail(e));
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiSingleResponse<Void>> handleMethodArgumentTypeMismatchException(
-            MethodArgumentTypeMismatchException e) {
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<ApiSingleResponse<Void>> handleTypeMismatchException(
+            TypeMismatchException e) {
 
         String value = (String) e.getValue();
 

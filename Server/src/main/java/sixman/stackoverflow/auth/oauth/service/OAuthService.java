@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import sixman.stackoverflow.auth.jwt.dto.Token;
 import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
@@ -24,6 +25,7 @@ import sixman.stackoverflow.auth.jwt.service.TokenProvider;
 import sixman.stackoverflow.auth.utils.AuthConstant;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.global.exception.businessexception.authexception.OAuthCodeRequestException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -117,14 +119,21 @@ public class OAuthService {
 
         HttpEntity entity = new HttpEntity<>(tokenRequest(code, clientRegistration), headers);
 
-        ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(
-                uri,
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
-        );
+        try {
+            ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(
+                    uri,
+                    HttpMethod.POST,
+                    entity,
+                    new ParameterizedTypeReference<Map<String, String>>() {}
+            );
 
-        return responseEntity.getBody().get("access_token");
+            return responseEntity.getBody().get("access_token");
+
+        } catch (HttpClientErrorException.BadRequest e) {
+            throw new OAuthCodeRequestException();
+        }
+
+
     }
 
     private String getEmail(String accessToken){
