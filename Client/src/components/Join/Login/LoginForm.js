@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { google, github, kakao } from '../../../redux/createSlice/OAuthSlice';
-import { email, password } from '../../../redux/createSlice/LoginInfoSlice';
+import { email, password, myid } from '../../../redux/createSlice/LoginInfoSlice';
 import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
 import { logintoken } from '../../../redux/createSlice/LoginInfoSlice';
 
@@ -31,6 +31,7 @@ export default function LoginForm() {
       .then((res) => {
         console.log(res);
         dispatch(logintoken(res.headers.authorization));
+        dispatch(myid(res.data.memberId))
         dispatch(errmsg(''));
         nevigate(RouteConst.Main);
       })

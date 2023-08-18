@@ -15,7 +15,6 @@ export default function QuestionList() {
 
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     axios
       .get(
