@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.reply.service;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import sixman.stackoverflow.global.exception.businessexception.memberexception.M
 import sixman.stackoverflow.global.exception.businessexception.replyexception.ReplyNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse.createReplyResponse;
@@ -45,41 +47,22 @@ public class ReplyService {
     public Long createReply(ReplyCreateServiceRequest request, Long answerId) {
         Long memberId = SecurityUtil.getCurrentId(); // 사실 인증만 하고, 멤버 id는 밑에 값에서 넣어야 더 깔끔할 것 같다.
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException());
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        Member member = memberOptional.orElseThrow(MemberNotFoundException::new);
 
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
         Reply reply = postReply(request, answer, member);
         replyRepository.save(reply);
 
         return reply.getReplyId();
     }
-//    public List<ReplyResponse> getReplies(Long answerId) {
-//
-//        Long memberId = SecurityUtil.getCurrentId();
-//
-//        Answer answer= answerRepository.findById(answerId)
-//                .orElseThrow(() -> new AnswerNotFoundException());
-//
-//        List<Reply> replies = replyRepository.findRepliesByAnswer(answer);
-//
-//        Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new MemberNotFoundException());
-//
-//        // 리스트로 된 replies를 맵에 넣어서
-//        // 하나 하나 꺼내서 멤버 아이디닉네임값과 가져와서 그걸 ReplyResponse저장한 후 반환
-//
-//        return replies.stream()
-//
-//                .map(reply -> createReplyResponse(reply, member))
-//                .collect(Collectors.toList());
-//    }
+
 
     public Page<ReplyResponse> getRepliesPaged(Long answerId, Pageable pageable) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
 
         Page<Reply> repliesPage = replyRepository.findByAnswer(answer, pageable);
@@ -102,8 +85,10 @@ public class ReplyService {
 
     @Transactional(readOnly = true)
     public ReplyResponse findReply(long replyId) {
-        Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new ReplyNotFoundException());
+
+        Optional<Reply> replyOptional = replyRepository.findById(replyId);
+        Reply reply = replyOptional.orElseThrow(ReplyNotFoundException::new);
+
         return ReplyResponse.createReplyResponse(reply);
     }
 
@@ -111,8 +96,8 @@ public class ReplyService {
 
         Long memberId = SecurityUtil.getCurrentId();
 
-        Reply replyUpdate = replyRepository.findById(replyId)
-                .orElseThrow(() -> new ReplyNotFoundException());
+        Optional<Reply> replyOptional = replyRepository.findById(replyId);
+        Reply replyUpdate = replyOptional.orElseThrow(ReplyNotFoundException::new);
 
         checkAccessAuthority(replyUpdate.getMember().getMemberId(), memberId);
 
@@ -125,11 +110,17 @@ public class ReplyService {
 
     public void deleteReply(long replyId) {
         Long memberId = SecurityUtil.getCurrentId();
-        Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new ReplyNotFoundException());
+
+        Optional<Reply> replyOptional = replyRepository.findById(replyId);
+        Reply reply = replyOptional.orElseThrow(ReplyNotFoundException::new);
+
         checkAccessAuthority(reply.getMember().getMemberId(), memberId);
 
-        replyRepository.deleteById(replyId);
+        try {
+            replyRepository.deleteById(replyId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new ReplyNotFoundException();
+        }
     }
 
 

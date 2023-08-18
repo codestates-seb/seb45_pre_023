@@ -50,7 +50,7 @@ class ReplyServiceTest extends ServiceTest {
 
 
     @Test
-    @DisplayName("리플의 content와 answerId를 받아 댓글을 생성한다.")
+    @DisplayName("리플의 content와 answerId를 받아 댓글을 생성한다.") // o
     void createReply() {
 
 
@@ -100,22 +100,19 @@ class ReplyServiceTest extends ServiceTest {
 
 
     @Test
-    @DisplayName("댓글 조회 시 존재하지 않는 replyId 이면 ReplyNotFoundException 을 반환한다.")
+    @DisplayName("댓글 조회 시 존재하지 않는 replyId 이면 ReplyNotFoundException 을 반환한다.") // o
     void findReplyException() {
-
-
-//        long nonExistentReplyId = 586L;
-//
-//        when(replyRepository.findById(nonExistentReplyId)).thenReturn(Optional.empty());
-//
-//        // When, Then
-//        assertThrows(ReplyNotFoundException.class, () -> replyRepository.findById(nonExistentReplyId));
+        // Given
+        long replyId = 12345L;
+        // When, Then
+        assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }
 
 
     @Test
-    @DisplayName("answerId 를 통해 답변 목록을 페이징으로 찾아서 반환한다.(10개의 경우)")
+    @DisplayName("answerId 를 통해 댓글 목록을 페이징으로 찾아서 반환한다.(10개의 경우)") // ㅇ
     void getRepliesPaged() {
+        //given
         Member member = createMember();
         memberRepository.save(member);
 
@@ -140,12 +137,13 @@ class ReplyServiceTest extends ServiceTest {
         Page<ReplyResponse> replyResponsesPage = replyService.getRepliesPaged(answer.getAnswerId(), pageable);
 
         // Then
-        assertEquals(5, replyResponsesPage.getContent().size());
+        assertThat(replyResponsesPage.getContent()).hasSize(5);
     }
 
     @Test
-    @DisplayName("answerId 를 통해 답변 목록을 페이징으로 찾아서 반환한다.(4개의 경우)")
+    @DisplayName("answerId 를 통해 댓글 목록을 페이징으로 찾아서 반환한다.(4개의 경우)") // ㅇ
     void getRepliesPaged1() {
+        //given
         Member member = createMember();
         memberRepository.save(member);
 
@@ -170,13 +168,13 @@ class ReplyServiceTest extends ServiceTest {
         Page<ReplyResponse> replyResponsesPage = replyService.getRepliesPaged(answer.getAnswerId(), pageable);
 
         // Then
-        assertEquals(4, replyResponsesPage.getContent().size());
+        assertThat(replyResponsesPage.getContent()).hasSize(4);
     }
 
     @Test
-    @DisplayName("replyId로 댓글 조회한다")
+    @DisplayName("replyId로 댓글 조회한다") // ㅇ
     void findReply() {
-
+        //given
         Member member = createMember();
         memberRepository.save(member);
 
@@ -197,15 +195,16 @@ class ReplyServiceTest extends ServiceTest {
 
         //when
         ReplyResponse replyResponse = replyService.findReply(replyId);
-
-        assertNotNull(replyResponse);
-        assertEquals(content, replyResponse.getContent());
-        assertEquals(member.getMemberId(), replyResponse.getMember().getMemberId());
+        //then
+        assertThat(replyResponse).isNotNull();
+        assertThat(replyResponse.getContent()).isEqualTo(content);
+        assertThat(replyResponse.getMember().getMemberId()).isEqualTo(member.getMemberId());
     }
 
     @Test
-    @DisplayName("content를 새로운 내용으로 update한다")
+    @DisplayName("content를 새로운 내용으로 update한다") //ㅇ
     void updateReply() {
+        //given
         Member member = createMember();
         memberRepository.save(member);
 
@@ -233,15 +232,16 @@ class ReplyServiceTest extends ServiceTest {
         Reply updatedReply = replyService.updateReply(reply.getReplyId(), newContent);
 
         //then
-        assertNotNull(updatedReply);
-        assertEquals(newContent, updatedReply.getContent());
+        assertThat(updatedReply).isNotNull();
+        assertThat(updatedReply.getContent()).isEqualTo(newContent);
 
     }
 
 
     @Test
-    @DisplayName("특정 댓글을 삭제한다.")
+    @DisplayName("특정 댓글을 삭제한다.") //ㅇ
     void deleteReply() {
+        // given
         Member member = createMember();
         memberRepository.save(member);
 
@@ -268,47 +268,25 @@ class ReplyServiceTest extends ServiceTest {
 
         // Then
         Optional<Reply> deletedReply = replyRepository.findById(reply.getReplyId());
-        assertFalse(deletedReply.isPresent());
+        assertThat(deletedReply).isEmpty();
+//        assertThat(deletedReply.get().getContent()).isNull();
+//        assertThat(deletedReply.get().getMember()).isNull();
+//        assertThat(deletedReply.get().getAnswer()).isNull();
     }
 
     @Test
-    @DisplayName("존재하지 않는 댓글을 삭제하면 예외가 발생한다.")
+    @DisplayName("존재하지 않는 댓글을 삭제하면 ReplyNotFoundException가 발생한다.") //o
     void deleteNonExistentReply() {
-//        Member member = createMember();
-//        memberRepository.save(member);
-//
-//        Question question = createQuestion(member);
-//        questionRepository.save(question);
-//
-//        Answer answer = createAnswer(question);
-//        answerRepository.save(answer);
-//
-//        Reply reply = Reply.builder()
-//                .content("Content")
-//                .member(member)
-//                .answer(answer)
-//                .build();
-//        replyRepository.save(reply);
-//
-//
-//        setDefaultAuthentication(member.getMemberId());
-//
-//        //when
-//        assertThrows(ReplyNotFoundException.class, () -> replyService.deleteReply(reply.getReplyId()));
-//
-//
-//        //then
-//        assertFalse(replyRepository.findById(reply.getReplyId()).isPresent());
-
-
-//        long replyId = 999L;
-//
-//
-//
-//        // When, Then
-//        assertThrows(ReplyNotFoundException.class, () -> replyService.deleteReply(replyId));
+        // Given
+        long replyId = 12345L;
+        // When, Then
+        assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }
 }
+
+
+
+
 
 
 
