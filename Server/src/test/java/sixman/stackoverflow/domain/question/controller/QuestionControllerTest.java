@@ -456,26 +456,4 @@ public class QuestionControllerTest extends ControllerTest {
                 )
         );
     }
-
-    @Test
-    @DisplayName("태그 삭제 API")
-    void removeTagsFromQuestion() throws Exception {
-
-        //given
-        Long questionId = 1L;
-        List<String> tagNames = List.of("tag1", "tag2");
-
-        //when
-        ResultActions actions = mockMvc.perform(
-                delete("/questions/{questionId}/tags", questionId)
-                        .header("Authorization", "Bearer abc.def.ghi")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tagNames))
-        );
-        //then
-        actions
-                .andDo(print())
-                .andExpect(status().isNoContent());
-
-    }
 }

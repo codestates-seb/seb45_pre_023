@@ -6,18 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
+import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
+import sixman.stackoverflow.domain.answer.service.AnswerService;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
+import sixman.stackoverflow.domain.member.entity.Member;
+import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionTagResponse;
+import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
+import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +34,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class QuestionServiceTest extends ServiceTest {
+
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
+    private AnswerService answerService;
+    @Autowired
+    private AnswerRepository answerRepository;
 
 
     @Test
@@ -37,16 +57,30 @@ public class QuestionServiceTest extends ServiceTest {
 
 
 
-    @Test
-    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
-    public void getQuestionById(){
-
-    }
+//    @Test
+//    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
+//    public void getQuestionById(){
+//        // given
+//        Member member = createMember();
+//        memberRepository.save(member);
+//
+//        Question question = createQuestion(member);
+//
+//        Answer answer = createanswer(member,question);
+//        answerRepository.save(answer);
+//
+//
+//
+//
+//
+//        questionRepository.save(question);
+//
+//    }
 
 
     @Test
     @DisplayName("생성된 question의 questionId를 반환한다.")
-    public void createQuestion(){
+    public void createQuestionTest(){
 
     }
 
@@ -73,4 +107,31 @@ public class QuestionServiceTest extends ServiceTest {
     public void addQuestionRecommend(){
 
     }
+
+    private Question createQuestion(Member member) {
+        return Question.builder()
+                .member(member)
+                .detail("detail")
+                .title("title")
+                .expect("expect")
+                .build();
+    }
+
+//    private Question createQuestiondetail(Question question,List<Answer> answers) {
+//        Tag tag1 = createTag("tag1");
+//        Tag tag2 = createTag("tag2");
+//
+//        return Question.builder()
+//                .member(question.getMember())
+//                .detail("detail")
+//                .title("title")
+//                .expect("expect")
+//                .views(100)
+//                .recommend(10)
+//                .questionTags(Arrays.asList(tag1, tag2))
+//                .answers(answers)
+//                .build();
+//    }
+
+
 }
