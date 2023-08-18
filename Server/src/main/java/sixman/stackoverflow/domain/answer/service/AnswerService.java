@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.answer.service;
 
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,10 +50,11 @@ public class AnswerService {
     public Long createAnswer(AnswerCreateServiceRequest request, Long questionId) {
 
         Long memberId = SecurityUtil.getCurrentId();
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException());
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new QuestionNotFoundException());
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        Member member = memberOptional.orElseThrow(MemberNotFoundException::new);
+
+        Optional<Question> questionOptional = questionRepository.findById(questionId);
+        Question question = questionOptional.orElseThrow(QuestionNotFoundException::new);
 
         Answer answer = postAnswer(request, member, question);
 
@@ -62,8 +64,8 @@ public class AnswerService {
     }
     @Transactional(readOnly = true)
     public AnswerResponse findAnswer(long answerId) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
         return AnswerResponse.createAnswerResponse(answer);
     }
@@ -90,8 +92,9 @@ public class AnswerService {
 
     public Answer updateAnswer(Long answerId, String newContent) {
         Long memberId = SecurityUtil.getCurrentId();
-        Answer answerUpdate = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answerUpdate = answerOptional.orElseThrow(AnswerNotFoundException::new);
+
 
         checkAccessAuthority(answerUpdate.getMember().getMemberId(), memberId);
 
@@ -102,8 +105,8 @@ public class AnswerService {
 
     public void deleteAnswer(long answerId) {
         Long memberId = SecurityUtil.getCurrentId();
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
         checkAccessAuthority(answer.getMember().getMemberId(), memberId);
         answerRepository.deleteById(answerId);
@@ -118,6 +121,7 @@ public class AnswerService {
                 request.getContent(), member, question
         );
     }
+
 
     private void checkAccessAuthority(Long answerAuthorId, Long memberId) {
         if (!answerAuthorId.equals(memberId)) {

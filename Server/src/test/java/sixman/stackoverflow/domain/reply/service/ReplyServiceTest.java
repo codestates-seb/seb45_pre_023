@@ -1,0 +1,296 @@
+package sixman.stackoverflow.domain.reply.service;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
+import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
+import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
+import sixman.stackoverflow.domain.member.entity.Member;
+import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.question.entity.Question;
+import sixman.stackoverflow.domain.question.repository.QuestionRepository;
+import sixman.stackoverflow.domain.reply.entity.Reply;
+import sixman.stackoverflow.domain.reply.repository.ReplyRepository;
+import sixman.stackoverflow.domain.reply.service.dto.request.ReplyCreateServiceRequest;
+import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
+import sixman.stackoverflow.global.exception.businessexception.answerexception.AnswerNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.replyexception.ReplyNotFoundException;
+import sixman.stackoverflow.global.testhelper.ServiceTest;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+
+class ReplyServiceTest extends ServiceTest {
+    @Autowired
+    private ReplyService replyService;
+    @Autowired
+    private AnswerRepository answerRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private ReplyRepository replyRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
+
+
+    @Test
+    @DisplayName("리플의 content와 answerId를 받아 댓글을 생성한다.") // o
+    void createReply() {
+
+
+        Member member = createMember();
+        memberRepository.save(member);
+
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+
+        setDefaultAuthentication(member.getMemberId());
+
+        String content = "content";
+
+        ReplyCreateServiceRequest request = new ReplyCreateServiceRequest(content);
+
+        //when
+        Long replyId = replyService.createReply(request, answer.getAnswerId());
+
+        //then
+        Reply savedReply = replyRepository.findById(replyId).orElseThrow();
+        assertThat(savedReply.getReplyId()).isEqualTo(replyId);
+        assertThat(savedReply.getContent()).isEqualTo(content);
+        assertThat(savedReply.getAnswer().getAnswerId()).isEqualTo(answer.getAnswerId());
+        assertThat(savedReply.getMember().getMemberId()).isEqualTo(member.getMemberId());
+    }
+
+    private Question createQuestion(Member member) {
+        return Question.builder()
+                .member(member)
+                .detail("detail")
+                .title("title")
+                .expect("expect")
+                .build();
+    }
+
+    private Answer createAnswer(Question question) {
+        return Answer.builder()
+                .question(question)
+                .content("content")
+                .build();
+    }
+
+
+    @Test
+    @DisplayName("댓글 조회 시 존재하지 않는 replyId 이면 ReplyNotFoundException 을 반환한다.") // o
+    void findReplyException() {
+        // Given
+        long replyId = 12345L;
+        // When, Then
+        assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
+    }
+
+
+    @Test
+    @DisplayName("answerId 를 통해 댓글 목록을 페이징으로 찾아서 반환한다.(10개의 경우)") // ㅇ
+    void getRepliesPaged() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        for (int i = 0; i < 10; i++) {
+            Reply reply = Reply.builder()
+                    .content("Reply Content " + i)
+                    .member(member)
+                    .answer(answer)
+                    .build();
+            replyRepository.save(reply);
+        }
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        // When
+        Page<ReplyResponse> replyResponsesPage = replyService.getRepliesPaged(answer.getAnswerId(), pageable);
+
+        // Then
+        assertThat(replyResponsesPage.getContent()).hasSize(5);
+    }
+
+    @Test
+    @DisplayName("answerId 를 통해 댓글 목록을 페이징으로 찾아서 반환한다.(4개의 경우)") // ㅇ
+    void getRepliesPaged1() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        for (int i = 0; i < 4; i++) {
+            Reply reply = Reply.builder()
+                    .content("Reply Content " + i)
+                    .member(member)
+                    .answer(answer)
+                    .build();
+            replyRepository.save(reply);
+        }
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        // When
+        Page<ReplyResponse> replyResponsesPage = replyService.getRepliesPaged(answer.getAnswerId(), pageable);
+
+        // Then
+        assertThat(replyResponsesPage.getContent()).hasSize(4);
+    }
+
+    @Test
+    @DisplayName("replyId로 댓글 조회한다") // ㅇ
+    void findReply() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        String content = "content";
+
+        ReplyCreateServiceRequest request = new ReplyCreateServiceRequest(content);
+
+
+        Long replyId = replyService.createReply(request, answer.getAnswerId());
+
+        //when
+        ReplyResponse replyResponse = replyService.findReply(replyId);
+        //then
+        assertThat(replyResponse).isNotNull();
+        assertThat(replyResponse.getContent()).isEqualTo(content);
+        assertThat(replyResponse.getMember().getMemberId()).isEqualTo(member.getMemberId());
+    }
+
+    @Test
+    @DisplayName("content를 새로운 내용으로 update한다") //ㅇ
+    void updateReply() {
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        String oldContent = "old content";
+        Reply reply = Reply.builder()
+                .content(oldContent)
+                .member(member)
+                .answer(answer)
+                .build();
+        replyRepository.save(reply);
+
+
+        setDefaultAuthentication(member.getMemberId());
+
+
+        String newContent = "new Content";
+
+        // When
+        Reply updatedReply = replyService.updateReply(reply.getReplyId(), newContent);
+
+        //then
+        assertThat(updatedReply).isNotNull();
+        assertThat(updatedReply.getContent()).isEqualTo(newContent);
+
+    }
+
+
+    @Test
+    @DisplayName("특정 댓글을 삭제한다.") //ㅇ
+    void deleteReply() {
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        String content = "deleted content1";
+
+        Reply reply = Reply.builder()
+                .content(content)
+                .member(member)
+                .answer(answer)
+                .build();
+        replyRepository.save(reply);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        // When
+        replyService.deleteReply(reply.getReplyId());
+
+        // Then
+        Optional<Reply> deletedReply = replyRepository.findById(reply.getReplyId());
+        assertThat(deletedReply).isEmpty();
+//        assertThat(deletedReply.get().getContent()).isNull();
+//        assertThat(deletedReply.get().getMember()).isNull();
+//        assertThat(deletedReply.get().getAnswer()).isNull();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 댓글을 삭제하면 ReplyNotFoundException가 발생한다.") //o
+    void deleteNonExistentReply() {
+        // Given
+        long replyId = 12345L;
+        // When, Then
+        assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

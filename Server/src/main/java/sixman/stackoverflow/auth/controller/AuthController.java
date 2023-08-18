@@ -1,5 +1,6 @@
 package sixman.stackoverflow.auth.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.Collections;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private final OAuthService oAuthService;
@@ -32,7 +34,6 @@ public class AuthController {
 
     @GetMapping("/oauth")
     public ResponseEntity<String> login(Provider provider, String code) {
-        
         Token token = oAuthService.login(provider, code);
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -64,4 +65,12 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/error")
+    public ResponseEntity<Void> error() {
+        log.error("error");
+
+        RuntimeException error = new RuntimeException("error");
+        error.printStackTrace();
+        throw error;
+    }
 }
