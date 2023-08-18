@@ -567,12 +567,6 @@ class MemberServiceTest extends ServiceTest {
                 .build();
     }
 
-    private Tag createTag(String name){
-        return Tag.builder()
-                .tagName(name)
-                .build();
-    }
-
     private QuestionTag createQuestionTag(Question question, Tag tag){
         return QuestionTag.builder()
                 .question(question)

@@ -47,6 +47,8 @@ import sixman.stackoverflow.domain.question.service.response.QuestionDetailRespo
 import sixman.stackoverflow.domain.reply.controller.ReplyController;
 import sixman.stackoverflow.domain.reply.service.ReplyService;
 import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
+import sixman.stackoverflow.domain.tag.controller.TagController;
+import sixman.stackoverflow.domain.tag.service.TagService;
 import sixman.stackoverflow.global.common.CommonController;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.response.PageInfo;
@@ -69,7 +71,13 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest({MemberController.class, AuthController.class, CommonController.class, QuestionController.class, AnswerController.class, ReplyController.class})
+@WebMvcTest({MemberController.class,
+        AuthController.class,
+        CommonController.class,
+        QuestionController.class,
+        AnswerController.class,
+        ReplyController.class,
+        TagController.class})
 @ExtendWith({RestDocumentationExtension.class})
 @ActiveProfiles("local")
 public abstract class ControllerTest {
@@ -82,6 +90,7 @@ public abstract class ControllerTest {
     @MockBean protected S3Service s3Service;
     @MockBean protected ReplyService replyService;
     @MockBean protected AnswerRecommendService answerRecommendService;
+    @MockBean protected TagService tagService;
     @Autowired protected MockMvc mockMvc;
     @Autowired protected ObjectMapper objectMapper;
     protected RestDocumentationResultHandler documentHandler;

@@ -314,6 +314,7 @@ public class QuestionControllerTest extends ControllerTest {
                 .title("update title")
                 .detail("update detail")
                 .expect("update expect")
+                .tagIds(Arrays.asList(1, 2, 3))
                 .build();
 
         Long questionId = 1L;
@@ -345,7 +346,8 @@ public class QuestionControllerTest extends ControllerTest {
                         requestFields(
                                 fieldWithPath("title").description("질문 제목").attributes(getConstraint("title")),
                                 fieldWithPath("detail").description("질문 내용").attributes(getConstraint("detail")),
-                                fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect"))
+                                fieldWithPath("expect").description("질문 내용2").attributes(getConstraint("expect")),
+                                fieldWithPath("tagIds").description("질문 태그 ID 목록").attributes(getConstraint("tagIds"))
                         )
                 )
         );
