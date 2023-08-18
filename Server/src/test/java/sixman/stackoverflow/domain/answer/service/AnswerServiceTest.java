@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
@@ -24,6 +25,7 @@ import sixman.stackoverflow.global.testhelper.ServiceTest;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
+
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -113,23 +115,21 @@ class AnswerServiceTest extends ServiceTest {
         Question question = createQuestion(member);
         questionRepository.save(question);
 
+        Answer answer = createanswer(member, question);
+        answerRepository.save(answer);
+
 
 
         setDefaultAuthentication(member.getMemberId());
 
-        String content = "content";
 
-        AnswerCreateServiceRequest request = new AnswerCreateServiceRequest(content);
-
-
-        Long answerId = answerService.createAnswer(request, question.getQuestionId());
 
         //when
-        AnswerResponse answerResponse = answerService.findAnswer(answerId);
+        AnswerResponse answerResponse = answerService.findAnswer(answer.getAnswerId());
 
         //then
         assertNotNull(answerResponse);
-        assertThat(answerResponse.getContent()).isEqualTo(content);
+        assertThat(answerResponse.getContent()).isEqualTo(answer.getContent());
         assertThat(answerResponse.getMember().getMemberId()).isEqualTo(member.getMemberId());
     }
 
@@ -154,34 +154,33 @@ class AnswerServiceTest extends ServiceTest {
 
 
     @Test
-    @DisplayName("answerId, content 를 통해 답변을 수정한다.") // o
+    @DisplayName("answerId, content 를 통해 답변을 수정한다.") // 깨지는 애
     void updateAnswer() {
 
-//        //given
-//        Member memberForUpdate = createMember();
-//        memberRepository.save(memberForUpdate);
-//
-//        Question questionForUpdate = createQuestion(memberForUpdate);
-//        questionRepository.save(questionForUpdate);
-//
-//        Answer changeAnswer = Answer.builder()
-//                .answerId(1L)
-//                .content("old Content")
-//                .member(memberForUpdate)
-//                .question(questionForUpdate)
-//                .build();
-//        answerRepository.save(changeAnswer);
-//
-//        setDefaultAuthentication(memberForUpdate.getMemberId());
-//
-//        String newContent = "Updated Content";
-//
-//        // When
-//        Answer updatedAnswer = answerService.updateAnswer(changeAnswer.getAnswerId(), newContent);
-//
-//        // Then
-//        assertThat(updatedAnswer).isNotNull();
-//        assertThat(updatedAnswer.getContent()).isEqualTo(newContent);
+        //given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createanswer(member, question);
+        answerRepository.save(answer);
+
+
+
+
+
+        setDefaultAuthentication(member.getMemberId());
+
+        String newContent = "Updated Content";
+
+        // When
+        Answer updatedAnswer = answerService.updateAnswer(answer.getAnswerId(), newContent);
+
+        // Then
+        assertThat(updatedAnswer).isNotNull();
+        assertThat(updatedAnswer.getContent()).isEqualTo(newContent);
     }
 
 
@@ -254,31 +253,36 @@ class AnswerServiceTest extends ServiceTest {
     @DisplayName("answerId 를 통해 답변을 삭제한다.") // ㅇ
     void deleteAnswer() {
         // Given
-//        Member member = createMember();
-//        memberRepository.save(member);
-//
-//        Question question = createQuestion(member);
-//        questionRepository.save(question);
-//
-//        String content = "deleted content2";
-//        Answer answer = Answer.builder()
-//                .answerId(1L)
-//                .content(content)
-//                .member(member)
-//                .question(question)
-//                .build();
-//
-//        answerRepository.save(answer);
-//
-//        setDefaultAuthentication(member.getMemberId());
-//
-//        //When
-//        answerService.deleteAnswer(answer.getAnswerId());
-//
-//        //Then
-//        Optional<Answer> deletedAnswer = answerRepository.findById(answer.getAnswerId());
-//        assertThat(deletedAnswer).isEmpty();
-//        answerRepository.flush();
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        String content = "deleted content2";
+        Answer answer = Answer.builder()
+                .content(content)
+                .member(member)
+                .question(question)
+                .build();
+
+        answerRepository.save(answer);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        //When
+        answerService.deleteAnswer(answer.getAnswerId());
+
+
+        //Optional<Answer> deletedAnswer = answerRepository.findById(answer.getAnswerId());
+
+        //Then
+        boolean answerExists = answerRepository.existsById(answer.getAnswerId());
+        org.junit.jupiter.api.Assertions.assertFalse(answerExists, "답변이 삭제되었으므로 해당 answerId의 답변이 더 이상 존재해서는 안됩니다.");
+
+
+
+
 
     }
 

@@ -95,4 +95,6 @@ public class Member extends BaseEntity {
     public void disable() {
         this.enabled = false;
     }
+
+
 }

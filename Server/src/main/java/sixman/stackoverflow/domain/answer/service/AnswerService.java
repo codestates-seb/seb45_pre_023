@@ -1,6 +1,7 @@
 package sixman.stackoverflow.domain.answer.service;
 
 import lombok.Getter;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import sixman.stackoverflow.global.exception.businessexception.answerexception.A
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.replyexception.ReplyNotFoundException;
 
 
 import java.util.List;
@@ -109,7 +111,12 @@ public class AnswerService {
         Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
         checkAccessAuthority(answer.getMember().getMemberId(), memberId);
-        answerRepository.deleteById(answerId);
+
+        try {
+            answerRepository.deleteById(answerId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new AnswerNotFoundException();
+        }
     }
 
 

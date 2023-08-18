@@ -107,6 +107,9 @@ class ReplyServiceTest extends ServiceTest {
         // When, Then
         assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }
+    @Test
+    @DisplayName("Reply 목록을 최신 순으로 불러온다.")
+    void SortByCreatedAt() {}
 
 
     @Test
@@ -184,20 +187,27 @@ class ReplyServiceTest extends ServiceTest {
         Answer answer = createAnswer(question);
         answerRepository.save(answer);
 
+        String oldContent = "old content";
+        Reply reply = Reply.builder()
+                .content(oldContent)
+                .member(member)
+                .answer(answer)
+                .build();
+        replyRepository.save(reply);
+
+
+
         setDefaultAuthentication(member.getMemberId());
 
-        String content = "content";
-
-        ReplyCreateServiceRequest request = new ReplyCreateServiceRequest(content);
 
 
-        Long replyId = replyService.createReply(request, answer.getAnswerId());
 
         //when
-        ReplyResponse replyResponse = replyService.findReply(replyId);
+        ReplyResponse replyResponse = replyService.findReply(reply.getReplyId());
         //then
         assertThat(replyResponse).isNotNull();
-        assertThat(replyResponse.getContent()).isEqualTo(content);
+        assertThat(replyResponse.getReplyId()).isEqualTo(reply.getReplyId());
+        assertThat(replyResponse.getContent()).isEqualTo(reply.getContent());
         assertThat(replyResponse.getMember().getMemberId()).isEqualTo(member.getMemberId());
     }
 
