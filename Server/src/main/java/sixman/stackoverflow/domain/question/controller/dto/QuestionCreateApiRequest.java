@@ -27,7 +27,7 @@ public class QuestionCreateApiRequest {
     private String expect;
 
     @NotNull(message = "{validation.question.tag}")
-    private List<Integer> tagIds;
+    private List<Long> tagIds;
 
     // 생성 메서드
     public Question toEntity(Member member) {
@@ -35,6 +35,7 @@ public class QuestionCreateApiRequest {
                 .title(title)
                 .detail(detail)
                 .expect(expect)
+                .questionTags(new ArrayList<>())
                 .member(member)
                 .build();
     }

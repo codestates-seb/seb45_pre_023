@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.question.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionTagResponse;
 import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.domain.tag.entity.Tag;
+import sixman.stackoverflow.domain.tag.repository.TagRepository;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
@@ -44,9 +46,13 @@ public class QuestionServiceTest extends ServiceTest {
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
+    private TagRepository tagRepository;
+    @Autowired
     private AnswerService answerService;
     @Autowired
     private AnswerRepository answerRepository;
+    @Autowired
+    private QuestionService questionService;
 
 
     @Test
@@ -80,8 +86,30 @@ public class QuestionServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("생성된 question의 questionId를 반환한다.")
-    public void createQuestionTest(){
+    void createQuestionTest(){
+        //given
+        Member member = createMember();
+        Tag tag1 = createTag("tag1");
+        Tag tag2 = createTag("tag2");
+        memberRepository.save(member);
+        tagRepository.save(tag1);
+        tagRepository.save(tag2);
 
+        Question question = createQuestion(member);
+        List<Long> tagsId = List.of(1L, 2L);
+
+        //when
+        Long questionId = questionService.createQuestion(question, tagsId);
+
+        //then
+        Question findQuestion = questionRepository.findById(questionId).orElseThrow();
+        assertThat(findQuestion.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(findQuestion.getTitle()).isEqualTo(question.getTitle());
+        assertThat(findQuestion.getDetail()).isEqualTo(question.getDetail());
+        assertThat(findQuestion.getExpect()).isEqualTo(question.getExpect());
+        assertThat(findQuestion.getViews()).isEqualTo(0);
+        assertThat(findQuestion.getRecommend()).isEqualTo(0);
+        assertThat(findQuestion.getQuestionTags()).hasSize(2);
     }
 
     @Test
@@ -114,6 +142,7 @@ public class QuestionServiceTest extends ServiceTest {
                 .detail("detail")
                 .title("title")
                 .expect("expect")
+                .questionTags(new ArrayList<>())
                 .build();
     }
 

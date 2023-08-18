@@ -51,7 +51,7 @@ public class QuestionControllerTest extends ControllerTest {
                 .title("title")
                 .detail("detail")
                 .expect("expect")
-                .tagIds(Arrays.asList(1, 2))
+                .tagIds(Arrays.asList(1L, 2L))
                 .build();
 
         setDefaultAuthentication(1L);
@@ -314,7 +314,7 @@ public class QuestionControllerTest extends ControllerTest {
                 .title("update title")
                 .detail("update detail")
                 .expect("update expect")
-                .tagIds(Arrays.asList(1, 2, 3))
+                .tagIds(Arrays.asList(1L, 2L, 3L))
                 .build();
 
         Long questionId = 1L;
