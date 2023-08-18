@@ -107,7 +107,7 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    public Question updateQuestion(Long questionId, String title, String detail, String expect) {
+    public Question updateQuestion(Long questionId, String title, String detail, String expect, List<Integer> tagIds) {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow();
 

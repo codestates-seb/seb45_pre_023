@@ -120,28 +120,17 @@ public class QuestionController {
             @PathVariable("question-id") @Positive Long questionId,
             @RequestBody @Valid QuestionUpdateApiRequest request) {
 
-        questionService.updateQuestion(questionId, request.getTitle(), request.getDetail(), request.getExpect());
+        questionService.updateQuestion(
+                questionId,
+                request.getTitle(),
+                request.getDetail(),
+                request.getExpect(),
+                request.getTagIds()
+        );
 
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{question-Id}/tags")
-    public ResponseEntity<ApiSingleResponse<List<String>>> getTags() {
-
-//        List<String> tags = tagService.getTags();
-
-        return null;
-    }
-
-    // 태그 수정 기능 -> 얘기해봐야 함
-    @PatchMapping("/{question-id}/tags")
-    public ResponseEntity<Void> updateTags(
-            @PathVariable("question-id") @Positive Long questionId,
-            @RequestBody List<Integer> tagIds) {
-
-        questionService.updateTags(questionId, tagIds);
-        return ResponseEntity.noContent().build();
-    }
     // 질문글 삭제 기능
     @DeleteMapping("/{question-id}")
     public ResponseEntity<ApiSingleResponse<Void>> deleteQuestion(@PathVariable("question-id") @Positive Long questionId) {
