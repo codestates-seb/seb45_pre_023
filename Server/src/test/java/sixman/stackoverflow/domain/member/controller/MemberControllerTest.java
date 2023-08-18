@@ -1185,7 +1185,6 @@ class MemberControllerTest extends ControllerTest {
     @DisplayName("메일 인증 요청 시 요청 값 validation 검증")
     Collection<DynamicTest> sendEmailValidation() throws Exception {
         //given
-
         willDoNothing()
                 .given(memberService)
                 .sendCodeToEmail(anyString());
@@ -1239,7 +1238,6 @@ class MemberControllerTest extends ControllerTest {
     @DisplayName("이메일 인증 코드 전송 시 요청 값 validation 검증")
     Collection<DynamicTest> confirmEmailValidation() throws Exception {
         //given
-
         given(memberService.checkCode(anyString(), anyString()))
                 .willReturn(true);
 
@@ -1312,6 +1310,139 @@ class MemberControllerTest extends ControllerTest {
                         .andExpect(jsonPath("$.data[0].value").value("null"))
                         .andExpect(jsonPath("$.data[0].reason").value("코드를 정확히 입력해주세요."));
             })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("비밀번호를 찾기 위한 메일 인증 요청 시 요청 값 validation 검증")
+    Collection<DynamicTest> sendFindPasswordEmailValidation() throws Exception {
+        //given
+        willDoNothing()
+                .given(memberService)
+                .sendFindPasswordCodeToEmail(anyString());
+
+        return List.of(
+                dynamicTest("이메일 값이 null 이면 검증에 실패한다.", () -> {
+                    MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                            .build();
+
+                    String content = objectMapper.writeValueAsString(request);
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/email")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(content));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                }),
+                dynamicTest("이메일 값 형식에 맞지 않으면 검증에 실패한다.", () -> {
+                    MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                            .email("test")
+                            .build();
+
+                    String content = objectMapper.writeValueAsString(request);
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/email")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(content));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getEmail()))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("비밀번호를 찾기 위한 이메일 인증 코드 전송 시 요청 값 validation 검증")
+    Collection<DynamicTest> confirmFindPasswordEmailValidation() throws Exception {
+        //given
+
+        given(memberService.checkCode(anyString(), anyString()))
+                .willReturn(true);
+
+
+        return List.of(
+                dynamicTest("이메일 값이 null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                            .code("123456")
+                            .build();
+
+                    String content = objectMapper.writeValueAsString(request);
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/email/confirm")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(content));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                }),
+                dynamicTest("이메일 값이 형식에 맞지 않으면 검증에 실패한다.", () -> {
+                    //given
+                    MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                            .email("test")
+                            .code("123456")
+                            .build();
+
+                    String content = objectMapper.writeValueAsString(request);
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/email/confirm")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(content));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("email"))
+                            .andExpect(jsonPath("$.data[0].value").value(request.getEmail()))
+                            .andExpect(jsonPath("$.data[0].reason").value("이메일을 정확히 입력해주세요."));
+                }),
+                dynamicTest("code 값이 null 이면 검증에 실패한다.", () -> {
+                    //given
+                    MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
+                            .email("test@google.com")
+                            .build();
+
+                    String content = objectMapper.writeValueAsString(request);
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/auth/email/confirm")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(content));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("code"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("코드를 정확히 입력해주세요."));
+                })
         );
     }
 
