@@ -3,6 +3,7 @@ package sixman.stackoverflow.domain.member.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
@@ -241,10 +242,11 @@ class MemberServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("member email 인증이 완료되면 member 의 비밀번호를 변경할 수 있다.")
+    @DisplayName("member email 인증이 완료되면 member 의 비밀번호를 변경하고 member 를 enable 로 변경한다.")
     void findPassword() {
         //given
         Member member = createMember();
+        member.disable();
         memberRepository.save(member);
 
         String email = member.getEmail();
@@ -263,6 +265,7 @@ class MemberServiceTest extends ServiceTest {
         //then
         Member updatedMember = memberRepository.findById(member.getMemberId()).orElseThrow();
         assertThat(passwordEncoder.matches(password, updatedMember.getPassword())).isTrue();
+        assertThat(updatedMember.isEnabled()).isTrue();
     }
 
     @Test
@@ -391,14 +394,14 @@ class MemberServiceTest extends ServiceTest {
         questions.forEach(em::persist);
 
         //when
-        MemberResponse.MemberQuestionPageResponse memberQuestion =
+        Page<MemberResponse.MemberQuestion> memberQuestion =
                 memberService.getMemberQuestion(member.getMemberId(), 0, 5);
 
         //then
-        assertThat(memberQuestion.getQuestions()).hasSize(5);
-        assertThat(memberQuestion.getPageInfo().getPage()).isEqualTo(1);
-        assertThat(memberQuestion.getPageInfo().getSize()).isEqualTo(5);
-        assertThat(memberQuestion.getPageInfo().getTotalSize()).isEqualTo(10);
+        assertThat(memberQuestion.getContent()).hasSize(5);
+        assertThat(memberQuestion.getNumber()).isEqualTo(0);
+        assertThat(memberQuestion.getSize()).isEqualTo(5);
+        assertThat(memberQuestion.getTotalElements()).isEqualTo(10);
     }
 
     @Test
@@ -419,14 +422,15 @@ class MemberServiceTest extends ServiceTest {
         });
 
         //when
-        MemberResponse.MemberAnswerPageResponse memberAnswer =
-                memberService.getMemberAnswer(member.getMemberId(), 0, 5);
+
+        Page<MemberResponse.MemberAnswer> memberAnswer
+                = memberService.getMemberAnswer(member.getMemberId(), 0, 5);
 
         //then
-        assertThat(memberAnswer.getAnswers()).hasSize(5);
-        assertThat(memberAnswer.getPageInfo().getPage()).isEqualTo(1);
-        assertThat(memberAnswer.getPageInfo().getSize()).isEqualTo(5);
-        assertThat(memberAnswer.getPageInfo().getTotalSize()).isEqualTo(10);
+        assertThat(memberAnswer.getContent()).hasSize(5);
+        assertThat(memberAnswer.getNumber()).isEqualTo(0);
+        assertThat(memberAnswer.getSize()).isEqualTo(5);
+        assertThat(memberAnswer.getTotalElements()).isEqualTo(10);
     }
 
     @Test
@@ -446,7 +450,7 @@ class MemberServiceTest extends ServiceTest {
                         "image/png",
                         "image".getBytes());
 
-        given(s3Service.uploadImage(anyString(), any(MultipartFile.class)))
+        given(s3Service.uploadAndGetUrl(anyString(), any(MultipartFile.class)))
                 .willReturn("https://image.png");
 
         //when
@@ -486,7 +490,7 @@ class MemberServiceTest extends ServiceTest {
                 .willReturn(new MimeMessage(Session.getInstance(new Properties())));
 
         //when
-        memberService.sendCodeToEmail(email);
+        memberService.sendSignupCodeToEmail(email);
 
         //then
         verify(redisService, times(1)).saveValues(anyString(), anyString(), any(Duration.class)); //저장 로직 호출
@@ -537,7 +541,7 @@ class MemberServiceTest extends ServiceTest {
         String email = member.getEmail();
 
         //when & then
-        assertThatThrownBy(() -> memberService.sendCodeToEmail(email))
+        assertThatThrownBy(() -> memberService.sendSignupCodeToEmail(email))
                 .isInstanceOf(MemberDuplicateException.class)
                 .hasMessageContaining("이미 존재하는 회원 이메일입니다.");
     }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -14,8 +15,9 @@ import sixman.stackoverflow.domain.member.controller.dto.*;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.service.dto.request.*;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberDisabledException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberDuplicateException;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
-import sixman.stackoverflow.global.response.PageInfo;
 import sixman.stackoverflow.global.testhelper.ControllerTest;
 
 import java.time.LocalDateTime;
@@ -25,8 +27,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.DynamicTest.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -200,7 +201,7 @@ class MemberControllerTest extends ControllerTest {
     void getMemberQuestion() throws Exception {
         //given
         Long memberId = 1L;
-        MemberResponse.MemberQuestionPageResponse response = memberQuestionPageResponse();
+        Page<MemberResponse.MemberQuestion> response = memberQuestionPageResponse();
 
         given(memberService.getMemberQuestion(anyLong(), anyInt(), anyInt())).willReturn(response);
 
@@ -256,7 +257,7 @@ class MemberControllerTest extends ControllerTest {
     void getMemberAnswer() throws Exception {
         //given
         Long memberId = 1L;
-        MemberResponse.MemberAnswerPageResponse response = memberAnswerPageResponse();
+        Page<MemberResponse.MemberAnswer> response = memberAnswerPageResponse();
 
         given(memberService.getMemberAnswer(anyLong(), anyInt(), anyInt())).willReturn(response);
 
@@ -525,7 +526,7 @@ class MemberControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("이메일 인증 API - 인증 요청")
+    @DisplayName("이메일 인증 API - 가입 인증 요청")
     void sendEmail() throws Exception{
         //given
         MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
@@ -536,7 +537,7 @@ class MemberControllerTest extends ControllerTest {
 
         willDoNothing()
                 .given(memberService)
-                .sendCodeToEmail(anyString());
+                .sendSignupCodeToEmail(anyString());
 
         //when
         ResultActions actions = mockMvc.perform(
@@ -557,11 +558,92 @@ class MemberControllerTest extends ControllerTest {
                         fieldWithPath("email").description("인증 요청할 이메일").attributes(getConstraint("email"))
                 )
         ));
-
     }
 
     @Test
-    @DisplayName("이메일 인증 API - 인증 확인")
+    @DisplayName("이메일 인증 API - 탈퇴한 회원일 때")
+    void sendEmailDisable() throws Exception{
+        //given
+        MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                .email("test@google.com")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        willThrow(new MemberDisabledException())
+                .given(memberService)
+                .sendSignupCodeToEmail(anyString());
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/members/email")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //when
+        actions
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+        //restDocs
+        setConstraintClass(MemberMailAuthApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 요청할 이메일").attributes(getConstraint("email"))
+                ),
+                responseFields(
+                        fieldWithPath("data").description("null"),
+                        fieldWithPath("message").description("에러 메시지"),
+                        fieldWithPath("status").description("에러 상태 코드"),
+                        fieldWithPath("code").description("에러 코드")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("이메일 인증 API - 중복된 활성 회원일 때")
+    void sendEmailDuplicate() throws Exception{
+        //given
+        MemberMailAuthApiRequest request = MemberMailAuthApiRequest.builder()
+                .email("test@google.com")
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        willThrow(new MemberDuplicateException())
+                .given(memberService)
+                .sendSignupCodeToEmail(anyString());
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/members/email")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+        //when
+        actions
+                .andDo(print())
+                .andExpect(status().isConflict());
+
+        //restDocs
+        setConstraintClass(MemberMailAuthApiRequest.class);
+
+        actions.andDo(documentHandler.document(
+                requestFields(
+                        fieldWithPath("email").description("인증 요청할 이메일").attributes(getConstraint("email"))
+                ),
+                responseFields(
+                        fieldWithPath("data").description("null"),
+                        fieldWithPath("message").description("에러 메시지"),
+                        fieldWithPath("status").description("에러 상태 코드"),
+                        fieldWithPath("code").description("에러 코드")
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("이메일 인증 API - 가입 인증 확인")
     void confirmEmail() throws Exception {
         //given
         MemberMailConfirmApiRequest request = MemberMailConfirmApiRequest.builder()
@@ -1187,7 +1269,7 @@ class MemberControllerTest extends ControllerTest {
         //given
         willDoNothing()
                 .given(memberService)
-                .sendCodeToEmail(anyString());
+                .sendSignupCodeToEmail(anyString());
 
         return List.of(
                 dynamicTest("이메일 값이 null 이면 검증에 실패한다.", () -> {
@@ -1469,15 +1551,15 @@ class MemberControllerTest extends ControllerTest {
                 .location("location")
                 .accounts(List.of("account1", "account2"))
                 .authority(Authority.ROLE_USER)
-                .question(memberQuestionPageResponse())
-                .answer(memberAnswerPageResponse())
+                .question(MemberResponse.MemberQuestionPageResponse.of(memberQuestionPageResponse()))
+                .answer(MemberResponse.MemberAnswerPageResponse.of(memberAnswerPageResponse()))
                 .tags(tags)
                 .build();
 
         return memberResponse;
     }
 
-    MemberResponse.MemberQuestionPageResponse memberQuestionPageResponse() {
+    Page<MemberResponse.MemberQuestion> memberQuestionPageResponse() {
         List<MemberResponse.MemberQuestion> questions = new ArrayList<>();
 
         for(long i = 1; i <= 5; i++){
@@ -1494,15 +1576,10 @@ class MemberControllerTest extends ControllerTest {
             questions.add(question);
         }
 
-        MemberResponse.MemberQuestionPageResponse question = MemberResponse.MemberQuestionPageResponse.builder()
-                .questions(questions)
-                .pageInfo(PageInfo.of(new PageImpl(questions, PageRequest.of(0, 5), 100)))
-                .build();
-
-        return question;
+        return new PageImpl<>(questions, PageRequest.of(0, 5), 100);
     }
 
-    private MemberResponse.MemberAnswerPageResponse memberAnswerPageResponse() {
+    Page<MemberResponse.MemberAnswer> memberAnswerPageResponse() {
         List<MemberResponse.MemberAnswer> answers = new ArrayList<>();
 
         for(long i = 1; i <= 5; i++){
@@ -1520,12 +1597,7 @@ class MemberControllerTest extends ControllerTest {
             answers.add(answer);
         }
 
-        MemberResponse.MemberAnswerPageResponse answer = MemberResponse.MemberAnswerPageResponse.builder()
-                .answers(answers)
-                .pageInfo(PageInfo.of(new PageImpl(answers, PageRequest.of(0, 5), 100)))
-                .build();
-
-        return answer;
+        return new PageImpl<>(answers, PageRequest.of(0, 5), 100);
     }
 
 

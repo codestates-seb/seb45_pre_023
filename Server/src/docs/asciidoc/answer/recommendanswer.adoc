@@ -4,7 +4,7 @@
 :toc: left
 :toclevels: 2
 :sectlinks:
-:docinfo: shared-head
+:docinfo: ../shared-head
 
 [[recommendAnswer]]
 = 답변 추천 API

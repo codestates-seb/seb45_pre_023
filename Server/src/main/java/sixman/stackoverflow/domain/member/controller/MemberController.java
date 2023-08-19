@@ -1,8 +1,6 @@
 package sixman.stackoverflow.domain.member.controller;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 
 @RestController
 @RequestMapping("/members")
@@ -44,13 +41,8 @@ public class MemberController {
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
 
-        MemberResponse.MemberQuestionPageResponse memberQuestion
+        Page<MemberResponse.MemberQuestion> memberQuestionPage
                 = memberService.getMemberQuestion(memberId, page - 1, 5);
-
-        Page<MemberResponse.MemberQuestion> memberQuestionPage = new PageImpl<>(
-                memberQuestion.getQuestions(),
-                PageRequest.of(page - 1, 5),
-                memberQuestion.getPageInfo().getTotalSize());
 
         return ResponseEntity.ok(ApiPageResponse.ok(memberQuestionPage));
     }
@@ -61,14 +53,8 @@ public class MemberController {
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
 
-        MemberResponse.MemberAnswerPageResponse memberAnswerPageResponse
-                = memberService.getMemberAnswer(memberId, page - 1, 5);
-
         Page<MemberResponse.MemberAnswer> memberAnswerPage
-                = new PageImpl<>(
-                memberAnswerPageResponse.getAnswers(),
-                PageRequest.of(page - 1, 5),
-                memberAnswerPageResponse.getPageInfo().getTotalSize());
+                = memberService.getMemberAnswer(memberId, page - 1, 5);
 
         return ResponseEntity.ok(ApiPageResponse.ok(memberAnswerPage));
     }
@@ -132,7 +118,7 @@ public class MemberController {
 
     @PostMapping("/email")
     public ResponseEntity<Void> sendEmail(@RequestBody @Valid MemberMailAuthApiRequest request) {
-        memberService.sendCodeToEmail(request.getEmail());
+        memberService.sendSignupCodeToEmail(request.getEmail());
         return ResponseEntity.noContent().build();
     }
 

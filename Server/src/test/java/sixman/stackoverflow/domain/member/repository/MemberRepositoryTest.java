@@ -1,5 +1,6 @@
 package sixman.stackoverflow.domain.member.repository;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +125,22 @@ class MemberRepositoryTest extends RepositoryTest {
         //then
         assertThat(tags).hasSize(2)
                 .extracting("tagName").containsExactly("tag1", "tag2");
+    }
+
+    @Test
+    @DisplayName("memberId 로 member 와 member 의 myInfo 를 함께 조회한다.")
+    void findByMemberIdWithInfo() {
+        //given
+        Member member = createMember();
+        em.persist(member);
+        em.flush();
+        em.clear();
+
+        //when
+        Member findMember = memberRepository.findByMemberIdWithInfo(member.getMemberId()).orElseThrow();
+
+        //then
+        assertThat(Hibernate.isInitialized(findMember.getMyInfo())).isTrue(); //myInfo 가 초기화 되었는지 확인
     }
 
     private List<Question> createQuestions(Member member, int count){

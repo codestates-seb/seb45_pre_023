@@ -1,14 +1,15 @@
 package sixman.stackoverflow.domain.member.entity;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
-import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberPasswordException;
+import org.junit.jupiter.api.TestFactory;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.DynamicTest.*;
 
 class MemberTest {
 
@@ -38,7 +39,7 @@ class MemberTest {
         Member member = createMemberDefault();
     
         //when
-        member.updateMember("new nickname");
+        member.updateNickname("new nickname");
 
         //then
         assertThat(member.getNickname()).isEqualTo("new nickname");
@@ -51,7 +52,7 @@ class MemberTest {
         Member member = createMemberDefault();
 
         //when
-        member.updateMember(null);
+        member.updateNickname(null);
 
         //then
         assertThat(member.getNickname()).isEqualTo("test");
@@ -89,6 +90,44 @@ class MemberTest {
 
         //then
         assertThat(member.getPassword()).isEqualTo(newPassword);
+    }
+
+    @Test
+    @DisplayName("image path 를 받아서 member MyInfo 의 image 를 수정한다.")
+    void updateImagePath() {
+        //given
+        Member member = createMemberDefault();
+        String imagePath = "png";
+
+        //when
+        member.updateImagePath(imagePath);
+
+        //then
+        assertThat(member.getMyInfo().getImage()).isEqualTo(String.format("images/%s.%s", member.getEmail(), imagePath));
+    }
+
+    @TestFactory
+    @DisplayName("member 를 비활성화, 활성화 시킨다.")
+    Collection<DynamicTest> memberEnable() {
+        //given
+        Member member = createMemberDefault();
+
+        return List.of(
+                dynamicTest("member 를 비활성화시킨다.", () -> {
+                    //when
+                    member.disable();
+
+                    //then
+                    assertThat(member.isEnabled()).isFalse();
+                }),
+                dynamicTest("member 를 활성화시킨다.", () -> {
+                    //when
+                    member.enable();
+
+                    //then
+                    assertThat(member.isEnabled()).isTrue();
+                })
+        );
     }
 
     private Member createMemberDefault() {

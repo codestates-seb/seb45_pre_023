@@ -15,8 +15,6 @@ import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.global.exception.businessexception.s3exception.S3FileNotValidException;
 import sixman.stackoverflow.global.exception.businessexception.s3exception.S3PathNotValidException;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class S3ServiceTest {
 
@@ -71,7 +69,7 @@ class S3ServiceTest {
 
         //when & then
         Assertions.assertThatThrownBy(
-                        () -> s3Service.uploadImage(member.getMyInfo().getImage(), multipartFile))
+                        () -> s3Service.uploadAndGetUrl(member.getMyInfo().getImage(), multipartFile))
                 .isInstanceOf(S3FileNotValidException.class)
                 .hasMessage("유효하지 않은 file 확장자입니다.");
     }
@@ -93,7 +91,7 @@ class S3ServiceTest {
 
         //when & then
         Assertions.assertThatThrownBy(
-                        () -> s3Service.uploadImage(member.getMyInfo().getImage(), image))
+                        () -> s3Service.uploadAndGetUrl(member.getMyInfo().getImage(), image))
                 .isInstanceOf(S3PathNotValidException.class)
                 .hasMessage("이미지 경로에 오류가 있습니다. 다시 시도해주세요.");
     }
@@ -115,7 +113,7 @@ class S3ServiceTest {
 
         //when & then
         Assertions.assertThatThrownBy(
-                        () -> s3Service.uploadImage(member.getMyInfo().getImage(), image))
+                        () -> s3Service.uploadAndGetUrl(member.getMyInfo().getImage(), image))
                 .isInstanceOf(S3PathNotValidException.class)
                 .hasMessage("이미지 경로에 오류가 있습니다. 다시 시도해주세요.");
     }
