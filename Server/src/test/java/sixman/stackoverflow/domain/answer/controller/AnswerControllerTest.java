@@ -417,8 +417,8 @@ class AnswerControllerTest extends ControllerTest {
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isMethodNotAllowed())
-                .andExpect(jsonPath("$.status").value("REQUEST-405"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("REQUEST-400"))
                 .andExpect(jsonPath("$.message").value("요청 값의 타입이 잘못되었습니다. 잘못된 값 : " + sort));
     }
 
