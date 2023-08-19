@@ -1,5 +1,7 @@
 package sixman.stackoverflow.global.testhelper;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,8 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.member.entity.Authority;
@@ -40,6 +44,8 @@ public abstract class ServiceTest {
     @MockBean protected S3Service s3Service;
     @MockBean protected RedisService redisService;
     @MockBean protected JavaMailSender emailSender;
+    @MockBean protected RestTemplate restTemplate;
+    @MockBean protected DefaultOAuth2UserService defaultOAuth2UserService;
     @Autowired protected PasswordEncoder passwordEncoder;
     @Autowired protected EntityManager em;
 

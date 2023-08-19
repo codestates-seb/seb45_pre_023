@@ -20,14 +20,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     
-        Member member = memberRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("아이디가 존재하지 않습니다."));
+        Member member = findByEmail(email);
 
         checkEnableMember(member);
 
         return createUserDetails(member);
+    }
+
+    private Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("이메일이 존재하지 않습니다."));
     }
 
     private void checkEnableMember(Member member) {

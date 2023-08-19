@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import sixman.stackoverflow.global.exception.businessexception.authexception.JwtExpiredAuthException;
 import sixman.stackoverflow.global.exception.businessexception.authexception.JwtNotVaildAuthException;
@@ -19,6 +18,9 @@ import sixman.stackoverflow.global.exception.businessexception.authexception.Jwt
 import java.security.Key;
 import java.util.Date;
 import java.util.stream.Collectors;
+
+import static sixman.stackoverflow.auth.utils.AuthConstant.CLAIM_AUTHORITY;
+import static sixman.stackoverflow.auth.utils.AuthConstant.CLAIM_ID;
 
 @Component
 @Slf4j
@@ -28,7 +30,8 @@ public class TokenProvider {
     private final Key key;
     private final CustomUserDetailsService userDetailsService;
 
-    public TokenProvider (@Value("${jwt.secret-key}") String secretKey, CustomUserDetailsService userDetailsService) {
+    public TokenProvider(@Value("${jwt.secret-key}") String secretKey,
+                          CustomUserDetailsService userDetailsService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.userDetailsService = userDetailsService;
@@ -36,31 +39,17 @@ public class TokenProvider {
 
     public String generateAccessToken(Authentication authentication, long accessTokenExpireTime) {
 
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
 
-        Date date = new Date();
-        long now = date.getTime();
+        Long id = getIdFrom(authentication);
 
-        Date AccessTokenExpiresIn = new Date(now + accessTokenExpireTime);
+        String authorities = getAuthorityFrom(authentication);
 
-        Long id = null;
-
-        if(authentication.getPrincipal() instanceof CustomUserDetails){
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            id = customUserDetails.getId();
-        }
-
-        if(authentication.getPrincipal() instanceof DefaultOAuth2User){
-            DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
-            id =principal.getAttribute("id");
-        }
+        Date AccessTokenExpiresIn = getExpireTime(accessTokenExpireTime);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("auth", authorities)
-                .claim("id", id)
+                .claim(CLAIM_AUTHORITY, authorities)
+                .claim(CLAIM_ID, id)
                 .setExpiration(AccessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -68,32 +57,48 @@ public class TokenProvider {
 
     public String generateRefreshToken(Authentication authentication, long refreshTokenExpireTime){
 
-        Date date = new Date();
-        long now = date.getTime();
+        Long id = getIdFrom(authentication);
 
-        Date refreshTokenExpiresIn = new Date(now + refreshTokenExpireTime);
-
-        Long id = null;
-
-        if(authentication.getPrincipal() instanceof CustomUserDetails){
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            id = customUserDetails.getId();
-        }
-
-        if(authentication.getPrincipal() instanceof DefaultOAuth2User){
-            DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
-            id =principal.getAttribute("id");
-        }
+        Date refreshTokenExpiresIn = getExpireTime(refreshTokenExpireTime);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("id", id)
+                .claim(CLAIM_ID, id)
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String generateAccessTokenFromRefreshToken(String refreshToken, long accessTokenExpireTime) {
+    private Long getIdFrom(Authentication authentication) {
+
+        Long id = null;
+
+        if(authentication.getPrincipal() instanceof CustomUserDetails){
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            id = customUserDetails.getMemberId();
+        }
+
+        if(authentication.getPrincipal() instanceof DefaultOAuth2User){
+            DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
+            id = principal.getAttribute(CLAIM_ID);
+        }
+        return id;
+    }
+
+    private String getAuthorityFrom(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
+
+    private Date getExpireTime(long tokenExpireTime) {
+        Date date = new Date();
+        long now = date.getTime();
+
+        return new Date(now + tokenExpireTime);
+    }
+
+    public String generateAccessTokenFrom(String refreshToken, long accessTokenExpireTime) {
         Claims claims = getParseClaims(refreshToken);
         String username = claims.getSubject();
 
@@ -105,10 +110,9 @@ public class TokenProvider {
         return generateAccessToken(authentication, accessTokenExpireTime);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
             throw new JwtNotVaildAuthException();

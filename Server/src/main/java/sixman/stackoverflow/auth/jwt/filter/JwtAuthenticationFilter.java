@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static sixman.stackoverflow.auth.utils.AuthConstant.*;
+
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -29,17 +31,25 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        if (!request.getMethod().equals("POST")) {
-            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
-        }
+        checkRequestPOST(request);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        LoginDto loginDto = objectMapper.readValue(request.getInputStream(), LoginDto.class);
+        LoginDto loginDto = getLoginDtoFrom(request);
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
         return authenticationManager.authenticate(authenticationToken);
+    }
+
+    private void checkRequestPOST(HttpServletRequest request) {
+        if (!request.getMethod().equals("POST")) {
+            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+        }
+    }
+
+    private LoginDto getLoginDtoFrom(HttpServletRequest request) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(request.getInputStream(), LoginDto.class);
     }
 
     @Override
@@ -48,11 +58,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication authentication) throws ServletException, IOException {
         
-        String accessToken = tokenProvider.generateAccessToken(authentication, AuthConstant.ACCESS_TOKEN_EXPIRE_TIME);
-        String refreshToken = tokenProvider.generateRefreshToken(authentication, AuthConstant.REFRESH_TOKEN_EXPIRE_TIME);
+        String accessToken = tokenProvider.generateAccessToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh", "Bearer " + refreshToken);
+        response.setHeader(AUTHORIZATION, BEARER + accessToken);
+        response.setHeader(REFRESH, BEARER + refreshToken);
 
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authentication);
     }

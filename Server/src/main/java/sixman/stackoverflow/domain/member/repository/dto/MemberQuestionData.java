@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -20,11 +21,11 @@ public class MemberQuestionData {
     private LocalDateTime updatedDate;
 
     @QueryProjection
-    public MemberQuestionData(Long questionId, String title, Integer views, Long votes, Long downs, LocalDateTime createdDate, LocalDateTime updatedDate) {
+    public MemberQuestionData(Long questionId, String title, Integer views, Integer recommend, LocalDateTime createdDate, LocalDateTime updatedDate) {
         this.questionId = questionId;
         this.title = title;
         this.views = views;
-        this.recommend = votes.intValue() - downs.intValue() * 2;
+        this.recommend = recommend;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
     }

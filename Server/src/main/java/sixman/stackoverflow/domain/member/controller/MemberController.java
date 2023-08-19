@@ -15,6 +15,9 @@ import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+
+import static org.springframework.http.HttpHeaders.*;
 
 @RestController
 @RequestMapping("/members")
@@ -28,7 +31,8 @@ public class MemberController {
     }
 
     @GetMapping("/{member-id}")
-    public ResponseEntity<ApiSingleResponse<MemberResponse>> getMember(@PathVariable("member-id") Long memberId) {
+    public ResponseEntity<ApiSingleResponse<MemberResponse>> getMember(
+            @PathVariable("member-id") @Positive Long memberId) {
 
         MemberResponse response = memberService.getMember(memberId);
 
@@ -37,8 +41,8 @@ public class MemberController {
 
     @GetMapping("/{member-id}/questions")
     public ResponseEntity<ApiPageResponse<MemberResponse.MemberQuestion>> getMemberQuestion(
-            @PathVariable("member-id") Long memberId,
-            @RequestParam(value = "page", defaultValue = "1") int page
+            @PathVariable("member-id") @Positive Long memberId,
+            @RequestParam(value = "page", defaultValue = "1") @Positive int page
     ) {
 
         Page<MemberResponse.MemberQuestion> memberQuestionPage
@@ -49,8 +53,8 @@ public class MemberController {
 
     @GetMapping("/{member-id}/answers")
     public ResponseEntity<ApiPageResponse<MemberResponse.MemberAnswer>> getMemberAnswer(
-            @PathVariable("member-id") Long memberId,
-            @RequestParam(value = "page", defaultValue = "1") int page
+            @PathVariable("member-id") @Positive Long memberId,
+            @RequestParam(value = "page", defaultValue = "1") @Positive int page
     ) {
 
         Page<MemberResponse.MemberAnswer> memberAnswerPage
@@ -60,7 +64,7 @@ public class MemberController {
     }
 
     @PatchMapping("/{member-id}")
-    public ResponseEntity<Void> updateMember(@PathVariable("member-id") Long updateMemberId,
+    public ResponseEntity<Void> updateMember(@PathVariable("member-id") @Positive Long updateMemberId,
                                              @RequestBody @Valid MemberUpdateApiRequest request) {
 
         Long loginMemberId = SecurityUtil.getCurrentId();
@@ -71,7 +75,7 @@ public class MemberController {
     }
 
     @PatchMapping("/{member-id}/password")
-    public ResponseEntity<Void> updatePassword(@PathVariable("member-id") Long updateMemberId,
+    public ResponseEntity<Void> updatePassword(@PathVariable("member-id") @Positive Long updateMemberId,
                                              @RequestBody @Valid MemberPasswordUpdateAPiRequest request) {
 
         Long loginMemberId = SecurityUtil.getCurrentId();
@@ -82,22 +86,18 @@ public class MemberController {
     }
 
     @PatchMapping("/{member-id}/image")
-    public ResponseEntity<Void> updateImage(@PathVariable("member-id") Long updateMemberId,
-                                            @RequestParam MultipartFile file
-                                             ) {
+    public ResponseEntity<Void> updateImage(@PathVariable("member-id") @Positive Long updateMemberId,
+                                            @RequestParam MultipartFile file) {
 
         Long loginMemberId = SecurityUtil.getCurrentId();
 
         String presignedUrl = memberService.updateImage(loginMemberId, updateMemberId, file);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", presignedUrl);
-
-        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().header(LOCATION, presignedUrl).build();
     }
 
     @DeleteMapping("/{member-id}/image")
-    public ResponseEntity<Void> deleteImage(@PathVariable("member-id") Long updateMemberId) {
+    public ResponseEntity<Void> deleteImage(@PathVariable("member-id") @Positive Long updateMemberId) {
 
         Long loginMemberId = SecurityUtil.getCurrentId();
 
@@ -107,24 +107,29 @@ public class MemberController {
     }
 
     @DeleteMapping("/{member-id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable("member-id") Long deleteMemberId) {
+    public ResponseEntity<Void> deleteMember(@PathVariable("member-id") @Positive Long deleteMemberId) {
 
         Long loginMemberId = SecurityUtil.getCurrentId();
 
-        memberService.deleteMember(loginMemberId,deleteMemberId);
+        memberService.deleteMember(loginMemberId, deleteMemberId);
 
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/email")
     public ResponseEntity<Void> sendEmail(@RequestBody @Valid MemberMailAuthApiRequest request) {
+
         memberService.sendSignupCodeToEmail(request.getEmail());
+
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/email/confirm")
-    public ResponseEntity<ApiSingleResponse<Boolean>> confirmEmail(@RequestBody @Valid MemberMailConfirmApiRequest request) {
+    public ResponseEntity<ApiSingleResponse<Boolean>> confirmEmail(
+            @RequestBody @Valid MemberMailConfirmApiRequest request) {
+
         boolean result = memberService.checkCode(request.getEmail(), request.getCode());
+
         return ResponseEntity.ok(ApiSingleResponse.ok(result));
     }
 }

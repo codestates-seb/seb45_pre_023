@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiSingleResponse<Void>> handleException(Exception e) {
 
-        log.error("Unknown error happened: {}", e.getMessage());
+        log.error("Unknown error {} happened: {}", e.getClass().getName(), e.getMessage());
         e.printStackTrace();
 
         return new ResponseEntity<>(ApiSingleResponse.fail(e), HttpStatus.INTERNAL_SERVER_ERROR);

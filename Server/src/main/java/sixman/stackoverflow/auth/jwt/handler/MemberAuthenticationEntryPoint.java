@@ -15,21 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static sixman.stackoverflow.auth.utils.AuthConstant.*;
+
 @Slf4j
 @Component
 public class MemberAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
 
-        BusinessException businessException = (BusinessException) request.getAttribute("businessException");
-        if(businessException != null){
-            AuthUtil.sendErrorResponse(response, businessException);
+        BusinessException businessException = (BusinessException) request.getAttribute(BUSINESS_EXCEPTION);
+        Exception exception = (Exception) request.getAttribute(EXCEPTION);
 
-            if(businessException instanceof JwtExpiredAuthException){
-                response.setHeader("Allow", "POST");
-                response.setHeader("Location",
-                        request.getScheme() + "://" + request.getServerName() +  "/auth/refresh");
-            }
+        if(exist(businessException)){
+            setResponseHeaderFrom(request, response, businessException);
+            AuthUtil.sendErrorResponse(response, businessException);
             return;
         }
 
@@ -38,17 +37,32 @@ public class MemberAuthenticationEntryPoint implements AuthenticationEntryPoint 
             return;
         }
 
+        if(exist(exception)){
+            printLog(exception);
+            AuthUtil.sendErrorResponse(response, new UnknownException(exception.getMessage()));
+            return;
+        }
 
-        Exception exception = (Exception) request.getAttribute("exception");
-        logExceptionMessage(authException, exception);
-
-        authException.printStackTrace();
-        AuthUtil.sendErrorResponse(response, new UnknownException(exception.getMessage()));
+        printLog(authException);
+        AuthUtil.sendErrorResponse(response, new UnknownException(authException.getMessage()));
     }
 
-    private void logExceptionMessage(AuthenticationException authException, Exception exception) {
-        String message = exception != null ? exception.getMessage() : authException.getMessage();
-        log.error("Unauthorized error happened: {}", message);
+    private boolean exist(Exception exception) {
+        return exception != null;
+    }
+
+    private void printLog(Exception exception) {
+        log.error("Unknown error {} happened: {}", exception.getClass().getName(), exception.getMessage());
+        exception.printStackTrace();
+    }
+
+    private void setResponseHeaderFrom(HttpServletRequest request, HttpServletResponse response, BusinessException businessException) throws IOException {
+
+        if(businessException instanceof JwtExpiredAuthException){
+            response.setHeader(ALLOW, "POST");
+            response.setHeader(LOCATION,
+                    request.getScheme() + "://" + request.getServerName() +  AUTH_REFRESH_URL);
+        }
     }
 
 }
