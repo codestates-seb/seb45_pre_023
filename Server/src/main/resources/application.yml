@@ -54,19 +54,6 @@ jwt:
   access-token-expire-time: 7200000
   refresh-token-expire-time: 604800000
 
-#logging:
-#  file:
-#    name: logs/error.log
-#  pattern:
-#    file: "[%X{request_id}][%X{email}][%d{yy-MM-dd HH:mm:ss}][%-5level][%logger.%method:line%line] - %msg%n"
-#  level:
-#    root: error
-#  logback:
-#    rollingpolicy:
-#      max-file-size: 50MB
-#      max-history: 14
-#      total-size-cap: 1GB
-
 ---
 spring:
   config:

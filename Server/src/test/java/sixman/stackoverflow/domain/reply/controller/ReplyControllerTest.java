@@ -273,4 +273,63 @@ class ReplyControllerTest extends ControllerTest {
                 )
         );
     }
+
+    @Test
+    @DisplayName("댓글 생성 시 validation 검증 - content 가 null 일 때")
+    void createReplyValidation() throws Exception {
+        //given
+        Long answerId = 1L;
+        Long createdReplyId = 1L;
+        ReplyCreateApiRequest request = ReplyCreateApiRequest.builder()
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        given(replyService.createReply(any(), any())).willReturn(createdReplyId);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/answers/{answer-id}/replies", answerId)
+                        .content(content)
+                        .contentType(APPLICATION_JSON)
+                        .header("Authorization", "Bearer abc.def.ghi")
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data[0].field").value("content"))
+                .andExpect(jsonPath("$.data[0].value").value("null"))
+                .andExpect(jsonPath("$.data[0].reason").value("댓글 내용을 입력해주세요."));
+    }
+
+    @Test
+    @DisplayName("댓글 수정 시 validation 검증 - content 가 null 일 때")
+    void updateReplyValidation() throws Exception {
+        //given
+        Long replyId = 1L;
+        setDefaultAuthentication(1L);
+
+        ReplyUpdateApiRequest request = ReplyUpdateApiRequest.builder()
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/replies/{reply-id}", replyId)
+                        .contentType(APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer abc.def.ghi")
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data[0].field").value("content"))
+                .andExpect(jsonPath("$.data[0].value").value("null"))
+                .andExpect(jsonPath("$.data[0].reason").value("댓글 내용을 입력해주세요."));
+    }
 }

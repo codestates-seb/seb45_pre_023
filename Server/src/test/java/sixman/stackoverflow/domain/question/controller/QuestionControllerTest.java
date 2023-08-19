@@ -1,7 +1,9 @@
 package sixman.stackoverflow.domain.question.controller;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,11 +25,10 @@ import sixman.stackoverflow.global.testhelper.ControllerTest;
 
 import javax.persistence.EnumType;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.DynamicTest.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -447,6 +448,233 @@ public class QuestionControllerTest extends ControllerTest {
                                 parameterWithName("question-id").description("삭제할 질문 ID")
                         )
                 )
+        );
+    }
+
+    @Test
+    @DisplayName("질문 조회 시 validation 검증 - QuestionSortRequest 값이 잘못된 경우")
+    void getQuestionsValidation() throws Exception {
+        //given
+        Integer page = 1;
+        String sort = "wrongsort";
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/questions")
+                        .accept(APPLICATION_JSON)
+                        .param("page", String.valueOf(page))
+                        .param("sort", sort)
+                        .param("tag", "tag1")
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.status").value("REQUEST-405"))
+                .andExpect(jsonPath("$.message").value("요청 값의 타입이 잘못되었습니다. 잘못된 값 : " + sort));
+    }
+
+    @TestFactory
+    @DisplayName("질문 생성시 요청 값 validation 검증")
+    Collection<DynamicTest> createQuestionValidation() throws Exception {
+        //given
+        Long createdQuestionId = 1L;
+
+        setDefaultAuthentication(1L);
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
+        given(questionService.createQuestion(any(Question.class), any(List.class))).willReturn(createdQuestionId);
+
+        return List.of(
+                dynamicTest("title 이 null 이면 검증에 실패한다", () -> {
+                    QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
+                            .detail("detail")
+                            .expect("expect")
+                            .tagNames(Arrays.asList("java", "mysql"))
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/questions")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("title"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("제목을 입력해주세요."));
+                }),
+                dynamicTest("detail 이 null 이면 검증에 실패한다", () -> {
+                    QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
+                            .title("title")
+                            .expect("expect")
+                            .tagNames(Arrays.asList("java", "mysql"))
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/questions")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("detail"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("내용을 입력해주세요."));
+                }),
+                dynamicTest("expect 가 null 이면 검증에 실패한다", () -> {
+                    QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
+                            .title("title")
+                            .detail("detail")
+                            .tagNames(Arrays.asList("java", "mysql"))
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/questions")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("expect"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("내용을 입력해주세요."));
+                }),
+                dynamicTest("tagNames 가 null 이면 검증에 실패한다", () -> {
+                    QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
+                            .title("title")
+                            .detail("detail")
+                            .expect("expect")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            post("/questions")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("tagNames"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("태그를 선택해주세요."));
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("질문 수정 요청 값 validation 검증")
+    Collection<DynamicTest> updateQuestionValidation() throws Exception {
+        //given
+        setDefaultAuthentication(1L);
+
+        Long questionId = 1L;
+
+        return List.of(
+                dynamicTest("title 이 null 이면 검증에 실패한다", () -> {
+                    QuestionUpdateApiRequest request = QuestionUpdateApiRequest.builder()
+                            .detail("detail")
+                            .expect("expect")
+                            .tagNames(Arrays.asList("java", "mysql"))
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/questions/{question-id}", questionId)
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("title"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("제목을 입력해주세요."));
+                }),
+                dynamicTest("detail 이 null 이면 검증에 실패한다", () -> {
+                    QuestionUpdateApiRequest request = QuestionUpdateApiRequest.builder()
+                            .title("title")
+                            .expect("expect")
+                            .tagNames(Arrays.asList("java", "mysql"))
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/questions/{question-id}", questionId)
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("detail"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("내용을 입력해주세요."));
+                }),
+                dynamicTest("expect 가 null 이면 검증에 실패한다", () -> {
+                    QuestionUpdateApiRequest request = QuestionUpdateApiRequest.builder()
+                            .title("title")
+                            .detail("detail")
+                            .tagNames(Arrays.asList("java", "mysql"))
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/questions/{question-id}", questionId)
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("expect"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("내용을 입력해주세요."));
+                }),
+                dynamicTest("tagNames 가 null 이면 검증에 실패한다", () -> {
+                    QuestionUpdateApiRequest request = QuestionUpdateApiRequest.builder()
+                            .title("title")
+                            .detail("detail")
+                            .expect("expect")
+                            .build();
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            patch("/questions/{question-id}", questionId)
+                                    .header("Authorization", "Bearer abc.def.ghi")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(request))
+                    );
+
+                    //then
+                    actions.andDo(print())
+                            .andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.data[0].field").value("tagNames"))
+                            .andExpect(jsonPath("$.data[0].value").value("null"))
+                            .andExpect(jsonPath("$.data[0].reason").value("태그를 선택해주세요."));
+                })
         );
     }
 }

@@ -90,6 +90,7 @@ class AnswerControllerTest extends ControllerTest {
 
 
     }
+
     @Test
     @DisplayName("답변 목록 조회 API")
     void getAnswers() throws Exception {
@@ -398,6 +399,85 @@ class AnswerControllerTest extends ControllerTest {
     }
 
     @Test
-    void createReply() {
+    @DisplayName("답변 조회 시 validation 검증 - AnswerSortRequest 값이 잘못된 경우")
+    void getAnswersValidation() throws Exception {
+        //given
+        String page = "1";
+        Long questionId = 1L;
+        String sort = "wrongsort";
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/questions/{question-id}/answers", questionId)
+                        .accept(APPLICATION_JSON)
+                        .param("page", page)
+                        .param("sort", sort)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.status").value("REQUEST-405"))
+                .andExpect(jsonPath("$.message").value("요청 값의 타입이 잘못되었습니다. 잘못된 값 : " + sort));
+    }
+
+    @Test
+    @DisplayName("답변 생성 시 validation 검증 - content 가 null 일 때")
+    void createAnswerValidation() throws Exception {
+        //given
+        Long questionId = 1L;
+        Long createdAnswerId = 1L;
+
+        AnswerCreateApiRequest request = AnswerCreateApiRequest.builder()
+                .build();
+
+        given(answerService.createAnswer(any(AnswerCreateServiceRequest.class), anyLong())).willReturn(createdAnswerId);
+
+        String content = objectMapper.writeValueAsString(request);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/questions/{question-id}/answers", questionId)
+                        .content(content)
+                        .contentType(APPLICATION_JSON)
+                        .header("Authorization", "Bearer abc.def.ghi")
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data[0].field").value("content"))
+                .andExpect(jsonPath("$.data[0].value").value("null"))
+                .andExpect(jsonPath("$.data[0].reason").value("답변 내용을 입력해주세요."));
+    }
+
+    @Test
+    @DisplayName("답변 수정 시 validation 검증 - content 가 null 일 때")
+    void updateAnswerValidation() throws Exception {
+        //given
+        Long answerId = 1L;
+
+        AnswerUpdateApiRequest request = AnswerUpdateApiRequest.builder()
+                .build();
+
+        String content = objectMapper.writeValueAsString(request);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/answers/{answer-id}", answerId)
+                        .content(content)
+                        .contentType(APPLICATION_JSON)
+                        .header("Authorization", "Bearer abc.def.ghi")
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data[0].field").value("content"))
+                .andExpect(jsonPath("$.data[0].value").value("null"))
+                .andExpect(jsonPath("$.data[0].reason").value("답변 내용을 입력해주세요."));
     }
 }

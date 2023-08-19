@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
 
         String value = (String) e.getValue();
 
-        return new ResponseEntity<>(ApiSingleResponse.fail(new RequestTypeMismatchException(value)), HttpStatus.METHOD_NOT_ALLOWED);
+        return new ResponseEntity<>(ApiSingleResponse.fail(new RequestTypeMismatchException(value)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
