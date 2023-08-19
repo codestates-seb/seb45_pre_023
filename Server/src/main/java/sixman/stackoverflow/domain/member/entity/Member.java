@@ -35,7 +35,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Authority authority;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "my_info_id")
     private MyInfo myInfo;
 
@@ -79,7 +79,7 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    public void updateMember(String nickname) {
+    public void updateNickname(String nickname) {
         if(nickname != null) this.nickname = nickname;
     }
 
@@ -92,8 +92,16 @@ public class Member extends BaseEntity {
         this.password = newPassword;
     }
 
+    public void updateImagePath(String imageType) {
+        this.myInfo.updateImage(String.format("images/%s.%s", this.getEmail(), imageType));
+    }
+
     public void disable() {
         this.enabled = false;
+    }
+
+    public void enable() {
+        this.enabled = true;
     }
 
 

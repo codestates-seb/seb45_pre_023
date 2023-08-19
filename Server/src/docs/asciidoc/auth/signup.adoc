@@ -4,7 +4,7 @@
 :toc: left
 :toclevels: 2
 :sectlinks:
-:docinfo: shared-head
+:docinfo: ../shared-head
 
 [[signup]]
 = 회원가입 API

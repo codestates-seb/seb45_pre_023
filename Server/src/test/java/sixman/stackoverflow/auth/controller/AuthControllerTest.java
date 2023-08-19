@@ -115,6 +115,94 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("일반 로그인 API - 탈퇴한 회원일 때")
+    void jwtLoginDisable() throws Exception {
+        //given
+        LoginDto loginDto = new LoginDto("email@test.com", "1234abcd!");
+
+        Member member = createMember(loginDto.getEmail(), loginDto.getPassword());
+        member.disable(); //비활성화 처리
+        em.persist(member);
+
+        String content = objectMapper.writeValueAsString(loginDto);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/auth/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value("탈퇴한 회원입니다."));
+
+        //restDocs
+        actions.andDo(
+                document("auth/logindisable",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("email").description("로그인할 이메일"),
+                                fieldWithPath("password").description("로그인할 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("data").description("null"),
+                                fieldWithPath("message").description("에러 메시지"),
+                                fieldWithPath("status").description("에러 상태 코드"),
+                                fieldWithPath("code").description("에러 코드")
+                        )
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("일반 로그인 API - 로그인 정보 불일치")
+    void jwtLoginFail() throws Exception {
+        //given
+        String email = "email@tset.com";
+        String password = "1234abcd!";
+        LoginDto loginDto = new LoginDto(email, password + "!");
+
+        createMember(email, password);
+
+        String content = objectMapper.writeValueAsString(loginDto);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/auth/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(content));
+
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value("로그인 정보를 확인해주세요."));
+
+        //restDocs
+        actions.andDo(
+                document("auth/loginfail",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("email").description("로그인할 이메일"),
+                                fieldWithPath("password").description("로그인할 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("data").description("null"),
+                                fieldWithPath("message").description("에러 메시지"),
+                                fieldWithPath("status").description("에러 상태 코드"),
+                                fieldWithPath("code").description("에러 코드")
+                        )
+                )
+        );
+    }
+
+    @Test
     @DisplayName("OAuth 로그인 API")
     void oauthLogin() throws Exception {
         //given

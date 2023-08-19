@@ -35,8 +35,8 @@ public class MemberResponse {
 
     public static MemberResponse of(Member member,
                                     String imageUrl,
-                                    MemberQuestionPageResponse question,
-                                    MemberAnswerPageResponse answer,
+                                    Page<MemberQuestion> question,
+                                    Page<MemberAnswer> answer,
                                     List<MemberTag> tags) {
         return MemberResponse.builder()
                 .memberId(member.getMemberId())
@@ -48,8 +48,8 @@ public class MemberResponse {
                 .location(member.getMyInfo().getLocation())
                 .accounts(member.getMyInfo().getAccounts())
                 .authority(member.getAuthority())
-                .question(question)
-                .answer(answer)
+                .question(MemberQuestionPageResponse.of(question))
+                .answer(MemberAnswerPageResponse.of(answer))
                 .tags(tags)
                 .build();
     }
@@ -61,9 +61,9 @@ public class MemberResponse {
         private List<MemberQuestion> questions;
         private PageInfo pageInfo;
 
-        public static MemberQuestionPageResponse of(Page<MemberQuestionData> data) {
+        public static MemberQuestionPageResponse of(Page<MemberQuestion> data) {
             return MemberQuestionPageResponse.builder()
-                    .questions(data.getContent().stream().map(MemberQuestion::of).collect(Collectors.toList()))
+                    .questions(data.getContent())
                     .pageInfo(PageInfo.of(data))
                     .build();
         }
@@ -99,9 +99,9 @@ public class MemberResponse {
         private List<MemberAnswer> answers;
         private PageInfo pageInfo;
 
-        public static MemberAnswerPageResponse of(Page<MemberAnswerData> data) {
+        public static MemberAnswerPageResponse of(Page<MemberAnswer> data) {
             return MemberAnswerPageResponse.builder()
-                    .answers(data.getContent().stream().map(MemberAnswer::of).collect(Collectors.toList()))
+                    .answers(data.getContent())
                     .pageInfo(PageInfo.of(data))
                     .build();
         }

@@ -22,12 +22,13 @@ import sixman.stackoverflow.module.redis.service.RedisService;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
-
     private final MemberRepository memberRepository;
+
     private final S3Service s3Service;
     private final MailService mailService;
     private final RedisService redisService;
@@ -62,34 +63,67 @@ public class MemberService {
         return memberRepository.save(member).getMemberId();
     }
 
+    private Member createMember(MemberCreateServiceRequest request) {
+        return Member.createMember(
+                request.getEmail(),
+                request.getNickname(),
+                passwordEncoder.encode(request.getPassword())
+        );
+    }
+
     public MemberResponse getMember(Long memberId) {
 
         Member member = verifiedMember(memberId);
 
-        return MemberResponse.of(
-                member,
-                getPreSignedUrl(member),
-                getMemberQuestionPageResponse(memberId, 0, 5),
-                getMemberAnswerPageResponse(memberId, 0, 5),
-                getMemberTag(memberId)
-        );
+        return getMemberResponseFrom(member);
 
     }
 
-    public MemberResponse.MemberQuestionPageResponse getMemberQuestion(Long memberId, Integer page, Integer size) {
+    private MemberResponse getMemberResponseFrom(Member member) {
+        return MemberResponse.of(
+                member,
+                getPreSignedUrl(member),
+                getMemberQuestionPageResponse(member.getMemberId(), 0, 5),
+                getMemberAnswerPageResponse(member.getMemberId(), 0, 5),
+                getMemberTag(member.getMemberId())
+        );
+    }
+
+    private String getPreSignedUrl(Member member) {
+
+        if(member.getMyInfo().getImage() == null) return null;
+
+        return s3Service.getPreSignedUrl(member.getMyInfo().getImage());
+    }
+
+    public Page<MemberResponse.MemberQuestion> getMemberQuestion(Long memberId, Integer page, Integer size) {
 
         verifiedMember(memberId);
 
         return getMemberQuestionPageResponse(memberId, page, size);
     }
 
-    public MemberResponse.MemberAnswerPageResponse getMemberAnswer(Long memberId, Integer page, Integer size) {
+    public Page<MemberResponse.MemberAnswer> getMemberAnswer(Long memberId, Integer page, Integer size) {
 
         verifiedMember(memberId);
 
         return getMemberAnswerPageResponse(memberId, page, size);
     }
 
+
+    private Page<MemberResponse.MemberQuestion> getMemberQuestionPageResponse(Long memberId, Integer page, Integer size) {
+
+        Page<MemberQuestionData> memberQuestionData = memberRepository.findQuestionByMemberId(memberId, PageRequest.of(page, size));
+
+        return memberQuestionData.map(MemberResponse.MemberQuestion::of);
+    }
+
+    private Page<MemberResponse.MemberAnswer> getMemberAnswerPageResponse(Long memberId, Integer page, Integer size) {
+
+        Page<MemberAnswerData> memberAnswerData = memberRepository.findAnswerByMemberId(memberId, PageRequest.of(page, size));
+
+        return memberAnswerData.map(MemberResponse.MemberAnswer::of);
+    }
 
     @Transactional
     public void updateMember(Long loginMemberId, MemberUpdateServiceRequest request){
@@ -99,6 +133,18 @@ public class MemberService {
         Member member = verifiedMember(loginMemberId);
 
         updateMember(member, request);
+    }
+
+    private void updateMember(Member member, MemberUpdateServiceRequest request) {
+
+        member.updateNickname(request.getNickname());
+
+        member.updateMyInfo(
+                request.getMyIntro(),
+                request.getTitle(),
+                request.getLocation(),
+                request.getAccounts()
+        );
     }
 
     @Transactional
@@ -115,12 +161,20 @@ public class MemberService {
         );
     }
 
+    private void checkPassword(String password, String savedPassword) {
+        if (!passwordEncoder.matches(password, savedPassword)) {
+            throw new MemberPasswordException();
+        }
+    }
+
     @Transactional
     public void findPassword(MemberFindPasswordServiceRequest request) {
 
         Member member = verifiedMember(request.getEmail());
 
         checkEmailAuthComplete(request.getEmail());
+
+        member.enable();
 
         member.updatePassword(
                 passwordEncoder.encode(request.getPassword())
@@ -134,9 +188,13 @@ public class MemberService {
 
         Member member = verifiedMember(updateMemberId);
 
-        updateMemberImagePath(file, member);
+        member.updateImagePath(getImageType(file));
 
-        return s3Service.uploadImage(member.getMyInfo().getImage(), file);
+        return s3Service.uploadAndGetUrl(member.getMyInfo().getImage(), file);
+    }
+
+    private String getImageType(MultipartFile file){
+        return file.getContentType().split("/")[1];
     }
 
     @Transactional
@@ -145,6 +203,10 @@ public class MemberService {
 
         Member member = verifiedMember(updateMemberId);
 
+        deleteImageFrom(member);
+    }
+
+    private void deleteImageFrom(Member member) {
         if(member.getMyInfo().getImage() != null) {
             s3Service.deleteImage(member.getMyInfo().getImage());
             member.getMyInfo().updateImage(null);
@@ -173,7 +235,7 @@ public class MemberService {
                 Duration.ofMillis(authCodeExpirationMillis));
     }
 
-    public void sendCodeToEmail(String toEmail) {
+    public void sendSignupCodeToEmail(String toEmail) {
 
         checkDuplicateMember(toEmail);
 
@@ -191,38 +253,31 @@ public class MemberService {
 
         boolean isValid = authCode.equals(code);
 
-        if(isValid) redisService.saveValues(
-                AUTH_CODE_PREFIX + toEmail,
-                "true",
-                Duration.ofMillis(emailCompleteExpirationMillis));
+        if(isValid) {
+            redisService.saveValues(
+                    AUTH_CODE_PREFIX + toEmail,
+                    "true",
+                    Duration.ofMillis(emailCompleteExpirationMillis));
+        }
 
         return isValid;
     }
 
 
-
-    private void checkPassword(String password, String savedPassword) {
-        if (!passwordEncoder.matches(password, savedPassword)) {
-            throw new MemberPasswordException();
-        }
-    }
-
     private void checkDuplicateMember(String email) {
-        if (memberRepository.findByEmail(email).isPresent()) {
-            throw new MemberDuplicateException();
-        }
-    }
 
-    private Member createMember(MemberCreateServiceRequest request) {
-        return Member.createMember(
-                request.getEmail(),
-                request.getNickname(),
-                passwordEncoder.encode(request.getPassword())
-        );
+        Member member = memberRepository.findByEmail(email).orElse(null);
+
+        if (member != null) {
+
+            if(member.isEnabled()) throw new MemberDuplicateException();
+            throw new MemberDisabledException();
+
+        }
     }
 
     private Member verifiedMember(Long memberId){
-        Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        Member member = memberRepository.findByMemberIdWithInfo(memberId).orElseThrow(MemberNotFoundException::new);
         if(!member.isEnabled()) throw new MemberDisabledException();
         return member;
     }
@@ -230,32 +285,6 @@ public class MemberService {
     private Member verifiedMember(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
-    }
-
-    private void updateMember(Member member, MemberUpdateServiceRequest request) {
-
-        member.updateMember(request.getNickname());
-
-        member.updateMyInfo(
-                request.getMyIntro(),
-                request.getTitle(),
-                request.getLocation(),
-                request.getAccounts()
-        );
-    }
-
-    private MemberResponse.MemberQuestionPageResponse getMemberQuestionPageResponse(Long memberId, Integer page, Integer size) {
-
-        Page<MemberQuestionData> memberQuestionData = memberRepository.findQuestionByMemberId(memberId, PageRequest.of(page, size));
-
-        return MemberResponse.MemberQuestionPageResponse.of(memberQuestionData);
-    }
-
-    private MemberResponse.MemberAnswerPageResponse getMemberAnswerPageResponse(Long memberId, Integer page, Integer size) {
-
-        Page<MemberAnswerData> memberAnswerData = memberRepository.findAnswerByMemberId(memberId, PageRequest.of(page, size));
-
-        return MemberResponse.MemberAnswerPageResponse.of(memberAnswerData);
     }
 
     private List<MemberResponse.MemberTag> getMemberTag(Long memberId) {
@@ -269,20 +298,6 @@ public class MemberService {
 
     private void checkAccessAuthority(Long loginMemberId, Long requestMemberId) {
         if(!loginMemberId.equals(requestMemberId)) throw new MemberAccessDeniedException();
-    }
-
-    private void updateMemberImagePath(MultipartFile file, Member member) {
-        if(member.getMyInfo().getImage() == null) {
-            String type = file.getContentType().split("/")[1];
-            member.getMyInfo().updateImage(String.format("images/%s.%s", member.getEmail(), type));
-        }
-    }
-
-    private String getPreSignedUrl(Member member) {
-
-        if(member.getMyInfo().getImage() == null) return null;
-
-        return s3Service.getPreSignedUrl(member.getMyInfo().getImage());
     }
 
     private void checkEmailAuthComplete(String email) {

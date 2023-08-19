@@ -681,13 +681,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
   "data" : [ {
-    "field" : "password",
-    "value" : "",
-    "reason" : "비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."
-  }, {
     "field" : "email",
     "value" : "",
     "reason" : "이메일을 정확히 입력해주세요."
+  }, {
+    "field" : "password",
+    "value" : "",
+    "reason" : "비밀번호는 영문, 숫자, 특수문자가 반드시 포함되어야 합니다."
   } ],
   "code" : 400,
   "status" : "BAD_REQUEST",
@@ -806,22 +806,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><a href="snippets/login.html" target="_blank" rel="noopener">로그인 API</a></p>
+<p><a href="auth/login.html" target="_blank" rel="noopener">로그인 API</a></p>
 </li>
 <li>
-<p><a href="snippets/signup.html" target="_blank" rel="noopener">회원가입 API</a></p>
+<p><a href="auth/loginfail.html" target="_blank" rel="noopener">로그인 실패 API</a></p>
 </li>
 <li>
-<p><a href="snippets/email.html" target="_blank" rel="noopener">회원 가입 이메일 인증 API</a></p>
+<p><a href="auth/signup.html" target="_blank" rel="noopener">회원가입 API</a></p>
 </li>
 <li>
-<p><a href="snippets/findpassword.html" target="_blank" rel="noopener">비밀번호 찾기 API</a></p>
+<p><a href="auth/email.html" target="_blank" rel="noopener">회원 가입 이메일 인증 API</a></p>
 </li>
 <li>
-<p><a href="snippets/findpasswordemail.html" target="_blank" rel="noopener">비밀번호 찾기 이메일 인증 API</a></p>
+<p><a href="auth/emailfail.html" target="_blank" rel="noopener">회원 가입 이메일 인증 실패 API</a></p>
 </li>
 <li>
-<p><a href="snippets/refreshtoken.html" target="_blank" rel="noopener">토큰 재발급 API</a></p>
+<p><a href="auth/findpassword.html" target="_blank" rel="noopener">비밀번호 찾기 API</a></p>
+</li>
+<li>
+<p><a href="auth/findpasswordemail.html" target="_blank" rel="noopener">비밀번호 찾기 이메일 인증 API</a></p>
+</li>
+<li>
+<p><a href="auth/refreshtoken.html" target="_blank" rel="noopener">토큰 재발급 API</a></p>
 </li>
 </ul>
 </div>
@@ -831,7 +837,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><a href="snippets/member.html" target="_blank" rel="noopener">회원 정보 API</a></p>
+<p><a href="member/getmember.html" target="_blank" rel="noopener">회원 정보 조회 API</a></p>
+</li>
+<li>
+<p><a href="member/member.html" target="_blank" rel="noopener">회원 정보 수정/삭제 API</a></p>
 </li>
 </ul>
 </div>
@@ -841,13 +850,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><a href="snippets/getquestion.html" target="_blank" rel="noopener">질문 목록/단건 조회 API</a></p>
+<p><a href="question/getquestion.html" target="_blank" rel="noopener">질문 목록/단건 조회 API</a></p>
 </li>
 <li>
-<p><a href="snippets/cudquestion.html" target="_blank" rel="noopener">질문 생성/수정/삭제 API</a></p>
+<p><a href="question/cudquestion.html" target="_blank" rel="noopener">질문 생성/수정/삭제 API</a></p>
 </li>
 <li>
-<p><a href="snippets/recommendquestion.html" target="_blank" rel="noopener">질문 추천 API</a></p>
+<p><a href="question/recommendquestion.html" target="_blank" rel="noopener">질문 추천 API</a></p>
 </li>
 </ul>
 </div>
@@ -857,7 +866,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><a href="snippets/gettag.html" target="_blank" rel="noopener">태그 목록 조회 API</a></p>
+<p><a href="tag/gettag.html" target="_blank" rel="noopener">태그 목록 조회 API</a></p>
 </li>
 </ul>
 </div>
@@ -867,13 +876,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><a href="snippets/getanswer.html" target="_blank" rel="noopener">답변 목록/단건 조회 API</a></p>
+<p><a href="answer/getanswer.html" target="_blank" rel="noopener">답변 목록/단건 조회 API</a></p>
 </li>
 <li>
-<p><a href="snippets/cudanswer.html" target="_blank" rel="noopener">답변 생성/수정/삭제 API</a></p>
+<p><a href="answer/cudanswer.html" target="_blank" rel="noopener">답변 생성/수정/삭제 API</a></p>
 </li>
 <li>
-<p><a href="snippets/recommendanswer.html" target="_blank" rel="noopener">답변 추천 API</a></p>
+<p><a href="answer/recommendanswer.html" target="_blank" rel="noopener">답변 추천 API</a></p>
 </li>
 </ul>
 </div>
@@ -883,10 +892,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><a href="snippets/getreply.html" target="_blank" rel="noopener">댓글 목록/단건 조회 API</a></p>
+<p><a href="reply/getreply.html" target="_blank" rel="noopener">댓글 목록/단건 조회 API</a></p>
 </li>
 <li>
-<p><a href="snippets/cudreply.html" target="_blank" rel="noopener">댓글 생성/수정/삭제 API</a></p>
+<p><a href="reply/cudreply.html" target="_blank" rel="noopener">댓글 생성/수정/삭제 API</a></p>
 </li>
 </ul>
 </div>
@@ -897,7 +906,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-08-18 16:32:06 +0900
+Last updated 2023-08-19 22:17:54 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

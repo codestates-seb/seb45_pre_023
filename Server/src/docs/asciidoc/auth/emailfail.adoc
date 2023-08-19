@@ -1,0 +1,38 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: ../shared-head
+
+[[Email]]
+= 회원가입 이메일 인증 실패 API
+
+== 이메일 인증 요청 시 중복 이메일
+=== HTTP Request
+include::{snippets}/member/sendemailduplicate/http-request.adoc[]
+==== Request Body
+include::{snippets}/member/sendemailduplicate/request-body.adoc[]
+==== Request Fields
+include::{snippets}/member/sendemailduplicate/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/member/sendemailduplicate/http-response.adoc[]
+==== Response Body
+include::{snippets}/member/sendemailduplicate/response-body.adoc[]
+==== Response Fields
+include::{snippets}/member/sendemailduplicate/response-fields.adoc[]
+
+== 이메일 인증 요청 시 비활성화 계정
+=== HTTP Request
+include::{snippets}/member/sendemaildisable/http-request.adoc[]
+==== Request Body
+include::{snippets}/member/sendemaildisable/request-body.adoc[]
+==== Request Fields
+include::{snippets}/member/sendemaildisable/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/member/sendemaildisable/http-response.adoc[]
+==== Response Body
+include::{snippets}/member/sendemaildisable/response-body.adoc[]
+==== Response Fields
+include::{snippets}/member/sendemaildisable/response-fields.adoc[]

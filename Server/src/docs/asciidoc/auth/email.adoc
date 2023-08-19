@@ -4,10 +4,10 @@
 :toc: left
 :toclevels: 2
 :sectlinks:
-:docinfo: shared-head
+:docinfo: ../shared-head
 
 [[Email]]
-= 이메일 인증 API
+= 회원가입 이메일 인증 API
 
 == 이메일 인증 요청
 === HTTP Request

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import sixman.stackoverflow.domain.answerrecommend.entity.QAnswerRecommend;
+import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.dto.MemberAnswerData;
 import sixman.stackoverflow.domain.member.repository.dto.MemberQuestionData;
 import sixman.stackoverflow.domain.member.repository.dto.QMemberAnswerData;
@@ -22,6 +23,7 @@ import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 import static sixman.stackoverflow.domain.answer.entitiy.QAnswer.answer;
 import static sixman.stackoverflow.domain.answerrecommend.entity.QAnswerRecommend.answerRecommend;
@@ -122,5 +124,15 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .innerJoin(questionTag.tag, tag)
                 .where(member.memberId.eq(memberId))
                 .fetch();
+    }
+
+    @Override
+    public Optional<Member> findByMemberIdWithInfo(Long memberId){
+        return Optional.ofNullable(
+                queryFactory
+                .selectFrom(member)
+                .join(member.myInfo).fetchJoin()
+                .where(member.memberId.eq(memberId))
+                .fetchOne());
     }
 }

@@ -51,7 +51,7 @@ public class S3Service {
         return preSingedUrl;
     }
 
-    public String uploadImage(String imagePath, MultipartFile file) {
+    public String uploadAndGetUrl(String imagePath, MultipartFile file) {
 
         checkValid(imagePath, file);
 

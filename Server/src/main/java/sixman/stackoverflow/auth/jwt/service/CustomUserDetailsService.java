@@ -1,6 +1,7 @@
 package sixman.stackoverflow.auth.jwt.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private void checkEnableMember(Member member) {
-        if(!member.isEnabled()) throw new UsernameNotFoundException("탈퇴한 회원입니다.");
+        if(!member.isEnabled()) throw new DisabledException("탈퇴한 회원입니다.");
     }
 
     private UserDetails createUserDetails(Member member) {

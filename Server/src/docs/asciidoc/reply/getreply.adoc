@@ -4,7 +4,7 @@
 :toc: left
 :toclevels: 2
 :sectlinks:
-:docinfo: shared-head
+:docinfo: ../shared-head
 
 [[getReply]]
 = 댓글 조회 API
