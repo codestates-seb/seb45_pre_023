@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -38,7 +39,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiSingleResponse.fail(e));
     }
 
-    @ExceptionHandler(TypeMismatchException.class)
+    @ExceptionHandler(TypeMismatchException.class) //ex. url 에 int 가 들어와야하는데 string 이 들어올때
     public ResponseEntity<ApiSingleResponse<Void>> handleTypeMismatchException(
             TypeMismatchException e) {
 
@@ -47,6 +48,13 @@ public class GlobalExceptionHandler {
         String stringValue = value == null ? "null" : value.toString();
 
         return new ResponseEntity<>(ApiSingleResponse.fail(new RequestTypeMismatchException(stringValue)), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageConversionException.class) //ex. json 요청값이 string 인데 array, object 등으로 들어올때
+    public ResponseEntity<ApiSingleResponse<Void>> handleHttpMessageConversionException(
+            HttpMessageConversionException e) {
+
+        return new ResponseEntity<>(ApiSingleResponse.fail(new RequestTypeMismatchException()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
