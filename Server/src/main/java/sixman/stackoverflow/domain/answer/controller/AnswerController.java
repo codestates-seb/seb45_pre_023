@@ -96,7 +96,7 @@ public class AnswerController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("{answer-id}/replies") //answer에 대한 리플 생성
+    @PostMapping("/{answer-id}/replies") //answer에 대한 리플 생성
     public ResponseEntity<Void> createReply(@PathVariable("answer-id")Long answerId,
                                             @RequestBody @Valid ReplyCreateApiRequest request) {
 
