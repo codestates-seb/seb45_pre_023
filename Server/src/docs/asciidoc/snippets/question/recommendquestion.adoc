@@ -1,0 +1,30 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[recommendQuestion]]
+= 질문 추천 API
+
+== 질문 추천
+=== HTTP Request
+include::{snippets}/question/recommendquestion/http-request.adoc[]
+==== Request Headers
+include::{snippets}/question/recommendquestion/request-headers.adoc[]
+==== Request Path Parameters
+include::{snippets}/question/recommendquestion/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/question/recommendquestion/http-response.adoc[]
+
+== 질문 비추천
+=== HTTP Request
+include::{snippets}/question/disrecommendquestion/http-request.adoc[]
+==== Request Headers
+include::{snippets}/question/disrecommendquestion/request-headers.adoc[]
+==== Request Path Parameters
+include::{snippets}/question/disrecommendquestion/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/question/disrecommendquestion/http-response.adoc[]
