@@ -14,6 +14,7 @@ import sixman.stackoverflow.domain.member.repository.dto.MemberQuestionData;
 import sixman.stackoverflow.domain.member.service.dto.request.*;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.domain.tag.entity.Tag;
+import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotAttemptException;
 import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotCompleteException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.*;
 import sixman.stackoverflow.module.aws.service.S3Service;
@@ -229,10 +230,7 @@ public class MemberService {
 
         String authCode = mailService.sendAuthEmail(toEmail);
 
-        redisService.saveValues(
-                AUTH_CODE_PREFIX + toEmail,
-                authCode,
-                Duration.ofMillis(authCodeExpirationMillis));
+        saveCodeInRedis(toEmail, authCode);
     }
 
     public void sendSignupCodeToEmail(String toEmail) {
@@ -241,26 +239,41 @@ public class MemberService {
 
         String authCode = mailService.sendAuthEmail(toEmail);
 
+        saveCodeInRedis(toEmail, authCode);
+    }
+
+    private void saveCodeInRedis(String toEmail, String authCode) {
         redisService.saveValues(
                 AUTH_CODE_PREFIX + toEmail,
                 authCode,
                 Duration.ofMillis(authCodeExpirationMillis));
     }
 
-    public boolean checkCode(String toEmail, String code) {
+    public boolean checkCode(String toEmail, String givenCode) {
 
-        String authCode = redisService.getValues(AUTH_CODE_PREFIX + toEmail);
-
-        boolean isValid = authCode.equals(code);
+        boolean isValid = checkCodeValid(toEmail, givenCode);
 
         if(isValid) {
-            redisService.saveValues(
-                    AUTH_CODE_PREFIX + toEmail,
-                    "true",
-                    Duration.ofMillis(emailCompleteExpirationMillis));
+            saveTrueInRedis(toEmail);
         }
 
         return isValid;
+    }
+
+    private boolean checkCodeValid(String toEmail, String givenCode){
+
+        String savedCode = redisService.getValues(AUTH_CODE_PREFIX + toEmail);
+
+        if(savedCode == null) throw new EmailAuthNotAttemptException();
+
+        return savedCode.equals(givenCode);
+    }
+
+    private void saveTrueInRedis(String toEmail) {
+        redisService.saveValues(
+                AUTH_CODE_PREFIX + toEmail,
+                "true",
+                Duration.ofMillis(emailCompleteExpirationMillis));
     }
 
 

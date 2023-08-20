@@ -40,15 +40,6 @@ public class AnswerController {
         this.replyService = replyService;
         this.answerRecommendService = answerRecommendService;
     }
-//    @PostMapping("/")
-//    public ResponseEntity<Void> createAnswer(@PathVariable("question-id")Long questionId,
-//                                           @RequestBody @Valid AnswerCreateApiRequest request) {
-//        Long answerId = answerService.createAnswer(request.toServiceRequest(), questionId);
-//
-//        URI uri = URI.create("/questions/{question-id}/answers/" + answerId);
-//
-//        return ResponseEntity.created(uri).build();
-//    }
 
     @GetMapping("/{answer-id}") // 답변 단건 조회
     public ResponseEntity<ApiSingleResponse<AnswerResponse>> getAnswer(@PathVariable("answer-id") Long answerId) {
@@ -105,7 +96,7 @@ public class AnswerController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("{answer-id}/replies") //answer에 대한 리플 생성
+    @PostMapping("/{answer-id}/replies") //answer에 대한 리플 생성
     public ResponseEntity<Void> createReply(@PathVariable("answer-id")Long answerId,
                                             @RequestBody @Valid ReplyCreateApiRequest request) {
 

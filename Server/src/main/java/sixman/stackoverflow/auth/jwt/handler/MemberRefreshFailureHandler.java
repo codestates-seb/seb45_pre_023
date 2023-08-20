@@ -12,23 +12,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static sixman.stackoverflow.auth.utils.AuthConstant.*;
+
 
 @Slf4j
 public class MemberRefreshFailureHandler {
 
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException {
 
         if(exception instanceof AuthException){
 
-            response.setHeader("Allow", "POST");
-            response.setHeader("Location", request.getScheme() + "://" + request.getServerName() +  "/auth/login");
+            response.setHeader(ALLOW, "POST");
+            response.setHeader(LOCATION, request.getScheme() + "://" + request.getServerName() + AUTH_LOGIN_URL);
             AuthUtil.sendErrorResponse(response, (AuthException) exception);
             return;
         }
 
         if(exception instanceof RequestException){
-            response.setHeader("Allow", "POST");
-            response.setHeader("Location", request.getScheme() + "://" + request.getServerName() +  "/auth/refresh");
+            response.setHeader(ALLOW, "POST");
+            response.setHeader(LOCATION, request.getScheme() + "://" + request.getServerName() +  AUTH_REFRESH_URL);
             AuthUtil.sendErrorResponse(response, (RequestException) exception);
             return;
         }
@@ -38,7 +40,8 @@ public class MemberRefreshFailureHandler {
             return;
         }
 
-        log.error("# Authentication failed with unknown reason : {}", exception.getMessage());
+        log.error("Unknown error {} happened: {}", exception.getClass().getName(), exception.getMessage());
+        exception.printStackTrace();
         AuthUtil.sendErrorResponse(response, new UnknownException());
     }
 }

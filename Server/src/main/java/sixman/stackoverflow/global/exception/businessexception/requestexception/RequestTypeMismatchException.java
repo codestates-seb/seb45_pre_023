@@ -12,6 +12,6 @@ public class RequestTypeMismatchException extends RequestException {
     }
 
     public RequestTypeMismatchException(String failedValue) {
-        super(CODE, HttpStatus.METHOD_NOT_ALLOWED, MESSAGE + " 잘못된 값 : " + failedValue);
+        super(CODE, HttpStatus.BAD_REQUEST, MESSAGE + " 잘못된 값 : " + failedValue);
     }
 }
