@@ -1,0 +1,39 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[getReply]]
+= 댓글 조회 API
+
+== 댓글 단건 조회
+=== HTTP Request
+include::{snippets}/reply/getreply/http-request.adoc[]
+==== Request Path Parameters
+include::{snippets}/reply/getreply/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/reply/getreply/http-response.adoc[]
+==== Response Body
+include::{snippets}/reply/getreply/response-body.adoc[]
+==== Response Fields
+include::{snippets}/reply/getreply/response-fields.adoc[]
+
+== 댓글 목록 조회
+=== HTTP Request
+include::{snippets}/reply/getreplies/http-request.adoc[]
+==== Request Path Parameters
+include::{snippets}/reply/getreplies/path-parameters.adoc[]
+==== Request Query Parameters
+include::{snippets}/reply/getreplies/request-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/reply/getreplies/http-response.adoc[]
+==== Response Body
+include::{snippets}/reply/getreplies/response-body.adoc[]
+==== Response Fields
+include::{snippets}/reply/getreplies/response-fields.adoc[]
+
+
+

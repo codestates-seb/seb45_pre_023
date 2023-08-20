@@ -7,41 +7,41 @@
 :sectlinks:
 :docinfo: shared-head
 
-include::common/overview.adoc[]
+include::snippets/common/overview.adoc[]
 
 [[API-List]]
 == APIs
 
 === Auth API
-* link:auth/login.html[로그인 API, window=_blank]
-* link:auth/loginfail.html[로그인 실패 API, window=_blank]
-* link:auth/signup.html[회원가입 API, window=_blank]
-* link:auth/email.html[회원 가입 이메일 인증 API, window=_blank]
-* link:auth/emailfail.html[회원 가입 이메일 인증 실패 API, window=_blank]
-* link:auth/findpassword.html[비밀번호 찾기 API, window=_blank]
-* link:auth/findpasswordemail.html[비밀번호 찾기 이메일 인증 API, window=_blank]
-* link:auth/refreshtoken.html[토큰 재발급 API, window=_blank]
+* link:snippets/auth/login.html[로그인 API, window=_blank]
+* link:snippets/auth/loginfail.html[로그인 실패 API, window=_blank]
+* link:snippets/auth/signup.html[회원가입 API, window=_blank]
+* link:snippets/auth/email.html[회원 가입 이메일 인증 API, window=_blank]
+* link:snippets/auth/emailfail.html[회원 가입 이메일 인증 실패 API, window=_blank]
+* link:snippets/auth/findpassword.html[비밀번호 찾기 API, window=_blank]
+* link:snippets/auth/findpasswordemail.html[비밀번호 찾기 이메일 인증 API, window=_blank]
+* link:snippets/auth/refreshtoken.html[토큰 재발급 API, window=_blank]
 
 === Member API
-* link:member/getmember.html[회원 정보 조회 API, window=_blank]
-* link:member/member.html[회원 정보 수정/삭제 API, window=_blank]
+* link:snippets/member/getmember.html[회원 정보 조회 API, window=_blank]
+* link:snippets/member/member.html[회원 정보 수정/삭제 API, window=_blank]
 
 === Question API
-* link:question/getquestion.html[질문 목록/단건 조회 API, window=_blank]
-* link:question/cudquestion.html[질문 생성/수정/삭제 API, window=_blank]
-* link:question/recommendquestion.html[질문 추천 API, window=_blank]
+* link:snippets/question/getquestion.html[질문 목록/단건 조회 API, window=_blank]
+* link:snippets/question/cudquestion.html[질문 생성/수정/삭제 API, window=_blank]
+* link:snippets/question/recommendquestion.html[질문 추천 API, window=_blank]
 
 === Tag API
-* link:tag/gettag.html[태그 목록 조회 API, window=_blank]
+* link:snippets/tag/gettag.html[태그 목록 조회 API, window=_blank]
 
 === Answer API
-* link:answer/getanswer.html[답변 목록/단건 조회 API, window=_blank]
-* link:answer/cudanswer.html[답변 생성/수정/삭제 API, window=_blank]
-* link:answer/recommendanswer.html[답변 추천 API, window=_blank]
+* link:snippets/answer/getanswer.html[답변 목록/단건 조회 API, window=_blank]
+* link:snippets/answer/cudanswer.html[답변 생성/수정/삭제 API, window=_blank]
+* link:snippets/answer/recommendanswer.html[답변 추천 API, window=_blank]
 
 === Reply API
-* link:reply/getreply.html[댓글 목록/단건 조회 API, window=_blank]
-* link:reply/cudreply.html[댓글 생성/수정/삭제 API, window=_blank]
+* link:snippets/reply/getreply.html[댓글 목록/단건 조회 API, window=_blank]
+* link:snippets/reply/cudreply.html[댓글 생성/수정/삭제 API, window=_blank]
 
 
 

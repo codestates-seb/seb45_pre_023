@@ -436,6 +436,42 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script>
+    function ready(callbackFunc) {
+        if (document.readyState !== 'loading') {
+            // Document is already ready, call the callback directly
+            callbackFunc();
+        } else if (document.addEventListener) {
+            // All modern browsers to register DOMContentLoaded
+            document.addEventListener('DOMContentLoaded', callbackFunc);
+        } else {
+            // Old IE browsers
+            document.attachEvent('onreadystatechange', function () {
+                if (document.readyState === 'complete') {
+                    callbackFunc();
+                }
+            });
+        }
+    }
+
+    function openPopup(event) {
+
+        const target = event.target;
+        if (target.className !== "popup") {
+            return;
+        }
+
+        event.preventDefault();
+        const screenX = event.screenX;
+        const screenY = event.screenY;
+        window.open(target.href, target.text, `left=${screenX}, top=${screenY}, width=500, height=600, status=no, menubar=no, toolbar=no, resizable=no`);
+    }
+
+    ready(function () {
+        const el = document.getElementById("content");
+        el.addEventListener("click", event => openPopup(event), false);
+    });
+</script>
 </head>
 <body id="getAnswer" class="book toc2 toc-left">
 <div id="header">
@@ -525,8 +561,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 7,
         "content" : "content",
@@ -535,8 +571,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 8,
         "content" : "content",
@@ -545,8 +581,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 9,
         "content" : "content",
@@ -555,8 +591,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 10,
         "content" : "content",
@@ -565,8 +601,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -579,8 +615,8 @@ Content-Length: 2215
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.2805919",
-    "updatedDate" : "2023-08-19T22:18:15.2805919"
+    "createdDate" : "2023-08-20T20:42:38.4772538",
+    "updatedDate" : "2023-08-20T20:42:38.4772538"
   },
   "code" : 200,
   "status" : "OK",
@@ -612,8 +648,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 7,
         "content" : "content",
@@ -622,8 +658,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 8,
         "content" : "content",
@@ -632,8 +668,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 9,
         "content" : "content",
@@ -642,8 +678,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       }, {
         "replyId" : 10,
         "content" : "content",
@@ -652,8 +688,8 @@ Content-Length: 2215
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.2805919",
-        "updatedDate" : "2023-08-19T22:18:15.2805919"
+        "createdDate" : "2023-08-20T20:42:38.4772538",
+        "updatedDate" : "2023-08-20T20:42:38.4772538"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -666,8 +702,8 @@ Content-Length: 2215
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.2805919",
-    "updatedDate" : "2023-08-19T22:18:15.2805919"
+    "createdDate" : "2023-08-20T20:42:38.4772538",
+    "updatedDate" : "2023-08-20T20:42:38.4772538"
   },
   "code" : 200,
   "status" : "OK",
@@ -931,7 +967,7 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 10966
+Content-Length: 11004
 
 {
   "data" : [ {
@@ -953,8 +989,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 7,
         "content" : "content",
@@ -963,8 +999,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 8,
         "content" : "content",
@@ -973,8 +1009,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 9,
         "content" : "content",
@@ -983,8 +1019,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 10,
         "content" : "content",
@@ -993,8 +1029,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1007,8 +1043,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 2,
     "member" : {
@@ -1028,8 +1064,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 12,
         "content" : "content",
@@ -1038,8 +1074,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 13,
         "content" : "content",
@@ -1048,8 +1084,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 14,
         "content" : "content",
@@ -1058,8 +1094,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 15,
         "content" : "content",
@@ -1068,8 +1104,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1082,8 +1118,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 3,
     "member" : {
@@ -1103,8 +1139,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 17,
         "content" : "content",
@@ -1113,8 +1149,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 18,
         "content" : "content",
@@ -1123,8 +1159,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 19,
         "content" : "content",
@@ -1133,8 +1169,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 20,
         "content" : "content",
@@ -1143,8 +1179,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1157,8 +1193,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 4,
     "member" : {
@@ -1178,8 +1214,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 22,
         "content" : "content",
@@ -1188,8 +1224,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 23,
         "content" : "content",
@@ -1198,8 +1234,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 24,
         "content" : "content",
@@ -1208,8 +1244,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 25,
         "content" : "content",
@@ -1218,8 +1254,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1232,8 +1268,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 5,
     "member" : {
@@ -1253,8 +1289,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 27,
         "content" : "content",
@@ -1263,8 +1299,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 28,
         "content" : "content",
@@ -1273,8 +1309,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 29,
         "content" : "content",
@@ -1283,8 +1319,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 30,
         "content" : "content",
@@ -1293,8 +1329,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1307,8 +1343,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.1452302",
-    "updatedDate" : "2023-08-19T22:18:15.1452302"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   } ],
   "pageInfo" : {
     "page" : 1,
@@ -1350,8 +1386,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 7,
         "content" : "content",
@@ -1360,8 +1396,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 8,
         "content" : "content",
@@ -1370,8 +1406,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 9,
         "content" : "content",
@@ -1380,8 +1416,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       }, {
         "replyId" : 10,
         "content" : "content",
@@ -1390,8 +1426,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1371665",
-        "updatedDate" : "2023-08-19T22:18:15.1371665"
+        "createdDate" : "2023-08-20T20:42:38.3255779",
+        "updatedDate" : "2023-08-20T20:42:38.3255779"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1404,8 +1440,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 2,
     "member" : {
@@ -1425,8 +1461,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 12,
         "content" : "content",
@@ -1435,8 +1471,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 13,
         "content" : "content",
@@ -1445,8 +1481,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 14,
         "content" : "content",
@@ -1455,8 +1491,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 15,
         "content" : "content",
@@ -1465,8 +1501,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1479,8 +1515,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 3,
     "member" : {
@@ -1500,8 +1536,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 17,
         "content" : "content",
@@ -1510,8 +1546,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 18,
         "content" : "content",
@@ -1520,8 +1556,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 19,
         "content" : "content",
@@ -1530,8 +1566,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 20,
         "content" : "content",
@@ -1540,8 +1576,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1554,8 +1590,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 4,
     "member" : {
@@ -1575,8 +1611,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 22,
         "content" : "content",
@@ -1585,8 +1621,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 23,
         "content" : "content",
@@ -1595,8 +1631,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 24,
         "content" : "content",
@@ -1605,8 +1641,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 25,
         "content" : "content",
@@ -1615,8 +1651,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.144234",
-        "updatedDate" : "2023-08-19T22:18:15.144234"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1629,8 +1665,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.144234",
-    "updatedDate" : "2023-08-19T22:18:15.144234"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   }, {
     "answerId" : 5,
     "member" : {
@@ -1650,8 +1686,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 27,
         "content" : "content",
@@ -1660,8 +1696,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 28,
         "content" : "content",
@@ -1670,8 +1706,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 29,
         "content" : "content",
@@ -1680,8 +1716,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       }, {
         "replyId" : 30,
         "content" : "content",
@@ -1690,8 +1726,8 @@ Content-Length: 10966
           "nickname" : "test",
           "imageUrl" : "test url"
         },
-        "createdDate" : "2023-08-19T22:18:15.1452302",
-        "updatedDate" : "2023-08-19T22:18:15.1452302"
+        "createdDate" : "2023-08-20T20:42:38.3325965",
+        "updatedDate" : "2023-08-20T20:42:38.3325965"
       } ],
       "pageInfo" : {
         "page" : 1,
@@ -1704,8 +1740,8 @@ Content-Length: 10966
         "hasPrevious" : false
       }
     },
-    "createdDate" : "2023-08-19T22:18:15.1452302",
-    "updatedDate" : "2023-08-19T22:18:15.1452302"
+    "createdDate" : "2023-08-20T20:42:38.3325965",
+    "updatedDate" : "2023-08-20T20:42:38.3325965"
   } ],
   "pageInfo" : {
     "page" : 1,
@@ -1960,7 +1996,7 @@ Content-Length: 10966
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-08-19 22:12:45 +0900
+Last updated 2023-08-20 20:40:58 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
