@@ -18,7 +18,7 @@ public class SecurityUtil {
 
         validate(authentication);
 
-        return userDetails.getId();
+        return userDetails.getMemberId();
     }
 
     public static String getCurrentEmail() {

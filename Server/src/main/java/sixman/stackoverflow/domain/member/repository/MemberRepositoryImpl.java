@@ -45,22 +45,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     @Override
     public Page<MemberQuestionData> findQuestionByMemberId(Long memberId, Pageable pageable) {
 
-        Expression<Long> votes = JPAExpressions.select(questionRecommend.count())
-                .from(questionRecommend)
-                .where(questionRecommend.question.eq(question));
-
-        Expression<Long> downs = JPAExpressions.select(questionRecommend.count())
-                .from(questionRecommend)
-                .where(questionRecommend.question.eq(question)
-                        .and(questionRecommend.type.eq(TypeEnum.DOWNVOTE)));
-
-
         List<MemberQuestionData> memberQuestionDatas = queryFactory.select(new QMemberQuestionData(
                         question.questionId,
                         question.title,
                         question.views,
-                        votes,
-                        downs,
+                        question.recommend,
                         question.createdDate,
                         question.modifiedDate))
                 .from(question)
@@ -80,22 +69,12 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     @Override
     public Page<MemberAnswerData> findAnswerByMemberId(Long memberId, Pageable pageable) {
 
-        Expression<Long> votes = JPAExpressions.select(answerRecommend.count())
-                .from(answerRecommend)
-                .where(answerRecommend.answer.eq(answer));
-
-        Expression<Long> downs = JPAExpressions.select(answerRecommend.count())
-                .from(answerRecommend)
-                .where(answerRecommend.answer.eq(answer)
-                        .and(answerRecommend.type.eq(TypeEnum.DOWNVOTE)));
-
         List<MemberAnswerData> memberAnswerDatas = queryFactory.select(new QMemberAnswerData(
                         answer.answerId,
                         answer.question.questionId,
                         answer.question.title,
                         answer.content,
-                        votes,
-                        downs,
+                        answer.recommend,
                         answer.createdDate,
                         answer.modifiedDate))
                 .from(answer)

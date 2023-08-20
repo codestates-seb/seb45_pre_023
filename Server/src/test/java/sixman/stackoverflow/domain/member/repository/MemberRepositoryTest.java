@@ -52,6 +52,7 @@ class MemberRepositoryTest extends RepositoryTest {
 
         List<Question> questions = createQuestions(member, 10);
         questions.forEach(question -> {
+            question.applyRecommend(TypeEnum.UPVOTE);
             em.persist(question);
             em.persist(createQuestionRecommend(member, question));
         });
@@ -79,6 +80,7 @@ class MemberRepositoryTest extends RepositoryTest {
         questions.forEach(question -> {
             em.persist(question);
             Answer answer = createAnswer(member, question);
+            answer.setRecommend(1);
             em.persist(answer);
             em.persist(createAnswerRecommend(member, answer));
         });

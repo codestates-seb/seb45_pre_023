@@ -18,12 +18,12 @@ public class MemberAnswerData {
     private LocalDateTime updatedDate;
 
     @QueryProjection
-    public MemberAnswerData(Long answerId, Long questionId, String questionTitle, String content, Long votes, Long downs, LocalDateTime createdDate, LocalDateTime updatedDate) {
+    public MemberAnswerData(Long answerId, Long questionId, String questionTitle, String content, Integer recommend, LocalDateTime createdDate, LocalDateTime updatedDate) {
         this.answerId = answerId;
         this.questionId = questionId;
         this.questionTitle = questionTitle;
         this.content = content;
-        this.recommend = votes.intValue() - downs.intValue() * 2;
+        this.recommend = recommend;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
     }

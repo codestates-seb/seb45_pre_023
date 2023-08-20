@@ -17,7 +17,7 @@ import java.io.IOException;
 @Component
 public class MemberAccessDeniedHandler implements AccessDeniedHandler {
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         AuthUtil.sendErrorResponse(response, new MemberAccessDeniedException());
     }
 

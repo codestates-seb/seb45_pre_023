@@ -1,6 +1,7 @@
 package sixman.stackoverflow.auth;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,7 +14,9 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import sixman.stackoverflow.auth.jwt.filter.JwtAuthenticationFilter;
@@ -21,14 +24,20 @@ import sixman.stackoverflow.auth.jwt.filter.JwtRefreshFilter;
 import sixman.stackoverflow.auth.jwt.filter.JwtVerificationFilter;
 import sixman.stackoverflow.auth.jwt.handler.*;
 import sixman.stackoverflow.auth.jwt.service.TokenProvider;
+import sixman.stackoverflow.auth.oauth.service.OAuthService;
+import sixman.stackoverflow.auth.utils.AuthConstant;
 
 import java.util.List;
+
+import static sixman.stackoverflow.auth.utils.AuthConstant.*;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
+    @Value("${url.frontend}")
+    private String frontBaseUrl;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,7 +52,7 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+            .and()
                 .cors(getCorsConfigurerCustomizer());
 
         http
@@ -57,19 +66,28 @@ public class SecurityConfig {
 
         http.authorizeRequests(getAuthorizeRequestsCustomizer());
 
-
         return http.build();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    public DefaultOAuth2UserService defaultOAuth2UserService() {
+        return new DefaultOAuth2UserService();
     }
 
     private Customizer<ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry> getAuthorizeRequestsCustomizer() {
         return (requests) -> requests
+                .antMatchers(HttpMethod.GET, "/").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/members/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/members/email/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/questions/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/answers/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/replies/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/").permitAll()
                 .antMatchers(HttpMethod.GET, "/snippets/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/tags/**").permitAll()
                 .anyRequest().authenticated();
@@ -80,12 +98,11 @@ public class SecurityConfig {
     public Customizer<CorsConfigurer<HttpSecurity>> getCorsConfigurerCustomizer() {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com");
-        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin(frontBaseUrl);
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Authorization", "Refresh", "Location"));
+        configuration.setExposedHeaders(List.of(AUTHORIZATION, REFRESH, LOCATION));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return corsConfigurer -> corsConfigurer.configurationSource(source);
@@ -97,7 +114,7 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, tokenProvider);
-            jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
+            jwtAuthenticationFilter.setFilterProcessesUrl(AUTH_LOGIN_URL);
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
 

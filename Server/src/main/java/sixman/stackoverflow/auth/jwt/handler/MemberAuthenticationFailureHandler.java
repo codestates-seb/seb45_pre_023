@@ -44,7 +44,7 @@ public class MemberAuthenticationFailureHandler implements AuthenticationFailure
             AuthUtil.sendErrorResponse(response, new RequestNotAllowedException("POST"));
             return;
         }
-        log.error("# Authentication failed with unknown reason : {}", exception.getMessage());
+        log.error("Unknown error {} happened: {}", exception.getClass().getName(), exception.getMessage());
         exception.printStackTrace();
         AuthUtil.sendErrorResponse(response, new UnknownException());
     }
