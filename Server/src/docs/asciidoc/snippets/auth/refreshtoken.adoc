@@ -1,0 +1,22 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[Refresh]]
+= RefreshToken API
+
+== refresh 으로 token 발급
+=== HTTP Request
+include::{snippets}/auth/refresh/http-request.adoc[]
+==== Request Header
+include::{snippets}/auth/refresh/request-headers.adoc[]
+=== HTTP Response
+include::{snippets}/auth/refresh/http-response.adoc[]
+==== Response Header
+include::{snippets}/auth/refresh/response-headers.adoc[]
+
+
