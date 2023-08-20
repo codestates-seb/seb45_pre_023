@@ -61,11 +61,5 @@ public class Answer extends BaseEntity {
         this.recommend = recommend;
     }
 
-    //    public void increaseRecommendCount() {
-//        upvoteCount++;
-//    }
 
-//    public void increaseDownvoteCount() {
-//        downvoteCount++;
-//    }
 }

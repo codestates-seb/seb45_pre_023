@@ -9,7 +9,7 @@ import sixman.stackoverflow.domain.reply.entity.Reply;
 
 import java.util.List;
 
-@Repository
+
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findRepliesByAnswer(Answer answer);
     Page<Reply> findByAnswer(Answer answer, Pageable pageable);

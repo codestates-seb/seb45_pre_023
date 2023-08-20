@@ -34,77 +34,67 @@ public class AnswerRecommendService {
         this.memberRepository = memberRepository;
     }
 
-//    public void recommendAnswer(Long answerId, TypeEnum type) {
-//        Long memberId = SecurityUtil.getCurrentId();
-//        Answer answer = answerRepository.findById(answerId)
-//                .orElseThrow(() -> new AnswerNotFoundException());
-//
-//        Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new MemberNotFoundException());
-//
-//
-//        Optional<AnswerRecommend> existingRecommend = answerRecommendRepository.findByAnswerAndMember(answer, member);
-//
-//        if (existingRecommend.isPresent()) {
-//            AnswerRecommend recommend = existingRecommend.get();
-//            if (recommend.getType() == type) {
-//
-//                answerRecommendRepository.delete(recommend);
-//            } else {
-//
-//                recommend.setType(type);
-//                answerRecommendRepository.save(recommend);
-//            }
-//        } else {
-//
-//            AnswerRecommend newRecommend = AnswerRecommend.builder()
-//                    .type(type)
-//                    .member(member)
-//                    .answer(answer)
-//                    .build();
-//            answerRecommendRepository.save(newRecommend);
-//        }
-//
-//        if (type == TypeEnum.UPVOTE) {
-//            answer.increaseRecommendCount();
-//        } else if (type == TypeEnum.DOWNVOTE) {
-//            answer.increaseDownvoteCount();
-//        }
-//        answerRepository.save(answer);
-//    }
-//}
+
 
     public void recommendAnswer(Long answerId, TypeEnum recommendationType) {
         Long memberId = SecurityUtil.getCurrentId();
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException());
 
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException());
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        Member member = memberOptional.orElseThrow(MemberNotFoundException::new);
+
+        Optional<Answer> answerOptional = answerRepository.findById(answerId);
+        Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
         AnswerRecommend existingRecommendation = answerRecommendRepository.findByAnswerAndMember(answer, member);
 
-        int currentRecommendCount = answer.getRecommend();
+        Integer currentRecommendCount = answer.getRecommend();
+
+        if (currentRecommendCount == null) {
+            currentRecommendCount = 0; // 0으로 초기화 안해줘서 그런 듯
+        }
 
         if (existingRecommendation != null) {
             if (existingRecommendation.getType() == recommendationType) {
-                currentRecommendCount -= (recommendationType == TypeEnum.UPVOTE) ? 1 : -1;
-                answerRecommendRepository.delete(existingRecommendation);
-            } else {
-                if (recommendationType == TypeEnum.DOWNVOTE) {
-                    // 이미 추천한 상태에서 비추천을 요청할 경우 추천을 취소하고 비추천 증가
+                // 이미 추천 또는 비추천 상태를 변경할 경우 삭제 후 저장하지 않고 추천 수만 변경
+                if (recommendationType == TypeEnum.UPVOTE) {
                     currentRecommendCount -= 1;
-                    answerRecommendRepository.delete(existingRecommendation);
-                    existingRecommendation.setType(recommendationType);
-                    answerRecommendRepository.save(existingRecommendation);
-                } else if (recommendationType == TypeEnum.UPVOTE) {
-                    // 이미 비추천한 상태에서 추천을 요청할 경우 비추천을 취소하고 추천 증가
+                } else if (recommendationType == TypeEnum.DOWNVOTE) {
                     currentRecommendCount += 1;
+                }
+                answerRecommendRepository.delete(existingRecommendation);
+            } else { // existingRecommendation.getType() =! recommendationType
+                // 이미 추천한 상태에서 비추천을 요청할 경우 추천을 취소하고 비추천 증가
+                if (recommendationType == TypeEnum.DOWNVOTE) {
+                    currentRecommendCount -= 2;
                     answerRecommendRepository.delete(existingRecommendation);
+                    AnswerRecommend answerRecommend = AnswerRecommend.builder()
+                            .type(recommendationType)
+                            .member(member)
+                            .answer(answer)
+                            .build();
+
+                    answerRecommendRepository.save(answerRecommend);
+                }
+                // 이미 비추천한 상태에서 추천을 요청할 경우 비추천을 취소하고 추천 증가
+                else if (recommendationType == TypeEnum.UPVOTE) {
+                    currentRecommendCount +=2;
+                    answerRecommendRepository.delete(existingRecommendation);
+                    AnswerRecommend answerRecommend = AnswerRecommend.builder()
+                            .type(recommendationType)
+                            .member(member)
+                            .answer(answer)
+                            .build();
+
+                    answerRecommendRepository.save(answerRecommend);
                 }
             }
         } else {
-            currentRecommendCount += (recommendationType == TypeEnum.UPVOTE) ? 1 : -1;
+            // 추천 또는 비추천 상태가 없을 경우 새로운 추천을 생성
+            if (recommendationType == TypeEnum.UPVOTE) {
+                currentRecommendCount += 1;
+            } else if (recommendationType == TypeEnum.DOWNVOTE) {
+                currentRecommendCount -= 1;
+            }
             AnswerRecommend answerRecommend = AnswerRecommend.builder()
                     .type(recommendationType)
                     .member(member)
@@ -118,6 +108,12 @@ public class AnswerRecommendService {
         answerRepository.save(answer);
     }
 }
+
+
+
+
+
+
 
 
 

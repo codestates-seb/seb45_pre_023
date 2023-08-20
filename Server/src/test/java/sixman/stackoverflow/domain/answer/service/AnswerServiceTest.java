@@ -197,30 +197,7 @@ class AnswerServiceTest extends ServiceTest {
             answerService.findAnswer(answerForUpdateId);
         });
 
-//        Member member = createMember();
-//        memberRepository.save(member);
-//
-//        Question question = createQuestion(member);
-//        questionRepository.save(question);
-//
-//        Answer existingAnswer = Answer.builder()
-//                .answerId(1L)
-//                .content("old Content11")
-//                .member(member)
-//                .question(question)
-//                .build();
-//        answerRepository.save(existingAnswer);
-//
-//        setDefaultAuthentication(member.getMemberId());
-//
-//        String newContent = "Updated Content11";
-//
-//        // When
-//        Answer updatedAnswer = answerService.updateAnswer(existingAnswer.getAnswerId(), newContent);
-//
-//        assertThrows(AnswerNotFoundException.class, () -> {
-//            answerService.updateAnswer();
-//        });
+
 
 
     }
@@ -274,7 +251,6 @@ class AnswerServiceTest extends ServiceTest {
         answerService.deleteAnswer(answer.getAnswerId());
 
 
-        //Optional<Answer> deletedAnswer = answerRepository.findById(answer.getAnswerId());
 
         //Then
         boolean answerExists = answerRepository.existsById(answer.getAnswerId());
