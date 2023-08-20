@@ -20,6 +20,9 @@ import sixman.stackoverflow.global.response.ApiSingleResponse;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
+
+import static sixman.stackoverflow.auth.utils.AuthConstant.BEARER;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,14 +41,19 @@ public class AuthController {
     public ResponseEntity<String> login(@ModelAttribute @Valid AuthLoginApiRequest request) {
         Token token = oAuthService.login(request.getProvider(), request.getCode());
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.put("Authorization", Collections.singletonList("Bearer " + token.getAccessToken()));
-        map.put("Refresh", Collections.singletonList("Bearer " + token.getRefreshToken()));
-        HttpHeaders tokenHeader = new HttpHeaders(map);
+        HttpHeaders tokenHeader = getHttpHeaders(token);
 
         String jsonResponse = "{\"memberId\":" + token.getMemberId() + "}";
 
         return ResponseEntity.ok().headers(tokenHeader).body(jsonResponse);
+    }
+
+    private HttpHeaders getHttpHeaders(Token token) {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.put("Authorization", List.of(BEARER + token.getAccessToken()));
+        map.put("Refresh", List.of(BEARER + token.getRefreshToken()));
+        HttpHeaders tokenHeader = new HttpHeaders(map);
+        return tokenHeader;
     }
 
     @PostMapping("/signup")
@@ -69,17 +77,21 @@ public class AuthController {
 
     @PostMapping("/email")
     public ResponseEntity<Void> sendEmail(@RequestBody @Valid MemberMailAuthApiRequest request) {
+
         memberService.sendFindPasswordCodeToEmail(request.getEmail());
+
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/email/confirm")
     public ResponseEntity<ApiSingleResponse<Boolean>> confirmEmail(@RequestBody @Valid MemberMailConfirmApiRequest request) {
+
         boolean result = memberService.checkCode(request.getEmail(), request.getCode());
+
         return ResponseEntity.ok(ApiSingleResponse.ok(result));
     }
 
-    @GetMapping("/error")
+    @GetMapping("/error") //error 로깅 테스트용입니다.
     public ResponseEntity<Void> error() {
         log.error("error");
 

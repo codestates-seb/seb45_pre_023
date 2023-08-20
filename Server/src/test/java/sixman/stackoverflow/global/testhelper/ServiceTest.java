@@ -60,6 +60,17 @@ public abstract class ServiceTest {
                 .build();
     }
 
+    protected Member createMemberDisable() {
+        return Member.builder()
+                .email("test@google.com")
+                .nickname("test")
+                .password(passwordEncoder.encode("1234abcd!"))
+                .authority(Authority.ROLE_USER)
+                .myInfo(MyInfo.builder().image("images/test.png").build())
+                .enabled(false)
+                .build();
+    }
+
     protected Member createMember(String password) {
         return Member.builder()
                 .email("test@test.com")
@@ -67,18 +78,6 @@ public abstract class ServiceTest {
                 .password(password)
                 .authority(Authority.ROLE_USER)
                 .myInfo(MyInfo.builder().build())
-                .enabled(true)
-                .build();
-    }
-
-    protected Member createMember(Long memberId) {
-        return Member.builder()
-                .memberId(memberId)
-                .email("test@google.com")
-                .nickname("test")
-                .password("1234abcd!")
-                .authority(Authority.ROLE_USER)
-                .myInfo(MyInfo.builder().image("test url").build())
                 .enabled(true)
                 .build();
     }

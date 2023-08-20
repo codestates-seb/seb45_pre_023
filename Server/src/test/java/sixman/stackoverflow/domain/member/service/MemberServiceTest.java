@@ -1,7 +1,9 @@
 package sixman.stackoverflow.domain.member.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.mock.web.MockMultipartFile;
@@ -15,6 +17,7 @@ import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.domain.tag.entity.Tag;
+import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotAttemptException;
 import sixman.stackoverflow.global.exception.businessexception.emailexception.EmailAuthNotCompleteException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberDuplicateException;
@@ -26,12 +29,11 @@ import sixman.stackoverflow.module.email.service.MailService;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -46,52 +48,52 @@ class MemberServiceTest extends ServiceTest {
     @Autowired MailService mailService;
 
 
-    @Test
+    @TestFactory
     @DisplayName("email, nickname, password 를 받아 회원가입을 한다.")
-    void signup() {
+    Collection<DynamicTest> signup() {
         //given
         String email = "test@test.com";
         String nickname = "test";
         String password = "1234abcd!";
 
-        MemberCreateServiceRequest request = MemberCreateServiceRequest.builder()
-                .email(email)
-                .nickname(nickname)
-                .password(password)
-                .build();
+        MemberCreateServiceRequest request = createSignupRequest(email, nickname, password);
 
-        willDoNothing()
-                .given(redisService)
-                .saveValues(anyString(), anyString(), any(Duration.class));
+        setRedisServiceSaveValuesReturn();
 
-        given(redisService.getValues(anyString())).willReturn("true");
+        setRedisServiceGetValuesReturn("true");
 
         //when
         Long memberId = memberService.signup(request);
 
         //then
         Member member = memberRepository.findById(memberId).orElseThrow();
-        assertThat(member.getEmail()).isEqualTo(email);
-        assertThat(member.getNickname()).isEqualTo(nickname);
-        assertThat(member.getPassword()).isNotNull();
-        assertThat(member.getAuthority()).isEqualTo(Authority.ROLE_USER);
-        assertThat(member.getMyInfo()).isNotNull();
+
+        return List.of(
+                dynamicTest("해당 email, nickname, password 로 저장된다.", () -> {
+                    //then
+                    assertThat(member.getEmail()).isEqualTo(email);
+                    assertThat(member.getNickname()).isEqualTo(nickname);
+                    assertThat(passwordEncoder.matches(password, member.getPassword())).isTrue();
+                }),
+                dynamicTest("권한이 USER 로 저장된다.", () -> {
+                    //then
+                    assertThat(member.getAuthority()).isEqualTo(Authority.ROLE_USER);
+                }),
+                dynamicTest("myInfo 가 함께 저장된다.", () -> {
+                    //then
+                    assertThat(member.getMyInfo()).isNotNull();
+                })
+        );
     }
+
 
     @Test
     @DisplayName("회원가입 시 중복되는 email 이 있으면 MemberDuplicateException 을 발생시킨다.")
     void signupMemberDuplicateException() {
         //given
-        Member member = createMember();
+        Member member = createAndSaveMember();
 
-        memberRepository.save(member);
-
-        MemberCreateServiceRequest request = MemberCreateServiceRequest.builder()
-                .email(member.getEmail()) // 중복되는 email
-                .nickname("new nickname")
-                .password("1234abcd!!!")
-                .build();
-
+        MemberCreateServiceRequest request = createSignupRequest(member.getEmail(), "new nickname", "1234abcd!!!");
 
         //when & then
         assertThatThrownBy(() -> memberService.signup(request))
@@ -99,17 +101,15 @@ class MemberServiceTest extends ServiceTest {
                 .hasMessageContaining("이미 존재하는 회원 이메일입니다.");
     }
 
+
+
     @Test
     @DisplayName("회원가입 시 아직 이메일 인증이 완료되지 않으면 EmailAuthNotCompleteException 을 발생시킨다.")
     void signupEmailAuthNotCompleteException() {
         //given
-        MemberCreateServiceRequest request = MemberCreateServiceRequest.builder()
-                .email("test@google.com")
-                .nickname("nickname")
-                .password("1234abcd!!!")
-                .build();
+        MemberCreateServiceRequest request = createSignupRequest("test@google.com", "nickname", "1234abcd!!!");
 
-        given(redisService.getValues(anyString())).willReturn("code12");
+        setRedisServiceGetValuesReturn("not true");
 
         //when & then
         assertThatThrownBy(() -> memberService.signup(request))
@@ -121,18 +121,9 @@ class MemberServiceTest extends ServiceTest {
     @DisplayName("nickname, myIntro, title, location, accounts 를 받아서 member 객체를 수정한다.")
     void updateMember() {
         //given
-        Member member = createMember();
+        Member member = createAndSaveMember();
 
-        memberRepository.save(member);
-
-        MemberUpdateServiceRequest request = MemberUpdateServiceRequest.builder()
-                .updateMemberId(member.getMemberId())
-                .nickname("new nickname")
-                .myIntro("new myIntro")
-                .title("new title")
-                .location("new location")
-                .accounts(List.of("account1", "account2"))
-                .build();
+        MemberUpdateServiceRequest request = createUpdateRequest(member);
 
         //when
         memberService.updateMember(member.getMemberId(), request);
@@ -146,21 +137,16 @@ class MemberServiceTest extends ServiceTest {
         assertThat(updatedMember.getMyInfo().getAccounts()).hasSize(2);
     }
 
+
+
     @Test
     @DisplayName("다른 멤버의 정보를 업데이트 하려고 하면 MemberAccessDeniedException 을 발생시킨다.")
     void updateMemberException() {
         //given
-        Member member = createMember();
-        Member otherMember = createMember();
+        Member member = createAndSaveMember();
+        Member otherMember = createAndSaveMember();
 
-        memberRepository.save(member);
-        memberRepository.save(otherMember);
-
-        MemberUpdateServiceRequest request = MemberUpdateServiceRequest.builder()
-                .updateMemberId(otherMember.getMemberId()) // 다른 멤버의 정보를 업데이트
-                .nickname("new nickname")
-                .myIntro("new myIntro")
-                .build();
+        MemberUpdateServiceRequest request = createUpdateRequest(otherMember);
 
         //when & then
         assertThatThrownBy(() -> memberService.updateMember(member.getMemberId(), request))
@@ -175,15 +161,9 @@ class MemberServiceTest extends ServiceTest {
         String password = "1234abcd!";
         String newPassword = "1234abcd!!";
         String encodedPassword = passwordEncoder.encode(password);
-        Member member = createMember(encodedPassword);
+        Member member = createAndSaveMember(encodedPassword);
 
-        memberRepository.save(member);
-
-        MemberPasswordUpdateServiceRequest request = MemberPasswordUpdateServiceRequest.builder()
-                .updateMemberId(member.getMemberId())
-                .password(password)
-                .newPassword(newPassword)
-                .build();
+        MemberPasswordUpdateServiceRequest request = createPasswordUpdateRequest(member, password, newPassword);
 
         //when
         memberService.updatePassword(member.getMemberId(), request);
@@ -192,24 +172,20 @@ class MemberServiceTest extends ServiceTest {
         assertThat(passwordEncoder.matches(newPassword, member.getPassword())).isTrue();
     }
 
+
+
     @Test
     @DisplayName("다른 멤버의 비밀번호를 수정하려고 하면 MemberAccessDeniedException 을 발생시킨다.")
     void updatePasswordAccessDeniedException() {
         //given
-        String password = "1234abcd!";
-        String newPassword = "1234abcd!!";
-        String encodedPassword = passwordEncoder.encode(password);
-        Member member = createMember();
-        Member otherMember = createMember(encodedPassword);
+        String otherPassword = "1234abcd!";
+        String newOtherPassword = "1234abcd!!";
+        String encodedPassword = passwordEncoder.encode(otherPassword);
 
-        memberRepository.save(member);
-        memberRepository.save(otherMember);
+        Member member = createAndSaveMember();
+        Member otherMember = createAndSaveMember(encodedPassword);
 
-        MemberPasswordUpdateServiceRequest request = MemberPasswordUpdateServiceRequest.builder()
-                .updateMemberId(otherMember.getMemberId()) // 다른 멤버의 비밀번호를 수정
-                .password(password)
-                .newPassword(newPassword)
-                .build();
+        MemberPasswordUpdateServiceRequest request = createPasswordUpdateRequest(otherMember, otherPassword, newOtherPassword);
 
         //when & then
         assertThatThrownBy(() -> memberService.updatePassword(member.getMemberId(), request))
@@ -225,15 +201,10 @@ class MemberServiceTest extends ServiceTest {
         String password = "1234abcd!";
         String newPassword = "1234abcd!!";
         String encodedPassword = passwordEncoder.encode(password);
-        Member member = createMember(encodedPassword);
 
-        memberRepository.save(member);
+        Member member = createAndSaveMember(encodedPassword);
 
-        MemberPasswordUpdateServiceRequest request = MemberPasswordUpdateServiceRequest.builder()
-                .updateMemberId(member.getMemberId())
-                .password(password + "wrong password") // 이전 비밀번호가 틀림
-                .newPassword(newPassword)
-                .build();
+        MemberPasswordUpdateServiceRequest request = createPasswordUpdateRequest(member, password + "wrong password", newPassword);
 
         //when & then
         assertThatThrownBy(() -> memberService.updatePassword(member.getMemberId(), request))
@@ -242,49 +213,55 @@ class MemberServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("member email 인증이 완료되면 member 의 비밀번호를 변경하고 member 를 enable 로 변경한다.")
+    @DisplayName(" member email 인증을 완료하고 비밀번호를 변경할 수 있다.")
     void findPassword() {
         //given
-        Member member = createMember();
-        member.disable();
-        memberRepository.save(member);
+        Member member = createAndSaveMember();
 
-        String email = member.getEmail();
-        String password = "1234abcd!!";
+        String newPassword = "1234abcd!!";
+        MemberFindPasswordServiceRequest request = createFindPasswordRequest(member.getEmail(), newPassword);
 
-        given(redisService.getValues(anyString())).willReturn("true");
-
-        MemberFindPasswordServiceRequest request = MemberFindPasswordServiceRequest.builder()
-                .email(email)
-                .password(password)
-                .build();
+        setRedisServiceGetValuesReturn("true");
 
         //when
         memberService.findPassword(request);
 
         //then
         Member updatedMember = memberRepository.findById(member.getMemberId()).orElseThrow();
-        assertThat(passwordEncoder.matches(password, updatedMember.getPassword())).isTrue();
+        assertThat(passwordEncoder.matches(newPassword, updatedMember.getPassword())).isTrue();
+    }
+
+
+    @Test
+    @DisplayName("member 가 disabled 상태일 때 member email 인증을 완료하고 비밀번호를 바꾸면 member 의 enable 로 변경한다.")
+    void findPasswordAndChangeEnable() {
+        //given
+        Member member = createAndSaveMemberDisable();
+
+        String password = "1234abcd!!";
+        MemberFindPasswordServiceRequest request = createFindPasswordRequest(member.getEmail(), password);
+
+        setRedisServiceGetValuesReturn("true");
+
+        //when
+        memberService.findPassword(request);
+
+        //then
+        Member updatedMember = memberRepository.findById(member.getMemberId()).orElseThrow();
         assertThat(updatedMember.isEnabled()).isTrue();
     }
+
 
     @Test
     @DisplayName("member password 를 찾을 때 email 인증이 완료되지 않았으면 EmailAuthNotCompleteException 을 발생시킨다.")
     void findPasswordException() {
         //given
-        Member member = createMember();
-        memberRepository.save(member);
+        Member member = createAndSaveMember();
 
-        String email = member.getEmail();
-        String password = "1234abcd!!";
-        String code = "abcd12";
+        String newPassword = "1234abcd!!";
+        MemberFindPasswordServiceRequest request = createFindPasswordRequest(member.getEmail(), newPassword);
 
-        given(redisService.getValues(anyString())).willReturn("abcd12"); //인증이 완료되지 않았으면 저장된 코드를 반환함.
-
-        MemberFindPasswordServiceRequest request = MemberFindPasswordServiceRequest.builder()
-                .email(email)
-                .password(password)
-                .build();
+        setRedisServiceGetValuesReturn("not true");
 
         //when & then
         assertThatThrownBy(() -> memberService.findPassword(request))
@@ -298,9 +275,7 @@ class MemberServiceTest extends ServiceTest {
         //given
         String password = "1234abcd!";
         String encodedPassword = passwordEncoder.encode(password);
-        Member member = createMember(encodedPassword);
-
-        memberRepository.save(member);
+        Member member = createAndSaveMember(encodedPassword);
 
         //when
         memberService.deleteMember(member.getMemberId(), member.getMemberId());
@@ -314,13 +289,12 @@ class MemberServiceTest extends ServiceTest {
     @DisplayName("다른 멤버를 삭제하려고 하면 MemberAccessDeniedException 을 발생시킨다.")
     void deleteMemberException() {
         //given
+
         String password = "1234abcd!";
         String encodedPassword = passwordEncoder.encode(password);
-        Member member = createMember();
-        Member otherMember = createMember(encodedPassword);
+        Member otherMember = createAndSaveMember(encodedPassword);
+        Member member = createAndSaveMember();
 
-        memberRepository.save(member);
-        memberRepository.save(otherMember);
 
         //when
         assertThatThrownBy(() -> memberService.deleteMember(member.getMemberId(), otherMember.getMemberId())) // 다른 멤버를 삭제
@@ -329,35 +303,10 @@ class MemberServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("memberId 를 통해 해당 멤버의 정보, 멤버의 게시물, 댓글, 태그 정보를 모두 가져온다.")
-    void getMember() {
+    @DisplayName("memberId 를 통해 해당 멤버의 정보, 멤버의 게시물, 댓글, 태그 정보를 모두 가져올 수 있다.")
+    void getMemberInfo() {
         //given
-        Member member = createMember();
-        Member otherMember = createMember();
-
-        memberRepository.save(member);
-        memberRepository.save(otherMember);
-
-        Tag tag1 = createTag("tag1");
-        Tag tag2 = createTag("tag2");
-
-        em.persist(tag1);
-        em.persist(tag2);
-
-        List<Question> questions = createQuestions(member, 10);
-
-        questions.forEach(question -> {
-            em.persist(question);
-            em.persist(createQuestionTag(question, tag1));
-            em.persist(createQuestionTag(question, tag2));
-        });
-
-        List<Question> otherQuestions = createQuestions(otherMember, 10);
-
-        otherQuestions.forEach(otherQuestion -> {
-            em.persist(otherQuestion);
-            em.persist(createAnswer(member, otherQuestion));
-        });
+        Member member = createAndSaveMember();
 
         //when
         MemberResponse response = memberService.getMember(member.getMemberId());
@@ -370,28 +319,72 @@ class MemberServiceTest extends ServiceTest {
         assertThat(response.getTitle()).isEqualTo(member.getMyInfo().getTitle());
         assertThat(response.getLocation()).isEqualTo(member.getMyInfo().getLocation());
         assertThat(response.getAccounts()).isEqualTo(member.getMyInfo().getAccounts());
-        assertThat(response.getQuestion().getQuestions()).hasSize(5);
-        assertThat(response.getQuestion().getPageInfo().getPage()).isEqualTo(1);
-        assertThat(response.getQuestion().getPageInfo().getSize()).isEqualTo(5);
-        assertThat(response.getQuestion().getPageInfo().getTotalSize()).isEqualTo(10);
+    }
+
+    @TestFactory
+    @DisplayName("memberId 를 통해 해당 멤버의 게시물 정보를 가져온다.")
+    Collection<DynamicTest> getMemberQuestion() {
+        //given
+        Member member = createAndSaveMember();
+
+        Tag tag1 = createAndSaveTag("tag1");
+        Tag tag2 = createAndSaveTag("tag2");
+
+        createAndSaveQuestionsWithTag(member, 10, tag1, tag2);
+
+        //when
+        MemberResponse response = memberService.getMember(member.getMemberId());
+
+        return List.of(
+                dynamicTest("게시물 정보 중 첫 페이지를 가져온다.", () -> {
+                    //then
+                    assertThat(response.getQuestion().getQuestions()).hasSize(5);
+                    assertThat(response.getQuestion().getPageInfo().getPage()).isEqualTo(1);
+                    assertThat(response.getQuestion().getPageInfo().getSize()).isEqualTo(5);
+                    assertThat(response.getQuestion().getPageInfo().getTotalSize()).isEqualTo(10);
+                    assertThat(response.getQuestion().getPageInfo().getTotalPage()).isEqualTo(2);
+                }),
+                dynamicTest("게시물 정보 중 작성한 모든 태그목록을 가져온다.", () -> {
+                    //then
+                    assertThat(response.getTags()).hasSize(2)
+                            .extracting("tagName")
+                            .containsExactlyInAnyOrder("tag1", "tag2");
+                })
+        );
+    }
+
+    @Test
+    @DisplayName("memberId 를 통해 해당 멤버의 답변 정보 중 첫 페이지를 가져온다.")
+    void getMemberAnswer() {
+        //given
+        Member member = createAndSaveMember();
+        Member otherMember = createAndSaveMember();
+
+        List<Question> othersQuestions = createAndSaveQuestionsWithTag(otherMember, 10);
+
+        othersQuestions.forEach(
+                question -> createAndSaveAnswer(member, question)
+        );
+
+        //when
+        MemberResponse response = memberService.getMember(member.getMemberId());
+
+        //then
+
         assertThat(response.getAnswer().getAnswers()).hasSize(5);
         assertThat(response.getAnswer().getPageInfo().getPage()).isEqualTo(1);
         assertThat(response.getAnswer().getPageInfo().getSize()).isEqualTo(5);
         assertThat(response.getAnswer().getPageInfo().getTotalSize()).isEqualTo(10);
-        assertThat(response.getTags()).hasSize(2);
+        assertThat(response.getAnswer().getPageInfo().getTotalPage()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("memberId 와 페이지를 통해 해당 멤버의 최신 순 게시물을 가져온다.")
-    void getMemberQuestion() {
+    void getMemberQuestionOnly() {
         //given
-        Member member = createMember();
+        Member member = createAndSaveMember();
 
-        memberRepository.save(member);
-
-        List<Question> questions = createQuestions(member, 10);
-
-        questions.forEach(em::persist);
+        createAndSaveQuestionsWithTag(member, 10);
 
         //when
         Page<MemberResponse.MemberQuestion> memberQuestion =
@@ -402,27 +395,23 @@ class MemberServiceTest extends ServiceTest {
         assertThat(memberQuestion.getNumber()).isEqualTo(0);
         assertThat(memberQuestion.getSize()).isEqualTo(5);
         assertThat(memberQuestion.getTotalElements()).isEqualTo(10);
+        assertThat(memberQuestion.getTotalPages()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("memberId 와 페이지를 통해 해당 멤버의 최신 순 답변 목록을 가져온다.")
-    void getMemberAnswer() {
+    void getMemberAnswerOnly() {
         //given
-        Member member = createMember();
-        Member otherMember = createMember();
+        Member member = createAndSaveMember();
+        Member otherMember = createAndSaveMember();
 
-        memberRepository.save(member);
-        memberRepository.save(otherMember);
+        List<Question> othersQuestions = createAndSaveQuestionsWithTag(otherMember, 10);
 
-        List<Question> otherQuestions = createQuestions(otherMember, 10);
-
-        otherQuestions.forEach(otherQuestion -> {
-            em.persist(otherQuestion);
-            em.persist(createAnswer(member, otherQuestion));
-        });
+        othersQuestions.forEach(
+                question -> createAndSaveAnswer(member, question)
+        );
 
         //when
-
         Page<MemberResponse.MemberAnswer> memberAnswer
                 = memberService.getMemberAnswer(member.getMemberId(), 0, 5);
 
@@ -431,82 +420,108 @@ class MemberServiceTest extends ServiceTest {
         assertThat(memberAnswer.getNumber()).isEqualTo(0);
         assertThat(memberAnswer.getSize()).isEqualTo(5);
         assertThat(memberAnswer.getTotalElements()).isEqualTo(10);
+        assertThat(memberAnswer.getTotalPages()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("s3 버킷에 image 를 업로드하고 업로드한 이미지의 presigned url 을 반환한다.")
     void updateImage() {
         //given
-        Member member = createMember();
+        Member member = createAndSaveMember();
 
-        memberRepository.save(member);
+        MultipartFile image = createMockFile("image", "image/png");
 
-        Long loginMemberId = member.getMemberId();
-        Long updateMemberId = member.getMemberId();
-        MultipartFile image =
-                new MockMultipartFile(
-                        "image",
-                        "image.png",
-                        "image/png",
-                        "image".getBytes());
-
-        given(s3Service.uploadAndGetUrl(anyString(), any(MultipartFile.class)))
-                .willReturn("https://image.png");
+        setS3ServiceUploadReturn("https://image.png");
 
         //when
-        String imageUrl = memberService.updateImage(loginMemberId, updateMemberId, image);
+        String imageUrl = memberService.updateImage(member.getMemberId(), member.getMemberId(), image);
 
         //then
         assertThat(imageUrl).isEqualTo("https://image.png");
     }
 
     @Test
+    @DisplayName("s3 버킷에 image 를 업로드 시 다른 member 의 이미지 업로드를 요청하면 MemberAccessDeniedException 이 발생한다.")
+    void updateImageException() {
+        //given
+        Member member = createAndSaveMember();
+        Member otherMember = createAndSaveMember();
+
+        MultipartFile image = createMockFile("image", "image/png");
+
+        setS3ServiceUploadReturn("https://image.png");
+
+        //when & then
+        assertThatThrownBy(() -> memberService.updateImage(member.getMemberId(), otherMember.getMemberId(), image))
+                .isInstanceOf(MemberAccessDeniedException.class);
+    }
+
+    @Test
     @DisplayName("s3 버킷에서 해당 멤버의 이미지를 삭제하고 Myinfo 의 image 를 null 로 만든다.")
     void deleteImage() {
         //given
-        Member member = createMember();
-
-        memberRepository.save(member);
-
-        Long loginMemberId = member.getMemberId();
-        Long updateMemberId = member.getMemberId();
+        Member member = createAndSaveMember();
 
         willDoNothing().given(s3Service).deleteImage(anyString());
 
         //when
-        memberService.deleteImage(loginMemberId, updateMemberId);
+        memberService.deleteImage(member.getMemberId(), member.getMemberId());
 
         //then
         assertThat(member.getMyInfo().getImage()).isNull();
     }
 
     @Test
-    @DisplayName("이메일 인증을 시도하면 이메일로 인증 코드를 보내고 redis 에 저장한다.")
+    @DisplayName("멤버의 이미지를 삭제 시 다른 멤버의 이미지를 삭제하면 MemberAccessDeniedException 이 발생한다.")
+    void deleteImageException() {
+        //given
+        Member member = createAndSaveMember();
+        Member otherMember = createAndSaveMember();
+
+        willDoNothing().given(s3Service).deleteImage(anyString());
+
+        //when & then
+        assertThatThrownBy(() -> memberService.deleteImage(member.getMemberId(), otherMember.getMemberId()))
+                .isInstanceOf(MemberAccessDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("회원가입을 위한 이메일 인증을 시도하면 이메일로 인증 코드를 보내고 redis 에 저장한다.")
     void sendCodeToEmail() {
         //given
         String email = "test@google.com";
 
-        given(emailSender.createMimeMessage())
-                .willReturn(new MimeMessage(Session.getInstance(new Properties())));
+        setEmailSenderCreateMessageReturn();
 
         //when
         memberService.sendSignupCodeToEmail(email);
 
         //then
-        verify(redisService, times(1)).saveValues(anyString(), anyString(), any(Duration.class)); //저장 로직 호출
-        verify(emailSender, times(1)).send(any(MimeMessage.class)); //이메일 전송 로직 호출
+        //저장 로직 호출 확인
+        verify(redisService, times(1)).saveValues(anyString(), anyString(), any(Duration.class));
+        //이메일 전송 로직 호출 확인
+        verify(emailSender, times(1)).send(any(MimeMessage.class));
+    }
 
+    @Test
+    @DisplayName("회원가입을 위한 이메일 인증 시도 시 중복된 이메일이면 MemberDuplicateException 이 발생한다.")
+    void sendCodeToEmailException() {
+        //given
+        Member member = createAndSaveMember();
+
+        //when & then
+        assertThatThrownBy(() -> memberService.sendSignupCodeToEmail(member.getEmail()))
+                .isInstanceOf(MemberDuplicateException.class)
+                .hasMessageContaining("이미 존재하는 회원 이메일입니다.");
     }
 
     @Test
     @DisplayName("비밀번호를 찾기 위해 이메일 인증을 시도하면 이메일로 인증 코드를 보내고 redis 에 저장한다.")
     void sendFindPasswordCodeToEmail() {
         //given
-        Member member = createMember();
-        memberRepository.save(member);
+        Member member = createAndSaveMember();
 
-        given(emailSender.createMimeMessage())
-                .willReturn(new MimeMessage(Session.getInstance(new Properties())));
+        setEmailSenderCreateMessageReturn();
 
         //when
         memberService.sendFindPasswordCodeToEmail(member.getEmail());
@@ -516,34 +531,20 @@ class MemberServiceTest extends ServiceTest {
         verify(emailSender, times(1)).send(any(MimeMessage.class)); //이메일 전송 로직 호출
     }
 
+
+
     @Test
     @DisplayName("비밀번호를 찾기 위해 이메일 인증을 시도 시 이메일이 가입되어있지 않으면 MemberNotFoundException 이 발생한다.")
     void sendFindPasswordCodeToEmailException() {
         //given
         String email = "notSavedEmail@test.com";
 
-        given(emailSender.createMimeMessage())
-                .willReturn(new MimeMessage(Session.getInstance(new Properties())));
+        setEmailSenderCreateMessageReturn();
 
         //when & then
         assertThatThrownBy(() -> memberService.sendFindPasswordCodeToEmail(email))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 회원입니다.");
-    }
-
-    @Test
-    @DisplayName("이메일 인증 시도 시 중복된 이메일이면 MemberDuplicateException 이 발생한다.")
-    void sendCodeToEmailException() {
-        //given
-        Member member = createMember();
-        memberRepository.save(member);
-
-        String email = member.getEmail();
-
-        //when & then
-        assertThatThrownBy(() -> memberService.sendSignupCodeToEmail(email))
-                .isInstanceOf(MemberDuplicateException.class)
-                .hasMessageContaining("이미 존재하는 회원 이메일입니다.");
     }
 
     @Test
@@ -553,8 +554,7 @@ class MemberServiceTest extends ServiceTest {
         String email = "test@google.com";
         String code = "123456";
 
-        given(redisService.getValues(anyString()))
-                .willReturn(code);
+        setRedisServiceGetValuesReturn(code);
 
         //when
         boolean result = memberService.checkCode(email, code);
@@ -570,14 +570,28 @@ class MemberServiceTest extends ServiceTest {
         String email = "test@google.com";
         String code = "123456";
 
-        given(redisService.getValues(anyString()))
-                .willReturn("654321");
+        setRedisServiceGetValuesReturn("654321");
 
         //when
         boolean result = memberService.checkCode(email, code);
 
         //then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("이메일로 온 코드를 인증할 때 redis 에 저장된 코드가 없으면 EmailAuthNotAttemptException 이 발생한다.")
+    void checkCodeException() {
+        //given
+        String email = "test@google.com";
+        String code = "123456";
+
+        setRedisServiceGetValuesReturn(null);
+
+        //when & then
+        assertThatThrownBy(() -> memberService.checkCode(email, code))
+                .isInstanceOf(EmailAuthNotAttemptException.class)
+                .hasMessageContaining("이메일 인증을 먼저 시도해주세요.");
     }
 
     private Question createQuestion(Member member) {
@@ -610,5 +624,115 @@ class MemberServiceTest extends ServiceTest {
                 .question(question)
                 .tag(tag)
                 .build();
+    }
+
+    private void setRedisServiceGetValuesReturn(String value) {
+        given(redisService.getValues(anyString())).willReturn(value);
+    }
+
+    private void setRedisServiceSaveValuesReturn() {
+        willDoNothing()
+                .given(redisService)
+                .saveValues(anyString(), anyString(), any(Duration.class));
+    }
+
+    private void setS3ServiceUploadReturn(String url) {
+        given(s3Service.uploadAndGetUrl(anyString(), any(MultipartFile.class)))
+                .willReturn(url);
+    }
+
+    private void setEmailSenderCreateMessageReturn() {
+        given(emailSender.createMimeMessage())
+                .willReturn(new MimeMessage(Session.getInstance(new Properties())));
+    }
+
+    private Member createAndSaveMember() {
+        Member member = createMember();
+
+        memberRepository.save(member);
+        return member;
+    }
+
+    private Member createAndSaveMember(String password) {
+        Member member = createMember(password);
+
+        memberRepository.save(member);
+        return member;
+    }
+
+    private Member createAndSaveMemberDisable() {
+        Member member = createMemberDisable();
+
+        memberRepository.save(member);
+        return member;
+    }
+
+    private Tag createAndSaveTag(String name) {
+        Tag tag = createTag(name);
+
+        em.persist(tag);
+        return tag;
+    }
+
+    private MemberCreateServiceRequest createSignupRequest(String email, String nickname, String password) {
+        return MemberCreateServiceRequest.builder()
+                .email(email)
+                .nickname(nickname)
+                .password(password)
+                .build();
+    }
+
+    private MemberUpdateServiceRequest createUpdateRequest(Member member) {
+        return MemberUpdateServiceRequest.builder()
+                .updateMemberId(member.getMemberId())
+                .nickname("new nickname")
+                .myIntro("new myIntro")
+                .title("new title")
+                .location("new location")
+                .accounts(List.of("account1", "account2"))
+                .build();
+    }
+
+    private MemberPasswordUpdateServiceRequest createPasswordUpdateRequest(Member member, String password, String newPassword) {
+        return MemberPasswordUpdateServiceRequest.builder()
+                .updateMemberId(member.getMemberId())
+                .password(password)
+                .newPassword(newPassword)
+                .build();
+    }
+
+    private MemberFindPasswordServiceRequest createFindPasswordRequest(String email, String password) {
+        return MemberFindPasswordServiceRequest.builder()
+                .email(email)
+                .password(password)
+                .build();
+    }
+
+    private List<Question> createAndSaveQuestionsWithTag(Member member, int count, Tag... tags) {
+
+        List<Question> questions = createQuestions(member, count);
+
+        questions.forEach(question -> {
+            em.persist(question);
+            Arrays.stream(tags).forEach(tag -> em.persist(createQuestionTag(question, tag)));
+        });
+
+        return questions;
+    }
+
+    private Answer createAndSaveAnswer(Member member, Question question) {
+
+        Answer answer = createAnswer(member, question);
+
+        em.persist(answer);
+        return answer;
+    }
+
+    private MockMultipartFile createMockFile(String fileName, String contentType) {
+        return new MockMultipartFile(
+                fileName,
+                fileName + contentType.split("/")[1],
+                contentType,
+                fileName.getBytes());
     }
 }
