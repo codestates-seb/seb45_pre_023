@@ -52,9 +52,12 @@ class MemberRepositoryTest extends RepositoryTest {
 
         List<Question> questions = createQuestions(member, 10);
         questions.forEach(question -> {
-            question.applyRecommend(TypeEnum.UPVOTE);
             em.persist(question);
-            em.persist(createQuestionRecommend(member, question));
+
+            QuestionRecommend questionRecommend = createQuestionRecommend(member, question);
+            em.persist(questionRecommend);
+            question.setQuestionRceommends(List.of(questionRecommend));
+            question.applyRecommend();
         });
 
         PageRequest pageRequest = PageRequest.of(0, 5);
@@ -68,7 +71,7 @@ class MemberRepositoryTest extends RepositoryTest {
         assertThat(findQuestions.getNumberOfElements()).isEqualTo(5);
         assertThat(findQuestions.getContent().get(0).getRecommend()).isEqualTo(1);
     }
-    
+
     @Test
     @DisplayName("pageable 을 받아 해당 멤버의 MemberAnswerData 를 반환한다.")
     void findAnswerByMemberId() {

@@ -54,12 +54,7 @@ public class MemberIntegrationTest extends IntegrationTest{
 
     @AfterAll
     void afterAll() {
-        questionTagRepository.deleteAllInBatch();
-        tagRepository.deleteAllInBatch();
-        replyRepository.deleteAllInBatch();
-        answerRepository.deleteAllInBatch();
-        questionRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
+        deleteAll();
     }
 
     @Test

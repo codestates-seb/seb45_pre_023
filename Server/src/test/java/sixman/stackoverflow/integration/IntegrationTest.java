@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,6 +42,7 @@ import sixman.stackoverflow.domain.reply.repository.ReplyRepository;
 import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.domain.tag.repository.TagRepository;
 import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.module.email.service.MailService;
 import sixman.stackoverflow.module.redis.service.RedisService;
@@ -51,6 +53,7 @@ import java.util.Collections;
 @SpringBootTest
 @ActiveProfiles("local")
 @AutoConfigureMockMvc
+@Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class IntegrationTest {
 
@@ -72,6 +75,17 @@ public abstract class IntegrationTest {
     @MockBean protected RedisService redisService;
     @MockBean protected RestTemplate restTemplate;
     @MockBean protected DefaultOAuth2UserService defaultOAuth2UserService;
+
+    protected void deleteAll(){
+        answerRecommendRepository.deleteAll();
+        questionRecommendRepository.deleteAll();
+        questionTagRepository.deleteAll();
+        tagRepository.deleteAll();
+        replyRepository.deleteAll();
+        answerRepository.deleteAll();
+        questionRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
 
     private String createAccessToken(Member member, long accessTokenExpireTime) {
         UserDetails userDetails = createUserDetails(member);
@@ -229,6 +243,14 @@ public abstract class IntegrationTest {
         String contentAsString = actions.andReturn().getResponse().getContentAsString();
 
         JavaType javaType = objectMapper.getTypeFactory().constructParametricType(ApiSingleResponse.class, clazz);
+
+        return objectMapper.readValue(contentAsString, javaType);
+    }
+
+    protected <T> ApiPageResponse<T> getApiPageResponseFromResult(ResultActions actions, Class<T> clazz) throws UnsupportedEncodingException, JsonProcessingException {
+        String contentAsString = actions.andReturn().getResponse().getContentAsString();
+
+        JavaType javaType = objectMapper.getTypeFactory().constructParametricType(ApiPageResponse.class, clazz);
 
         return objectMapper.readValue(contentAsString, javaType);
     }
