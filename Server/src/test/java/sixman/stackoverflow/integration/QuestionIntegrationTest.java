@@ -192,7 +192,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(0))
                             .andExpect(jsonPath("$.data.recommendType").doesNotExist());
                 }),
-                dynamicTest("익명 사용자가 질문을 확인하면 추천 수가 1 감소되어있고, 자신이 추천하지 않았다고 표시된다.", () -> {
+                dynamicTest("익명 사용자가 질문을 확인해도 추천 수가 1 감소되어있고, 자신이 추천하지 않았다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
                             .accept(APPLICATION_JSON));
