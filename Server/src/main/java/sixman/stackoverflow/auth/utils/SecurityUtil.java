@@ -14,15 +14,16 @@ public class SecurityUtil {
     public static boolean isLogin() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return false;
-        }
-
-        return !(authentication.getPrincipal() instanceof String && "anonymousUser".equals(authentication.getPrincipal()));
+        return checkLoggedIn(authentication);
     }
 
     public static Long getCurrentId() {
+
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(!checkLoggedIn(authentication)){
+            return null;
+        }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -32,7 +33,12 @@ public class SecurityUtil {
     }
 
     public static String getCurrentEmail() {
+
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(!checkLoggedIn(authentication)){
+            return null;
+        }
 
         validate(authentication);
 
@@ -40,13 +46,26 @@ public class SecurityUtil {
     }
 
     public static Authority getAuthority(){
+
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(!checkLoggedIn(authentication)){
+            return null;
+        }
 
         validate(authentication);
 
         return Authority.valueOf(authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining()));
+    }
+
+    private static boolean checkLoggedIn(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+
+        return !(authentication.getPrincipal() instanceof String && "anonymousUser".equals(authentication.getPrincipal()));
     }
 
     private static void validate(Authentication authentication) {
