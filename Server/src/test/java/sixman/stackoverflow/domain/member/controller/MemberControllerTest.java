@@ -352,7 +352,7 @@ class MemberControllerTest extends ControllerTest {
                         headerWithName("Authorization").description("accessToken")
                 ),
                 requestFields(
-                        fieldWithPath("nickname").description("수정할 회원의 nickname").attributes(getConstraint("nickname")),
+                        fieldWithPath("nickname").description("수정할 회원의 nickname").optional().attributes(getConstraint("nickname")),
                         fieldWithPath("myIntro").description("수정할 회원의 소개글").optional().attributes(getConstraint("myIntro")),
                         fieldWithPath("title").description("수정할 회원의 소개 제목").optional().attributes(getConstraint("title")),
                         fieldWithPath("location").description("수정할 회원의 지역").optional().attributes(getConstraint("location")),
@@ -1093,9 +1093,10 @@ class MemberControllerTest extends ControllerTest {
                 .updateMember(anyLong(), any(MemberUpdateServiceRequest.class));
 
         return List.of(
-                dynamicTest("nickname 이 Null 이면 검증에 실패한다.", () -> {
+                dynamicTest("nickname 이 15자를 초과하면 검증에 실패한다.", () -> {
                     //given
                     MemberUpdateApiRequest request = MemberUpdateApiRequest.builder()
+                            .nickname("1234567890123456")
                             .myIntro("update myIntro")
                             .build();
 
@@ -1111,14 +1112,13 @@ class MemberControllerTest extends ControllerTest {
                             .andDo(print())
                             .andExpect(status().isBadRequest())
                             .andExpect(jsonPath("$.data[0].field").value("nickname"))
-                            .andExpect(jsonPath("$.data[0].value").value("null"))
-                            .andExpect(jsonPath("$.data[0].reason").value("닉네임을 정확히 입력해주세요."));
-
+                            .andExpect(jsonPath("$.data[0].value").value(request.getNickname()))
+                            .andExpect(jsonPath("$.data[0].reason").value("가능한 길이는 1 ~ 15자 입니다."));
                 }),
-                dynamicTest("nickname 이 15자를 초과하면 검증에 실패한다.", () -> {
+                dynamicTest("nickname 이 blank 면 (\"\") 검증에 실패한다.", () -> {
                     //given
                     MemberUpdateApiRequest request = MemberUpdateApiRequest.builder()
-                            .nickname("1234567890123456")
+                            .nickname("")
                             .myIntro("update myIntro")
                             .build();
 

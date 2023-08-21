@@ -33,6 +33,7 @@ public class AnswerIntegrationTest extends IntegrationTest {
     Member member;
     Member otherMember;
     String accessToken;
+    String otherAccessToken;
     List<Question> questions = new ArrayList<>();
     List<Answer> answers = new ArrayList<>();
     List<Reply> replies = new ArrayList<>();
@@ -52,7 +53,7 @@ public class AnswerIntegrationTest extends IntegrationTest {
 
         //given
         member = createAndSaveMember("myEmail@google.com", "1q2w3e4r!");
-        otherMember = createAndSaveMember("otherEmail@google.com");
+        otherMember = createAndSaveMember("otherEmail@google.com", "1q2w3e4r!");
 
         Tag tag1 = createAndSaveTag("tag1");
         Tag tag2 = createAndSaveTag("tag2");
@@ -78,8 +79,6 @@ public class AnswerIntegrationTest extends IntegrationTest {
             }
         }
 
-        memberRepository.flush();
-
         //accessToken 발급을 위한 로그인
         String request = objectMapper.writeValueAsString(new LoginDto(member.getEmail(), "1q2w3e4r!"));
 
@@ -88,6 +87,15 @@ public class AnswerIntegrationTest extends IntegrationTest {
                 .content(request));
 
         accessToken = actions.andReturn().getResponse().getHeader("Authorization");
+
+        //otherMember 의 accessToken 발급을 위한 로그인
+        String otherMemberRequest = objectMapper.writeValueAsString(new LoginDto(otherMember.getEmail(), "1q2w3e4r!"));
+
+        ResultActions otherMemberActions = mockMvc.perform(post("/auth/login")
+                .contentType(APPLICATION_JSON)
+                .content(otherMemberRequest));
+
+        otherAccessToken = otherMemberActions.andReturn().getResponse().getHeader("Authorization");
     }
 
     @AfterAll
@@ -113,8 +121,45 @@ public class AnswerIntegrationTest extends IntegrationTest {
                     actions
                             .andDo(print())
                             .andExpect(status().isNoContent());
+
+                    flushAll();
                 }),
-                dynamicTest("답변 목록을 확인하면 해당 답변의 추천 수가 1 증가하고, 자신이 추천했다고 표시된다.", () -> {
+                dynamicTest("답변 목록을 확인하면 해당 답변의 추천 수가 1 증가되어 있고, 자신이 추천했다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
+
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(1);
+                    assertThat(response.getData().get(0).getRecommendType()).isEqualTo(TypeEnum.UPVOTE);
+
+                    flushAll();
+                }),
+                dynamicTest("다른 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 증가되어 있고, 자신의 추천여부는 null 로 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(1);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
+                }),
+                dynamicTest("익명 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 증가되어 있고, 자신의 추천여부는 null 로 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
                             .accept(APPLICATION_JSON));
@@ -126,7 +171,9 @@ public class AnswerIntegrationTest extends IntegrationTest {
 
                     ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
                     assertThat(response.getData().get(0).getRecommend()).isEqualTo(1);
-//                    assertThat(response.getData().get(0).getRecommendType()).isEqualTo(TypeEnum.UPVOTE);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
                 }),
                 dynamicTest("member 가 답변 추천을 다시 눌러 취소한다.", () -> {
                     //when
@@ -138,8 +185,44 @@ public class AnswerIntegrationTest extends IntegrationTest {
                     actions
                             .andDo(print())
                             .andExpect(status().isNoContent());
+
+                    flushAll();
                 }),
-                dynamicTest("답변을 확인하면 추천 수가 1 감소되어있고, 자신의 추천이 없어진다.", () -> {
+                dynamicTest("답변을 확인하면 추천 수가 1 감소(0)되어있고, 자신의 추천이 없어진다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(0);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
+                }),
+                dynamicTest("다른 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 감소(0)되어 있고, 자신의 추천여부는 null 로 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(0);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
+                }),
+                dynamicTest("익명 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 감소(0)되어 있고, 자신의 추천여부는 null 로 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
                             .accept(APPLICATION_JSON));
@@ -153,7 +236,7 @@ public class AnswerIntegrationTest extends IntegrationTest {
                     assertThat(response.getData().get(0).getRecommend()).isEqualTo(0);
                     assertThat(response.getData().get(0).getRecommendType()).isNull();
 
-
+                    flushAll();
                 }),
                 dynamicTest("member 가 답변 비추천을 누른다.", () -> {
                     //when
@@ -165,8 +248,44 @@ public class AnswerIntegrationTest extends IntegrationTest {
                     actions
                             .andDo(print())
                             .andExpect(status().isNoContent());
+
+                    flushAll();
                 }),
-                dynamicTest("답변을 확인하면 추천 수가 1 감소되어있고, 자신이 비추천했다고 표시된다.", () -> {
+                dynamicTest("답변을 확인하면 추천 수가 1 감소(-1)되어있고, 자신이 비추천했다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(-1);
+                    assertThat(response.getData().get(0).getRecommendType()).isEqualTo(TypeEnum.DOWNVOTE);
+
+                    flushAll();
+                }),
+                dynamicTest("다른 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 감소(-1)되어 있고, 자신의 추천여부는 null 로 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(-1);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
+                }),
+                dynamicTest("익명 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 감소(-1)되어 있고, 자신의 추천여부는 null 로 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
                             .accept(APPLICATION_JSON));
@@ -178,7 +297,9 @@ public class AnswerIntegrationTest extends IntegrationTest {
 
                     ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
                     assertThat(response.getData().get(0).getRecommend()).isEqualTo(-1);
-//                    assertThat(response.getData().get(0).getRecommendType()).isEqualTo(TypeEnum.DOWNVOTE);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
                 }),
                 dynamicTest("member 가 비추천 상태에서 답변을 다시 추천한다.", () -> {
                     //when
@@ -190,8 +311,44 @@ public class AnswerIntegrationTest extends IntegrationTest {
                     actions
                             .andDo(print())
                             .andExpect(status().isNoContent());
+
+                    flushAll();
                 }),
                 dynamicTest("답변을 확인하면 추천 수가 1 로 되어있고, 자신이 추천했다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(1);
+                    assertThat(response.getData().get(0).getRecommendType()).isEqualTo(TypeEnum.UPVOTE);
+
+                    flushAll();
+                }),
+                dynamicTest("다른 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 로 되어있고, 자신의 추천여부는 null 로 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
+                    assertThat(response.getData().get(0).getRecommend()).isEqualTo(1);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
+                }),
+                dynamicTest("익명 사용자가 답변 목록을 확인하면 해당 답변의 추천 수가 1 로 되어있고, 자신의 추천여부는 null 로 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}/answers", questionId)
                             .accept(APPLICATION_JSON));
@@ -203,7 +360,9 @@ public class AnswerIntegrationTest extends IntegrationTest {
 
                     ApiPageResponse<AnswerResponse> response = getApiPageResponseFromResult(actions, AnswerResponse.class);
                     assertThat(response.getData().get(0).getRecommend()).isEqualTo(1);
-//                    assertThat(response.getData().get(0).getRecommendType()).isEqualTo(TypeEnum.UPVOTE);
+                    assertThat(response.getData().get(0).getRecommendType()).isNull();
+
+                    flushAll();
                 })
         );
 
