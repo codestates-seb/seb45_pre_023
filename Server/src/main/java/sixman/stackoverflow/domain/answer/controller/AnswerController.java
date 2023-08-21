@@ -3,6 +3,7 @@ package sixman.stackoverflow.domain.answer.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
@@ -54,7 +55,7 @@ public class AnswerController {
                                                                     @RequestParam(defaultValue = "1") int page,
                                                                     @RequestParam(defaultValue = "5") int size) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
         Page<ReplyResponse> repliesPage = replyService.getRepliesPaged(answerId, pageable);
 
         return ResponseEntity.ok(ApiPageResponse.ok(repliesPage));

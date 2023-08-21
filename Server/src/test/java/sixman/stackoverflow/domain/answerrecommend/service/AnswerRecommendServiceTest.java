@@ -55,14 +55,18 @@ class AnswerRecommendServiceTest extends ServiceTest {
         answerRepository.save(answer);
 
 
-
-
         // When
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.UPVOTE);
         Answer updatedAnswer = answerRepository.findById(answer.getAnswerId()).orElse(null);
 
+
         // Then
         assertThat(updatedAnswer.getRecommend()).isEqualTo(1);
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(updatedAnswer.getRecommend()).isEqualTo(answer.getRecommend());
+
     }
 
     @Test
@@ -78,19 +82,21 @@ class AnswerRecommendServiceTest extends ServiceTest {
         Question question = createquestion(member);
         questionRepository.save(question);
 
-
-
         Answer answer = createAnswerforRecommend(member, question);
         answerRepository.save(answer);
-
 
 
         // When
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.DOWNVOTE);
         Answer updatedAnswer = answerRepository.findById(answer.getAnswerId()).orElse(null);
 
+
         // Then
         assertThat(updatedAnswer.getRecommend()).isEqualTo(-1);
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(updatedAnswer.getRecommend()).isEqualTo(answer.getRecommend());
     }
     @Test
     @DisplayName("이미 추천을 한 상태에서 추천을 할 경우 추천을 취소하고 총 추천에 관한 수가 1에서 0으로 감소한다.")
@@ -108,7 +114,6 @@ class AnswerRecommendServiceTest extends ServiceTest {
         Answer answer = createAnswerforRecommend(member, question);
         answerRepository.save(answer);
 
-        // 이미 추천
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.UPVOTE);
 
 
@@ -116,6 +121,10 @@ class AnswerRecommendServiceTest extends ServiceTest {
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.UPVOTE);
         Answer updatedAnswer = answerRepository.findById(answer.getAnswerId()).orElse(null);
         assertThat(updatedAnswer.getRecommend()).isEqualTo(0);
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(updatedAnswer.getRecommend()).isEqualTo(answer.getRecommend());
     }
 
     @Test
@@ -134,13 +143,17 @@ class AnswerRecommendServiceTest extends ServiceTest {
         Answer answer = createAnswerforRecommend(member, question);
         answerRepository.save(answer);
 
-        // 이미 비추천
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.DOWNVOTE);
+
 
         // When & Then // 이미 비추천 시 중복 비추천
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.DOWNVOTE);
         Answer updatedAnswer = answerRepository.findById(answer.getAnswerId()).orElse(null);
         assertThat(updatedAnswer.getRecommend()).isEqualTo(0);
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(updatedAnswer.getRecommend()).isEqualTo(answer.getRecommend());
     }
 
     @Test
@@ -159,8 +172,8 @@ class AnswerRecommendServiceTest extends ServiceTest {
         Answer answer = createAnswerforRecommend(member, question);
         answerRepository.save(answer);
 
-        // 이미 추천
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.UPVOTE);
+
 
         // When
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.DOWNVOTE);
@@ -169,6 +182,10 @@ class AnswerRecommendServiceTest extends ServiceTest {
         // Then
         Answer updatedAnswer = answerRepository.findById(answer.getAnswerId()).orElse(null);
         assertThat(updatedAnswer.getRecommend()).isEqualTo(-1);
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(updatedAnswer.getRecommend()).isEqualTo(answer.getRecommend());
 
     }
 
@@ -188,19 +205,21 @@ class AnswerRecommendServiceTest extends ServiceTest {
         Answer answer = createAnswerforRecommend(member, question);
         answerRepository.save(answer);
 
-        // 이미 비추천
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.DOWNVOTE);
-        System.out.println(answer.getRecommend());
+
+
         // When
         answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.UPVOTE);
-        System.out.println(answer.getRecommend());
+
+
         // Then
         Answer updatedAnswer = answerRepository.findById(answer.getAnswerId()).orElse(null);
         assertThat(updatedAnswer.getRecommend()).isEqualTo(1);
-
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(updatedAnswer.getRecommend()).isEqualTo(answer.getRecommend());
     }
-
-
 
 
     private Answer createAnswerforRecommend(Member member, Question question) {
@@ -210,7 +229,5 @@ class AnswerRecommendServiceTest extends ServiceTest {
                 .content("test for recommend")
                 .recommend(null)
                 .build();
-
     }
-
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.entity.MyInfo;
@@ -42,6 +43,15 @@ public abstract class RepositoryTest {
         return Tag.builder()
                 .tagName(tagName)
                 .tagDetail(tagName + " : tagDetail")
+                .build();
+    }
+
+    protected Answer createAnswerForRecommend(Member member, Question question) {
+        return Answer.builder()
+                .content("test")
+                .question(question)
+                .member(member)
+                .recommend(null)
                 .build();
     }
 }
