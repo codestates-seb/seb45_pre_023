@@ -36,6 +36,12 @@ public class QuestionRecommend extends BaseEntity {
 
     public void setType(TypeEnum type) { this.type = type; }
 
-
+    public TypeEnum getRecommendTypeCurrentUser(Long currentUserId) {
+        if (this.member.getMemberId().equals(currentUserId)) {
+            return this.type;
+        } else {
+            return null;
+        }
+    }
 }
 
