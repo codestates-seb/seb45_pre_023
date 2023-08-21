@@ -80,14 +80,6 @@ public class QuestionService {
                 throw new TagNotFoundException();
             }
 
-            // 각 태그를 검사해서 없는 태그가 있다면 예외 처리
-            for (QuestionTag questionTag : questionTags) {
-                Optional<Tag> tagOptional = tagRepository.findByTagName(questionTag.getTag().getTagName());
-                if (tagOptional.isEmpty()) {
-                    throw new TagNotFoundException();
-                }
-            }
-
             Page<AnswerResponse> pagedAnswers = answerService.findAnswers(questionId, PageRequest.of(0, 5));
             List<AnswerResponse> answerResponses = pagedAnswers.getContent();
 
@@ -104,6 +96,10 @@ public class QuestionService {
 
 
     public Long createQuestion(Question question, List<String> tagNames) {
+        if(tagNames.isEmpty()){
+            throw new TagNotFoundException();
+        }
+
         for(String tag : tagNames){
             Optional<Tag> verifiedTag = tagRepository.findByTagName(tag);
             if(!verifiedTag.isPresent()){
