@@ -56,4 +56,23 @@ class QuestionRepositoryTest extends RepositoryTest {
                 .map(Tag::getTagName))
                 .contains(tag1.getTagName()));
     }
+
+    @Test
+    @DisplayName("questionId으로 해당 질문글의 memberId를 조회한다.")
+    void findMemberIdByQuestionId(){
+        // given
+        Member member = createMember();
+        em.persist(member);
+
+        Question question = createQuestion(member);
+        em.persist(question);
+        em.flush();
+        em.clear();
+
+        // when
+        Long memberId = questionRepository.findMemberIdByQuestionId(question.getQuestionId());
+
+        // then
+        assertThat(memberId).isEqualTo(member.getMemberId());
+    }
 }

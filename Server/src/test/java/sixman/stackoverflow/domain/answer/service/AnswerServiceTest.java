@@ -150,8 +150,8 @@ class AnswerServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("questionId 를 통해 답변 목록을 페이징으로 찾아서 반환한다.")
-    void findAnswers() {
+    @DisplayName("questionId 를 통해 답변 목록을 페이징으로 찾아서 최신순으로 반환한다.")
+    void findAnswersBySortCreatedDate() {
         // given
         Member member = createMember();
         Question question = createQuestion(member);
@@ -165,11 +165,9 @@ class AnswerServiceTest extends ServiceTest {
         questionRepository.save(question);
 
         Pageable pageable = PageRequest.of(0, 5, Sort.by(AnswerSortRequest.CREATED_DATE.getValue()).descending());
-//        Pageable pageable2 = PageRequest.of(0, 5, Sort.by(AnswerSortRequest.RECOMMEND.getValue()).descending());
 
         //when
         Page<AnswerResponse> result = answerService.findAnswers(question.getQuestionId(), pageable);
-//        Page<AnswerResponse> result2 = answerService.findAnswers(question.getQuestionId(), pageable2);
 
         // then
         assertThat(result.getContent()).hasSize(5);
@@ -184,16 +182,38 @@ class AnswerServiceTest extends ServiceTest {
             assertThat(currentCreatedDate).isBeforeOrEqualTo(previousCreatedDate);
             previousCreatedDate = currentCreatedDate;
         }
+    }
 
-//        assertThat(result2.getContent()).hasSize(5);
-//
-//        List<AnswerResponse> answerList = result2.getContent();
-//        int previousRecommend = Integer.MAX_VALUE;
-//
-//        for (AnswerResponse answer : answerList) {
-//            assertThat(answer.getRecommend()).isLessThanOrEqualTo(previousRecommend);
-//            previousRecommend = answer.getRecommend();
-//        }
+    @Test
+    @DisplayName("questionId 를 통해 답변 목록을 페이징으로 찾아서 추천수 순서로 반환한다.")
+    void findAnswersBySortRecommend() {
+        // given
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+        for(int i=0; i<5; i++) {
+            Answer answer = createanswerdetail(member, question,i);
+            answerRepository.save(answer);
+        }
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+
+        Pageable pageable2 = PageRequest.of(0, 5, Sort.by(AnswerSortRequest.RECOMMEND.getValue()).descending());
+
+        //when
+        Page<AnswerResponse> result2 = answerService.findAnswers(question.getQuestionId(), pageable2);
+
+        // then
+        assertThat(result2.getContent()).hasSize(5);
+
+        List<AnswerResponse> answerList = result2.getContent();
+        int previousRecommend = Integer.MAX_VALUE;
+
+        for (AnswerResponse answer : answerList) {
+            assertThat(answer.getRecommend()).isLessThanOrEqualTo(previousRecommend);
+            previousRecommend = answer.getRecommend();
+        }
 
     }
 

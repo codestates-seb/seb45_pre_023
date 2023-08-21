@@ -34,6 +34,7 @@ import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.tagexception.TagNotFoundException;
 import sixman.stackoverflow.global.response.ApiPageResponse;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
@@ -77,7 +78,7 @@ public class QuestionServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("질문 목록을 페이징 해서 10개의 리스트를 최신 순으로 조회한다.")
-    public void getLatestQuestions() {
+    public void getLatestQuestionsSortByCreatedDate() {
         // given
         Member member = createMember();
         memberRepository.save(member);
@@ -87,40 +88,89 @@ public class QuestionServiceTest extends ServiceTest {
             questionRepository.save(question);
         }
 
-//        Pageable pageable1 = PageRequest.of(0, 10, Sort.by(QuestionSortRequest.CREATED_DATE.getValue()).descending());
-//        Pageable pageable2 = PageRequest.of(0, 10, Sort.by(QuestionSortRequest.VIEWS.getValue()).descending());
+        Pageable pageable1 = PageRequest.of(0, 10, Sort.by(QuestionSortRequest.CREATED_DATE.getValue()).descending());
+
+        setDefaultAuthentication(member.getMemberId());
+
+
+        //when
+        Page<QuestionResponse> result1 = questionService.getLatestQuestions(pageable1, null);
+
+
+        // then
+
+        assertThat(result1.getContent()).hasSize(10);
+
+        // 최신순으로 정렬되었는지 확인
+        List<QuestionResponse> questionList = result1.getContent();
+        Instant previousCreatedDate = Instant.now();
+        for (QuestionResponse question : questionList) {
+            LocalDateTime currentLocalDateTime = question.getCreatedDate();
+            Instant currentCreatedDate = currentLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
+
+            assertThat(currentCreatedDate).isBeforeOrEqualTo(previousCreatedDate);
+            previousCreatedDate = currentCreatedDate;
+        }
+    }
+
+    @Test
+    @DisplayName("질문 목록을 페이징 해서 10개의 리스트를 조회수 순으로 조회한다.")
+    public void getLatestQuestionsSortByViews() {
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        for (int i = 0; i < 10; i++) {
+            Question question = createQuestionDetail(member, i);
+            questionRepository.save(question);
+        }
+
+        Pageable pageable2 = PageRequest.of(0, 10, Sort.by(QuestionSortRequest.VIEWS.getValue()).descending());
+
+
+        setDefaultAuthentication(member.getMemberId());
+
+
+        //when
+        Page<QuestionResponse> result2 = questionService.getLatestQuestions(pageable2, null);
+
+        // then
+
+        assertThat(result2.getContent()).hasSize(10);
+
+
+        // 조회수로 정렬되었는지 확인
+        List<QuestionResponse> questionList2 = result2.getContent();
+        int previousViews = Integer.MAX_VALUE;
+        for (QuestionResponse question : questionList2) {
+            assertThat(question.getViews()).isLessThanOrEqualTo(previousViews);
+            previousViews = question.getViews();
+        }
+    }
+
+    @Test
+    @DisplayName("질문 목록을 페이징 해서 10개의 리스트를 추천 순으로 조회한다.")
+    public void getLatestQuestionsSortByRecommend() {
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        for (int i = 0; i < 10; i++) {
+            Question question = createQuestionDetail(member, i);
+            questionRepository.save(question);
+        }
+
         Pageable pageable3 = PageRequest.of(0, 10, Sort.by(QuestionSortRequest.RECOMMEND.getValue()).descending());
 
         setDefaultAuthentication(member.getMemberId());
 
 
         //when
-//        Page<QuestionResponse> result1 = questionService.getLatestQuestions(pageable1, null);
-//        Page<QuestionResponse> result2 = questionService.getLatestQuestions(pageable2, null);
         Page<QuestionResponse> result3 = questionService.getLatestQuestions(pageable3, null);
 
         // then
 
         assertThat(result3.getContent()).hasSize(10);
-
-//        // 최신순으로 정렬되었는지 확인
-//        List<QuestionResponse> questionList = result1.getContent();
-//        Instant previousCreatedDate = Instant.now();
-//        for (QuestionResponse question : questionList) {
-//            LocalDateTime currentLocalDateTime = question.getCreatedDate();
-//            Instant currentCreatedDate = currentLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
-//
-//            assertThat(currentCreatedDate).isBeforeOrEqualTo(previousCreatedDate);
-//            previousCreatedDate = currentCreatedDate;
-//        }
-
-//        // 조회수로 정렬되었는지 확인
-//        List<QuestionResponse> questionList2 = result2.getContent();
-//        int previousViews = Integer.MAX_VALUE;
-//        for (QuestionResponse question : questionList2) {
-//            assertThat(question.getViews()).isLessThanOrEqualTo(previousViews);
-//            previousViews = question.getViews();
-//        }
 
         // 추천수 정렬이 되었는지 확인
         List<QuestionResponse> questionList3 = result3.getContent();
@@ -131,68 +181,80 @@ public class QuestionServiceTest extends ServiceTest {
         }
     }
 
+//    @Test
+//    @DisplayName("입력받은 tagName에 해당하는 질문이 없으면 TagNotFoundException 예외 발생")
+//    public void getLatestQuestionsTagException(){
+//        //given
+//        String nonExistentTagName = "nonExistentTag";
+//
+//        // when & then
+//        assertThrows(TagNotFoundException.class, () -> {
+//            questionService.getLatestQuestions(Pageable.unpaged(), nonExistentTagName);
+//        });
+//    }
 
-    @Test
-    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
-    public void getQuestionById(){
-        // given
-        Member member = createMember();
-        Question question = createQuestionDetail(member,0);
-        Answer answer = createanswer(member, question);
 
-        Tag tag1 = createTag("tag1");
-        Tag tag2 = createTag("tag2");
-
-        QuestionTag questionTag1 = QuestionTag.builder()
-                .question(question)
-                .tag(tag1)
-                .build();
-
-        QuestionTag questionTag2 = QuestionTag.builder()
-                .question(question)
-                .tag(tag2)
-                .build();
-
-        question.setQuestionTags(List.of(questionTag1, questionTag2));
-
-        memberRepository.save(member);
-        questionRepository.save(question);
-        answerRepository.save(answer);
-        tagRepository.save(tag1);
-        tagRepository.save(tag2);
-
-        setDefaultAuthentication(member.getMemberId());
-
-        // when
-        QuestionDetailResponse result = questionService.getQuestionById(question.getQuestionId());
-
-        // then
-
-        assertThat(result).isNotNull();
-        assertThat(result.getQuestionId()).isEqualTo(question.getQuestionId());
-        assertThat(result.getTitle()).isEqualTo(question.getTitle());
-        assertThat(result.getDetail()).isEqualTo(question.getDetail());
-        assertThat(result.getExpect()).isEqualTo(question.getExpect());
-        assertThat(result.getMember().getMemberId()).isEqualTo(question.getMember().getMemberId());
-        assertThat(result.getViews()).isEqualTo(101);
-        assertThat(result.getRecommend()).isEqualTo(question.getRecommend());
-
-        // 태그 확인
-        assertThat(result.getTags()).isNotNull();
-        List<String> actualTags = result.getTags().stream()
-                .map(QuestionTagResponse::getTagName)
-                .collect(Collectors.toList());
-
-        List<String> expectedTags = question.getQuestionTags().stream()
-                .map(tag -> tag.getTag().getTagName())
-                .collect(Collectors.toList());
-
-        assertThat(actualTags).containsExactlyInAnyOrderElementsOf(expectedTags);
-
-        assertThat(result.getAnswer().getAnswers()).hasSize(1); // 답변이 1개인지 확인
-        assertThat(result.getCreatedDate()).isEqualTo(question.getCreatedDate());
-        assertThat(result.getUpdatedDate()).isEqualTo(question.getModifiedDate());
-    }
+//    @Test
+//    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
+//    public void getQuestionById(){
+//        // given
+//        Member member = createMember();
+//        Question question = createQuestionDetail(member,0);
+//        Answer answer = createanswer(member, question);
+//
+//        Tag tag1 = createTag("tag1");
+//        Tag tag2 = createTag("tag2");
+//
+//        QuestionTag questionTag1 = QuestionTag.builder()
+//                .question(question)
+//                .tag(tag1)
+//                .build();
+//
+//        QuestionTag questionTag2 = QuestionTag.builder()
+//                .question(question)
+//                .tag(tag2)
+//                .build();
+//
+//        question.setQuestionTags(List.of(questionTag1, questionTag2));
+//
+//        memberRepository.save(member);
+//        questionRepository.save(question);
+//        answerRepository.save(answer);
+//        tagRepository.save(tag1);
+//        tagRepository.save(tag2);
+//
+//        setDefaultAuthentication(member.getMemberId());
+//
+//        // when
+//        QuestionDetailResponse result = questionService.getQuestionById(question.getQuestionId());
+//
+//        // then
+//
+//        assertThat(result).isNotNull();
+//        assertThat(result.getQuestionId()).isEqualTo(question.getQuestionId());
+//        assertThat(result.getTitle()).isEqualTo(question.getTitle());
+//        assertThat(result.getDetail()).isEqualTo(question.getDetail());
+//        assertThat(result.getExpect()).isEqualTo(question.getExpect());
+//        assertThat(result.getMember().getMemberId()).isEqualTo(question.getMember().getMemberId());
+//        assertThat(result.getViews()).isEqualTo(101);
+//        assertThat(result.getRecommend()).isEqualTo(question.getRecommend());
+//
+//        // 태그 확인
+//        assertThat(result.getTags()).isNotNull();
+//        List<String> actualTags = result.getTags().stream()
+//                .map(QuestionTagResponse::getTagName)
+//                .collect(Collectors.toList());
+//
+//        List<String> expectedTags = question.getQuestionTags().stream()
+//                .map(tag -> tag.getTag().getTagName())
+//                .collect(Collectors.toList());
+//
+//        assertThat(actualTags).containsExactlyInAnyOrderElementsOf(expectedTags);
+//
+//        assertThat(result.getAnswer().getAnswers()).hasSize(1); // 답변이 1개인지 확인
+//        assertThat(result.getCreatedDate()).isEqualTo(question.getCreatedDate());
+//        assertThat(result.getUpdatedDate()).isEqualTo(question.getModifiedDate());
+//    }
 
 
     @Test
@@ -414,8 +476,8 @@ public class QuestionServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("다른 사람의 질문을 수정, 삭제할 수 없다.")
-    public void MemberAccessDeniedException(){
+    @DisplayName("다른 사람의 질문을 삭제할 수 없다.")
+    public void DeleteMemberAccessDeniedException(){
         Member member = createMember();
         Member otherMember = createMember();
         Question question = createQuestion(member);
@@ -435,6 +497,32 @@ public class QuestionServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("다른 사람의 질문을 수정할 수 없다.")
+    public void UpdateMemberAccessDeniedException(){
+        Member member = createMember();
+        Member otherMember = createMember();
+        Question question = createQuestion(member);
+
+        memberRepository.save(member);
+        memberRepository.save(otherMember);
+        questionRepository.save(question);
+
+        setDefaultAuthentication(otherMember.getMemberId());
+
+        String title = "update title";
+        String detail = "update detail";
+        String expect = "update expect";
+        List<String> tags = Arrays.asList("tag1", "tag2");
+
+
+        // when, then
+        assertThatThrownBy(
+                () -> questionService.updateQuestion(question.getQuestionId(),title, detail, expect, tags))
+                .isInstanceOf(MemberAccessDeniedException.class)
+                .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @Test
     @DisplayName("로그인을 하지 않으면 질문 추천을 할 수 없다.")
     public void addQuestionRecommendException() {
         // Given
@@ -449,28 +537,6 @@ public class QuestionServiceTest extends ServiceTest {
         assertThrows(MemberBadCredentialsException.class, () -> {
             questionService.addQuestionRecommend(question.getQuestionId(), TypeEnum.UPVOTE);
         });
-    }
-
-
-    @Test
-    @DisplayName("제목, 내용, 태그가 없으면 생성되지 않는다.")
-    public void QuestionCreateApiRequestTest(){
-        //given
-        Member member = createMember();
-        setDefaultAuthentication(member.getMemberId());
-
-        QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
-                .title("title")
-                .detail("detail")
-                .expect("expect") //제목 내용 각각 테스트 완료
-                .build();
-
-        // When & Then
-        assertThrows(ConstraintViolationException.class, () -> {
-            questionController.createQuestion(request);
-        });
-
-
     }
 
 

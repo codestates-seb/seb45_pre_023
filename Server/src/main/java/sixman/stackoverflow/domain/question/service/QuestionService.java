@@ -88,14 +88,6 @@ public class QuestionService {
     }
 
 
-    public List<QuestionTagResponse> getQuestionTags(Long questionId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(QuestionNotFoundException::new);
-        List<Tag> tags = question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList());
-
-        return QuestionTagResponse.of(tags);
-    }
-
     public Long createQuestion(Question question, List<String> tagNames) {
 
         List<Tag> tags = tagRepository.findAllByTagNameIn(tagNames);
