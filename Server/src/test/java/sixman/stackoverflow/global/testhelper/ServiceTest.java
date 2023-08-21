@@ -134,6 +134,15 @@ public abstract class ServiceTest {
                 .build();
     }
 
+    protected Answer createanswerdetail(Member member, Question question, int num) {
+        return Answer.builder()
+                .member(member)
+                .content("test")
+                .question(question)
+                .recommend(num)
+                .build();
+    }
+
     protected Tag createTag(String name){
         return Tag.builder()
                 .tagName(name)
