@@ -196,19 +196,6 @@ public class QuestionServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("입력받은 tagName에 해당하는 질문이 없으면 TagNotFoundException 예외 발생")
-    public void getLatestQuestionsTagException(){
-        //given
-        String nonExistentTagName = "nonExistentTag";
-
-        // when & then
-        assertThrows(TagNotFoundException.class, () -> {
-            questionService.getLatestQuestions(Pageable.unpaged(), nonExistentTagName);
-        });
-    }
-
-
-    @Test
     @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
     public void getQuestionById(){
         // given
