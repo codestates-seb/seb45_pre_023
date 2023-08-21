@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import tipboxSlice from './createSlice/tipboxSlice';
-import OAuthSlice from './createSlice/oauthSlice';
-import AskSlice from './createSlice/askSlice';
+import tipboxSlice from './createSlice/TipboxSlice';
+import OAuthSlice from './createSlice/OAuthSlice';
+import AskSlice from './createSlice/AskSlice';
 import LoginInfoSlice from './createSlice/LoginInfoSlice';
 import ErrMsgSlice from './createSlice/ErrMsgSlice';
 import SignUpInfoSlice from './createSlice/SignUpInfoSlice';
 import questionSlice from './createSlice/QuestionSlice';
 import questionDetailSlice from './createSlice/QuestionDetailSlice';
+import answerSlice from './createSlice/AnswerSlice';
+import replySlice from './createSlice/ReplySlice';
 import { combineReducers } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer } from 'redux-persist';
@@ -18,6 +20,10 @@ const reducers = combineReducers({
   logininfo: LoginInfoSlice.reducer,
   signupinfo: SignUpInfoSlice.reducer,
   errmsg: ErrMsgSlice.reducer,
+  questions: questionSlice.reducer,
+  detail: questionDetailSlice.reducer,
+  answerCRUD: answerSlice.reducer,
+  replyCRUD: replySlice.reducer,
 });
 
 const persistConfig = {
@@ -29,15 +35,7 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = configureStore({
-  reducer: {
-    tipbox: tipboxSlice.reducer,
-    oauth: OAuthSlice.reducer,
-    ask: AskSlice.reducer,
-    questions: questionSlice.reducer,
-    detail: questionDetailSlice.reducer,
-    reducer: persistedReducer,
-  },
-
+  reducer: persistedReducer
 });
 
 export default store;

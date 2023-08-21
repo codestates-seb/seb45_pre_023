@@ -2,10 +2,12 @@ import Pagination from 'react-js-pagination';
 import './Paging.css';
 import axios from 'axios';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setQuestions } from '../../../redux/createSlice/QuestionSlice';
 
-const Paging = ({setIsData}) => {
-
+const Paging = () => {
   const [page, setPage] = useState(1);
+  const dispatch = useDispatch();
 
   const getPage = (page) => {
     setPage(page);
@@ -14,14 +16,13 @@ const Paging = ({setIsData}) => {
         `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions?page=${page}`
       )
       .then((res) => {
-        setIsData(res.data.data);
+        dispatch(setQuestions(res.data.data));
         console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
 
   //   activePage: 현재 페이지
   //   itemsCountPerPage: 한 페이지에 보여줄 아이템 개수
