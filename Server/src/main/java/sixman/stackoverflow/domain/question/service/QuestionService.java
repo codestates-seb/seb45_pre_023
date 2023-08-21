@@ -73,13 +73,6 @@ public class QuestionService {
             question.setViews(question.getViews() + 1);
             questionRepository.save(question);
 
-            List<QuestionTag> questionTags = question.getQuestionTags();
-
-            // 태그가 없는 경우 예외 처리
-            if (questionTags.isEmpty()) {
-                throw new TagNotFoundException();
-            }
-
             Page<AnswerResponse> pagedAnswers = answerService.findAnswers(questionId, PageRequest.of(0, 5));
             List<AnswerResponse> answerResponses = pagedAnswers.getContent();
 
