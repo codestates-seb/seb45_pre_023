@@ -6,14 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
+import sixman.stackoverflow.domain.answer.service.AnswerService;
 import sixman.stackoverflow.domain.answerrecommend.answerrecommendrepository.AnswerRecommendRepository;
 import sixman.stackoverflow.domain.answerrecommend.entity.AnswerRecommend;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.member.service.MemberService;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.exception.businessexception.answerexception.AnswerNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
 import javax.persistence.EntityManager;
@@ -33,6 +37,10 @@ class AnswerRecommendServiceTest extends ServiceTest {
     private  AnswerRepository answerRepository;
     @Autowired
     private AnswerRecommendService answerRecommendService;
+    @Autowired
+    private AnswerService answerService;
+    @Autowired
+    private MemberService memberService;
 
 
 
@@ -220,6 +228,38 @@ class AnswerRecommendServiceTest extends ServiceTest {
         assertThat(updatedAnswer.getQuestion().getQuestionId()).isEqualTo(question.getQuestionId());
         assertThat(updatedAnswer.getRecommend()).isEqualTo(answer.getRecommend());
     }
+
+    @Test
+    @DisplayName("answerId가 없는 답변엔 추천을 할 수 없고 AnswerNotFoundException을 발생시킨다.")
+    void notRecommendWithoutAnswerId() {
+    // given
+    Long answerId = null;
+
+    // When,Then
+    assertThrows(AnswerNotFoundException .class, () ->
+            answerService.findAnswer(answerId));}
+
+    @Test
+    @DisplayName("로그인한 사용자만 추천할 수 있고, 로그인 안할 시 MemberNotFoundException을 발생시킨다.")
+    void notRecommendWithoutMemberId() {
+
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createquestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswerforRecommend(member,question);
+        answerRepository.save(answer);
+
+        // When, Then
+        assertThrows(MemberNotFoundException.class, () -> {
+            answerRecommendService.recommendAnswer(answer.getAnswerId(), TypeEnum.UPVOTE);
+        });
+    }
+
+
 
 
     private Answer createAnswerforRecommend(Member member, Question question) {

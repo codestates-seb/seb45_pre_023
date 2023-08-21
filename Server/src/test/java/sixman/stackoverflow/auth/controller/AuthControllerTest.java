@@ -180,7 +180,7 @@ class AuthControllerTest {
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").value("로그인 정보를 확인해주세요."));
 
         //restDocs

@@ -4,10 +4,12 @@ package sixman.stackoverflow.global.exception.exceptionhandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import sixman.stackoverflow.global.exception.businessexception.BusinessException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
+import sixman.stackoverflow.global.exception.businessexception.requestexception.RequestMediaTypeMismatchException;
 import sixman.stackoverflow.global.exception.businessexception.requestexception.RequestTypeMismatchException;
 import sixman.stackoverflow.global.response.ApiSingleResponse;
 
@@ -55,6 +58,15 @@ public class GlobalExceptionHandler {
             HttpMessageConversionException e) {
 
         return new ResponseEntity<>(ApiSingleResponse.fail(new RequestTypeMismatchException()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class) //요청 미디어 타입이 잘못됐을 때 ex. json 요청인데 xml 로 들어올때
+    public ResponseEntity<ApiSingleResponse<Void>> handleHttpMediaTypeNotSupportedException (
+            HttpMediaTypeNotSupportedException e) {
+
+        String contentType = e.getContentType().toString();
+
+        return new ResponseEntity<>(ApiSingleResponse.fail(new RequestMediaTypeMismatchException(contentType)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

@@ -74,8 +74,6 @@ public class QuestionIntegrationTest extends IntegrationTest {
             }
         }
 
-        memberRepository.flush();
-
         //accessToken 발급을 위한 로그인
         String request = objectMapper.writeValueAsString(new LoginDto(member.getEmail(), "1q2w3e4r!"));
 
@@ -194,7 +192,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(0))
                             .andExpect(jsonPath("$.data.recommendType").doesNotExist());
                 }),
-                dynamicTest("익명 사용자가 질문을 확인하면 추천 수가 1 감소되어있고, 자신이 추천하지 않았다고 표시된다.", () -> {
+                dynamicTest("익명 사용자가 질문을 확인해도 추천 수가 1 감소되어있고, 자신이 추천하지 않았다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
                             .accept(APPLICATION_JSON));
@@ -230,7 +228,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(-1))
                             .andExpect(jsonPath("$.data.recommendType").value("DOWNVOTE"));
                 }),
-                dynamicTest("다른 사용자가 질문을 확인하면 비추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                dynamicTest("다른 사용자가 질문을 확인하면 비추천 수가 1 증가해있고 자신의 추천 여부는 없다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
                             .accept(APPLICATION_JSON)
@@ -243,7 +241,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(-1))
                             .andExpect(jsonPath("$.data.recommendType").doesNotExist());
                 }),
-                dynamicTest("익명 사용자가 질문을 확인하면 비추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                dynamicTest("익명 사용자가 질문을 확인하면 비추천 수가 1 증가해있고 자신의 추천 여부는 없다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
                             .accept(APPLICATION_JSON));
@@ -255,7 +253,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(-1))
                             .andExpect(jsonPath("$.data.recommendType").doesNotExist());
                 }),
-                dynamicTest("member 가 질문을 다시 추천한다.", () -> {
+                dynamicTest("member 가 비추천한 질문을 다시 추천한다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(patch("/questions/{question-id}/upvote", questionId)
                             .accept(APPLICATION_JSON)
@@ -279,7 +277,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(1))
                             .andExpect(jsonPath("$.data.recommendType").value("UPVOTE"));
                 }),
-                dynamicTest("다른 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                dynamicTest("다른 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신의 추천 여부는 없다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
                             .accept(APPLICATION_JSON)
@@ -292,7 +290,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(1))
                             .andExpect(jsonPath("$.data.recommendType").doesNotExist());
                 }),
-                dynamicTest("익명 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                dynamicTest("익명 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신의 추천 여부는 없다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
                             .accept(APPLICATION_JSON));

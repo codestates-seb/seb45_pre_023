@@ -47,6 +47,7 @@ import sixman.stackoverflow.global.response.ApiSingleResponse;
 import sixman.stackoverflow.module.email.service.MailService;
 import sixman.stackoverflow.module.redis.service.RedisService;
 
+import javax.persistence.EntityManager;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
@@ -68,12 +69,12 @@ public abstract class IntegrationTest {
     @Autowired protected QuestionTagRepository questionTagRepository;
     @Autowired protected QuestionRecommendRepository questionRecommendRepository;
     @Autowired protected AnswerRecommendRepository answerRecommendRepository;
-
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired protected PasswordEncoder passwordEncoder;
+    @Autowired protected EntityManager entityManager;
+    @Autowired protected RestTemplate restTemplate;
 
     @MockBean protected MailService mailService;
     @MockBean protected RedisService redisService;
-    @MockBean protected RestTemplate restTemplate;
     @MockBean protected DefaultOAuth2UserService defaultOAuth2UserService;
 
     protected void deleteAll(){
@@ -85,6 +86,18 @@ public abstract class IntegrationTest {
         answerRepository.deleteAll();
         questionRepository.deleteAll();
         memberRepository.deleteAll();
+    }
+
+    protected void flushAll(){
+        answerRecommendRepository.flush();
+        questionRecommendRepository.flush();
+        questionTagRepository.flush();
+        tagRepository.flush();
+        replyRepository.flush();
+        answerRepository.flush();
+        questionRepository.flush();
+        memberRepository.flush();
+        entityManager.clear();
     }
 
     private String createAccessToken(Member member, long accessTokenExpireTime) {

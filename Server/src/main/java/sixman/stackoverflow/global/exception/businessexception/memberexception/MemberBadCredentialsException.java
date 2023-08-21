@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 public class MemberBadCredentialsException extends MemberException {
 
     public static final String MESSAGE = "로그인 정보를 확인해주세요.";
-    public static final String CODE = "MEMBER-401";
+    public static final String CODE = "MEMBER-400";
 
     public MemberBadCredentialsException() {
-        super(CODE, HttpStatus.UNAUTHORIZED, MESSAGE);
+        super(CODE, HttpStatus.BAD_REQUEST, MESSAGE);
     }
 }

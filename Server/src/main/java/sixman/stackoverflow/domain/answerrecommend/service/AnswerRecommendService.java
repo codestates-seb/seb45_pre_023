@@ -39,6 +39,10 @@ public class AnswerRecommendService {
     public void recommendAnswer(Long answerId, TypeEnum recommendationType) {
         Long memberId = SecurityUtil.getCurrentId();
 
+        if (memberId == null) {
+            throw new MemberNotFoundException();
+        }
+
         Optional<Member> memberOptional = memberRepository.findById(memberId);
         Member member = memberOptional.orElseThrow(MemberNotFoundException::new);
 
