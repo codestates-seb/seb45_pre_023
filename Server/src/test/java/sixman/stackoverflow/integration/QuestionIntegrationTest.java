@@ -28,6 +28,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
     Member member;
     Member otherMember;
     String accessToken;
+    String otherAccessToken;
     List<Question> questions = new ArrayList<>();
     List<Answer> answers = new ArrayList<>();
     List<Reply> replies = new ArrayList<>();
@@ -47,7 +48,7 @@ public class QuestionIntegrationTest extends IntegrationTest {
 
         //given
         member = createAndSaveMember("myEmail@google.com", "1q2w3e4r!");
-        otherMember = createAndSaveMember("otherEmail@google.com");
+        otherMember = createAndSaveMember("otherEmail@google.com", "1q2w3e4r!");
 
         Tag tag1 = createAndSaveTag("tag1");
         Tag tag2 = createAndSaveTag("tag2");
@@ -83,6 +84,15 @@ public class QuestionIntegrationTest extends IntegrationTest {
                 .content(request));
 
         accessToken = actions.andReturn().getResponse().getHeader("Authorization");
+
+        //otherMember 의 accessToken 발급을 위한 로그인
+        String otherMemberRequest = objectMapper.writeValueAsString(new LoginDto(otherMember.getEmail(), "1q2w3e4r!"));
+
+        ResultActions otherMemberActions = mockMvc.perform(post("/auth/login")
+                .contentType(APPLICATION_JSON)
+                .content(otherMemberRequest));
+
+        otherAccessToken = otherMemberActions.andReturn().getResponse().getHeader("Authorization");
     }
 
     @AfterAll
@@ -122,6 +132,31 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(1))
                             .andExpect(jsonPath("$.data.recommendType").value("UPVOTE"));
                 }),
+                dynamicTest("다른 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신이 추천하지 않았다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(1))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
+                }),
+                dynamicTest("익명 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신이 추천하지 않았다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(1))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
+                }),
                 dynamicTest("member 가 질문을 추천을 다시 누른다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(patch("/questions/{question-id}/upvote", questionId)
@@ -138,6 +173,31 @@ public class QuestionIntegrationTest extends IntegrationTest {
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
                             .accept(APPLICATION_JSON)
                             .header("Authorization", accessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(0))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
+                }),
+                dynamicTest("다른 사용자가 질문을 확인해도 추천 수가 1 감소되어있고, 자신이 추천하지 않았다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(0))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
+                }),
+                dynamicTest("익명 사용자가 질문을 확인하면 추천 수가 1 감소되어있고, 자신이 추천하지 않았다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON));
 
                     //then
                     actions
@@ -170,6 +230,31 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(jsonPath("$.data.recommend").value(-1))
                             .andExpect(jsonPath("$.data.recommendType").value("DOWNVOTE"));
                 }),
+                dynamicTest("다른 사용자가 질문을 확인하면 비추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(-1))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
+                }),
+                dynamicTest("익명 사용자가 질문을 확인하면 비추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(-1))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
+                }),
                 dynamicTest("member 가 질문을 다시 추천한다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(patch("/questions/{question-id}/upvote", questionId)
@@ -193,6 +278,31 @@ public class QuestionIntegrationTest extends IntegrationTest {
                             .andExpect(status().isOk())
                             .andExpect(jsonPath("$.data.recommend").value(1))
                             .andExpect(jsonPath("$.data.recommendType").value("UPVOTE"));
+                }),
+                dynamicTest("다른 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", otherAccessToken));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(1))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
+                }),
+                dynamicTest("익명 사용자가 질문을 확인하면 추천 수가 1 증가해있고 자신이 추천 여부는 없다고 표시된다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
+                            .accept(APPLICATION_JSON));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.data.recommend").value(1))
+                            .andExpect(jsonPath("$.data.recommendType").doesNotExist());
                 })
         );
 
