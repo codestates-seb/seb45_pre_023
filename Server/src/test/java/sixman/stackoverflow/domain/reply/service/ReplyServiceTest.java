@@ -154,7 +154,8 @@ class ReplyServiceTest extends ServiceTest {
     @DisplayName("댓글 update 시 존재하지 않는 replyId 이면 ReplyNotFoundException 을 반환한다.") // o
     void updateReplyException() {
         // Given
-
+        Member myMember = createMember();
+        memberRepository.save(myMember);
         Member member = createMember();
         memberRepository.save(member);
 
@@ -167,11 +168,12 @@ class ReplyServiceTest extends ServiceTest {
         String oldContent = "old content";
         Reply reply = Reply.builder()
                 .content(oldContent)
-                .member(member)
                 .answer(answer)
                 .build();
         replyRepository.save(reply);
         Long replyId = 123123434L;
+
+        setDefaultAuthentication(myMember.getMemberId()); //myMember 로 로그인
 
         // When, Then
         assertThrows(ReplyNotFoundException.class, () -> replyService.updateReply(replyId, "123"));
