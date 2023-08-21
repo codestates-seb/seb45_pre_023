@@ -112,7 +112,8 @@ public class QuestionIntegrationTest extends IntegrationTest {
                 dynamicTest("질문을 확인하면 추천 수가 1 증가하고, 자신이 추천했다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
-                            .accept(APPLICATION_JSON));
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
 
                     //then
                     actions
@@ -135,7 +136,8 @@ public class QuestionIntegrationTest extends IntegrationTest {
                 dynamicTest("질문을 확인하면 추천 수가 1 감소되어있고, 자신의 추천이 없어진다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
-                            .accept(APPLICATION_JSON));
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
 
                     //then
                     actions
@@ -158,7 +160,8 @@ public class QuestionIntegrationTest extends IntegrationTest {
                 dynamicTest("질문을 확인하면 추천 수가 1 감소되어있고, 자신이 비추천했다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
-                            .accept(APPLICATION_JSON));
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
 
                     //then
                     actions
@@ -181,7 +184,8 @@ public class QuestionIntegrationTest extends IntegrationTest {
                 dynamicTest("질문을 확인하면 추천 수가 1 로 되어있고, 자신이 추천했다고 표시된다.", () -> {
                     //when
                     ResultActions actions = mockMvc.perform(get("/questions/{question-id}", questionId)
-                            .accept(APPLICATION_JSON));
+                            .accept(APPLICATION_JSON)
+                            .header("Authorization", accessToken));
 
                     //then
                     actions
