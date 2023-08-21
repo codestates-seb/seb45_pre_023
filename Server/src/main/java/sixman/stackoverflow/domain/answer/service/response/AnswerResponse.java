@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
+import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answerrecommend.entity.AnswerRecommend;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
+import sixman.stackoverflow.domain.questionrecommend.entity.QuestionRecommend;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
@@ -53,6 +55,18 @@ public class AnswerResponse {
     }
 
     public static AnswerResponse of(Answer answer, Page<Reply> replyPage) {
+        TypeEnum recommendType = null;
+        if(SecurityUtil.isLogin()) {
+            Long currentUserId = SecurityUtil.getCurrentId();
+            for (AnswerRecommend recommend : answer.getAnswerRecommends()) {
+                TypeEnum type = recommend.getRecommendTypeCurrentUser(currentUserId);
+                if (type != null) {
+                    recommendType = type;
+                    break;
+                }
+            }
+        }
+
         List<ReplyResponse> replyResponses = replyPage.getContent().stream()
                 .map(ReplyResponse::pagingReplyResponse)
                 .collect(Collectors.toList());
@@ -69,6 +83,7 @@ public class AnswerResponse {
                 .content(answer.getContent())
                 .member(MemberInfo.of(answer.getMember()))
                 .recommend(answer.getRecommend())
+                .recommendType(recommendType)
                 .reply(answerReply)
                 .updatedDate(answer.getCreatedDate())
                 .createdDate(answer.getModifiedDate())
