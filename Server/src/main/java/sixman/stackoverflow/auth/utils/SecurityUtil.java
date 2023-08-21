@@ -11,6 +11,16 @@ import java.util.stream.Collectors;
 
 public class SecurityUtil {
 
+    public static boolean isLogin() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+
+        return !(authentication.getPrincipal() instanceof String && "anonymousUser".equals(authentication.getPrincipal()));
+    }
+
     public static Long getCurrentId() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
