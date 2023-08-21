@@ -78,7 +78,7 @@ public class AnswerService {
 
 
     public Page<AnswerResponse> findAnswers(Long questionId, Pageable pageable) {
-        Optional<Question> optionalQuestion = questionRepository.findByQuestionId(questionId);
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
 
         if (optionalQuestion.isPresent()) {
             Question question = optionalQuestion.get();
