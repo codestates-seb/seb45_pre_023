@@ -28,7 +28,7 @@ class AnswerRecommendRepositoryTest extends RepositoryTest {
     @Autowired
     private AnswerRecommendRepository answerRecommendRepository;
     @Test
-    @DisplayName("로그인된 member의 아이디와 answer로 답변 추천 조회")
+    @DisplayName("로그인된 member의 아이디와 answer로 answerRecommend 조회")
     void findByAnswerAndMember() {
         // Given
         Member member = createMember();
@@ -55,5 +55,6 @@ class AnswerRecommendRepositoryTest extends RepositoryTest {
         assertThat(foundRecommend.getAnswer()).isEqualTo(answer);
         assertThat(foundRecommend.getMember()).isEqualTo(member);
         assertThat(foundRecommend.getType()).isEqualTo(TypeEnum.UPVOTE);
+
     }
 }

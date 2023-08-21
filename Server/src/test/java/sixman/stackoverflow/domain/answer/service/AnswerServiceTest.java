@@ -188,10 +188,6 @@ class AnswerServiceTest extends ServiceTest {
         assertThrows(AnswerNotFoundException.class, () -> {
             answerService.findAnswer(answerForUpdateId);
         });
-
-
-
-
     }
 
     @Test

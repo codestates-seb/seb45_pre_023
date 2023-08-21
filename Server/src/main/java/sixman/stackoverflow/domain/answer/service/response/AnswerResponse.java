@@ -47,6 +47,7 @@ public class AnswerResponse {
                 .member(MemberInfo.of(answer.getMember()))
                 .updatedDate(answer.getCreatedDate())
                 .createdDate(answer.getModifiedDate())
+                .recommendType(null)
                 .build();
 
     }
