@@ -388,36 +388,30 @@ public class QuestionServiceTest extends ServiceTest {
         assertThat(findQuestion.getQuestionRecommends()).hasSize(1);
     }
 
-//    @Test
-//    @DisplayName("로그인을 하지 않으면 질문을 등록할 수 없다.")
-//    public void createQuestionException(){
-//        // given
-//        Member member = createMember();
-//        Tag tag1 = createTag("tag1");
-//        Tag tag2 = createTag("tag2");
-//
-//        List<String> tags = List.of(tag1.getTagName(), tag2.getTagName());
-//
-//
-//        SecurityContextHolder.clearContext();
-//
-//        QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
-//                .title("Test Question Title")
-//                .detail("Test Question Detail")
-//                .expect("Test Question Expect")
-//                .tagNames(tags)
-//                .build();
-//
-//
-//        // when
-//        Throwable exception = assertThrows(MemberBadCredentialsException.class, () -> {
-//            questionController.createQuestion(request);
-//        });
-//
-//        // then
-//        assertThat(exception).isInstanceOf(MemberBadCredentialsException.class);
-//
-//    }
+    @Test
+    @DisplayName("로그인을 하지 않으면 질문을 등록할 수 없다.")
+    public void createQuestionException(){
+        // given
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+
+        QuestionCreateApiRequest createApiRequest = QuestionCreateApiRequest.builder()
+                .title("Title")
+                .detail("Detail")
+                .expect("Expect")
+                .tagNames(Arrays.asList("tag1", "tag2"))
+                .build();
+
+
+        // When & Then
+        assertThrows(MemberBadCredentialsException.class, () -> {
+            questionController.createQuestion(createApiRequest);
+        });
+
+    }
 
     @Test
     @DisplayName("다른 사람의 질문을 수정, 삭제할 수 없다.")
@@ -440,27 +434,43 @@ public class QuestionServiceTest extends ServiceTest {
                 .hasMessage("접근 권한이 없습니다.");
     }
 
-//    @Test
-//    @DisplayName("로그인을 하지 않으면 질문 추천을 할 수 없다.")
-//    public void addQuestionRecommendException() {
-//        // Given
-//        Member member = createMember();
-//        Question question = createQuestionDetail(member,0);
-//
-//        memberRepository.save(member);
-//        questionRepository.save(question);
-//
-//
-//        // When & Then
-//        assertThrows(MemberBadCredentialsException.class, () -> {
-//            questionService.addQuestionRecommend(question.getQuestionId(), TypeEnum.UPVOTE);
-//        });
-//    }
+    @Test
+    @DisplayName("로그인을 하지 않으면 질문 추천을 할 수 없다.")
+    public void addQuestionRecommendException() {
+        // Given
+        Member member = createMember();
+        Question question = createQuestionDetail(member,0);
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+
+
+        // When & Then
+        assertThrows(MemberBadCredentialsException.class, () -> {
+            questionService.addQuestionRecommend(question.getQuestionId(), TypeEnum.UPVOTE);
+        });
+    }
 
 
     @Test
-    @DisplayName("제목, 내용이 없으면 생성되지 않는다.")
+    @DisplayName("제목, 내용, 태그가 없으면 생성되지 않는다.")
     public void QuestionCreateApiRequestTest(){
+        //given
+        Member member = createMember();
+        setDefaultAuthentication(member.getMemberId());
+
+        QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
+                .title("title")
+                .detail("detail")
+                .expect("expect")
+                .tagNames(new ArrayList<>())
+                .build();
+
+        // When & Then
+        assertThrows(ConstraintViolationException.class, () -> {
+            questionController.createQuestion(request);
+        });
+
 
     }
 
