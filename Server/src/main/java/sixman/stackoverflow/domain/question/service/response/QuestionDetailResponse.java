@@ -44,14 +44,15 @@ public class QuestionDetailResponse {
     }
 
     public static QuestionDetailResponse of(Question question, QuestionAnswer answer) {
-        Long currentUserId = SecurityUtil.getCurrentId();
         TypeEnum recommendType = null;
-
-        for (QuestionRecommend recommend : question.getQuestionRecommends()) {
-            TypeEnum type = recommend.getRecommendTypeCurrentUser(currentUserId);
-            if (type != null) {
-                recommendType = type;
-                break;
+        if(SecurityUtil.isLogin()) {
+            Long currentUserId = SecurityUtil.getCurrentId();
+            for (QuestionRecommend recommend : question.getQuestionRecommends()) {
+                TypeEnum type = recommend.getRecommendTypeCurrentUser(currentUserId);
+                if (type != null) {
+                    recommendType = type;
+                    break;
+                }
             }
         }
 
