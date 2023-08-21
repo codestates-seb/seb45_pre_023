@@ -68,6 +68,10 @@ public class Question extends BaseEntity {
         this.views = views;
     }
 
+    public void setRecommend(int recommend) { this.recommend = recommend; }
+
+    public void setQuestionRceommends(List<QuestionRecommend> questionRecommends) { this.questionRecommends = questionRecommends; }
+
 
     public void setQuestionTags(List<QuestionTag> questionTags) {
         this.questionTags.clear();
@@ -76,16 +80,14 @@ public class Question extends BaseEntity {
         }
     }
 
-    public void applyRecommend(TypeEnum type) {
-        if (type == TypeEnum.UPVOTE) {
-            this.recommend++;
-        } else {
-            this.recommend--;
-        }
-    }
+    public void applyRecommend() {
+        int upvotes = (int) this.questionRecommends.stream()
+                .filter(recommend -> recommend.getType() == TypeEnum.UPVOTE)
+                .count();
+        int downvotes = (int) this.questionRecommends.stream()
+                .filter(recommend -> recommend.getType() == TypeEnum.DOWNVOTE)
+                .count();
 
-    public boolean hasRecommendationFrom(Member member) {
-        return this.questionRecommends.stream()
-                .anyMatch(recommend -> recommend.getMember().equals(member));
+        this.recommend = upvotes - downvotes;
     }
 }
