@@ -11,20 +11,26 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
 import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.question.controller.dto.AnswerSortRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.reply.repository.ReplyRepository;
 import sixman.stackoverflow.domain.reply.service.dto.request.ReplyCreateServiceRequest;
 import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
+import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.exception.businessexception.answerexception.AnswerNotFoundException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.replyexception.ReplyNotFoundException;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
@@ -107,9 +113,9 @@ class ReplyServiceTest extends ServiceTest {
         // When, Then
         assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }
-    @Test
-    @DisplayName("Reply 목록을 최신 순으로 불러온다.")
-    void SortByCreatedAt() {}
+
+
+
 
 
     @Test
@@ -141,6 +147,59 @@ class ReplyServiceTest extends ServiceTest {
 
         // Then
         assertThat(replyResponsesPage.getContent()).hasSize(5);
+        assertThat(replyResponsesPage.getTotalPages()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("댓글 update 시 존재하지 않는 replyId 이면 ReplyNotFoundException 을 반환한다.") // o
+    void updateReplyException() {
+        // Given
+        Member myMember = createMember();
+        memberRepository.save(myMember);
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        String oldContent = "old content";
+        Reply reply = Reply.builder()
+                .content(oldContent)
+                .answer(answer)
+                .build();
+        replyRepository.save(reply);
+        Long replyId = 123123434L;
+
+        setDefaultAuthentication(myMember.getMemberId()); //myMember 로 로그인
+
+        // When, Then
+        assertThrows(ReplyNotFoundException.class, () -> replyService.updateReply(replyId, "123"));
+    }
+
+    @Test
+    @DisplayName("로그인한 사용자가 아니면 업데이트를 할 수 없고, MemberNotFoundException을 반환한다.") // o
+    void updateReplyMemberException() {
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createquestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        Reply reply = Reply.builder()
+                .content("dasd")
+                .member(member)
+                .answer(answer)
+                .build();
+        // when, then
+        assertThrows(MemberNotFoundException.class, () ->
+                replyService.updateReply(reply.getReplyId(), "new content"));
     }
 
     @Test
@@ -172,6 +231,7 @@ class ReplyServiceTest extends ServiceTest {
 
         // Then
         assertThat(replyResponsesPage.getContent()).hasSize(4);
+        assertThat(replyResponsesPage.getTotalPages()).isEqualTo(1);
     }
 
     @Test
@@ -285,6 +345,13 @@ class ReplyServiceTest extends ServiceTest {
         assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }
 }
+
+
+
+
+
+
+
 
 
 

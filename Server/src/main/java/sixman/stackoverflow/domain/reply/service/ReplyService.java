@@ -95,6 +95,9 @@ public class ReplyService {
 
         Long memberId = SecurityUtil.getCurrentId();
 
+        if (memberId == null) {
+            throw new MemberNotFoundException();}
+
         Optional<Reply> replyOptional = replyRepository.findById(replyId);
         Reply replyUpdate = replyOptional.orElseThrow(ReplyNotFoundException::new);
 
@@ -109,6 +112,7 @@ public class ReplyService {
 
     public void deleteReply(long replyId) {
         Long memberId = SecurityUtil.getCurrentId();
+
 
         Optional<Reply> replyOptional = replyRepository.findById(replyId);
         Reply reply = replyOptional.orElseThrow(ReplyNotFoundException::new);
