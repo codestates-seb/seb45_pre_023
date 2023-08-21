@@ -85,12 +85,7 @@ public class QuestionController {
             @RequestBody @Valid QuestionCreateApiRequest questionCreateApiRequest) {
 
         if (SecurityUtil.isLogin()) {
-
-            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-            if (!loggedInUserIdOpt.isPresent()) {
-                throw new MemberNotFoundException();
-            }
-            Long currentId = loggedInUserIdOpt.get();
+            Long currentId = SecurityUtil.getCurrentId();
 
             Optional<Member> optionalMember = memberRepository.findById(currentId);
 

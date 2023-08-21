@@ -73,6 +73,21 @@ public class QuestionService {
             question.setViews(question.getViews() + 1);
             questionRepository.save(question);
 
+            List<QuestionTag> questionTags = question.getQuestionTags();
+
+            // 태그가 없는 경우 예외 처리
+            if (questionTags.isEmpty()) {
+                throw new TagNotFoundException();
+            }
+
+            // 각 태그를 검사해서 없는 태그가 있다면 예외 처리
+            for (QuestionTag questionTag : questionTags) {
+                Optional<Tag> tagOptional = tagRepository.findByTagName(questionTag.getTag().getTagName());
+                if (tagOptional.isEmpty()) {
+                    throw new TagNotFoundException();
+                }
+            }
+
             Page<AnswerResponse> pagedAnswers = answerService.findAnswers(questionId, PageRequest.of(0, 5));
             List<AnswerResponse> answerResponses = pagedAnswers.getContent();
 
@@ -89,7 +104,12 @@ public class QuestionService {
 
 
     public Long createQuestion(Question question, List<String> tagNames) {
-
+        for(String tag : tagNames){
+            Optional<Tag> verifiedTag = tagRepository.findByTagName(tag);
+            if(!verifiedTag.isPresent()){
+                throw new TagNotFoundException();
+            }
+        }
         List<Tag> tags = tagRepository.findAllByTagNameIn(tagNames);
 
         List<QuestionTag> questionTags = tags.stream()
@@ -109,21 +129,31 @@ public class QuestionService {
 
         if (SecurityUtil.isLogin()) {
 
-            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-            if (!loggedInUserIdOpt.isPresent()) {
+            Long loggedInUserId = SecurityUtil.getCurrentId();
+
+            Optional<Member> currentMemberOptional = memberRepository.findById(loggedInUserId);
+
+            if (currentMemberOptional.isEmpty()) {
                 throw new MemberNotFoundException();
             }
-
-            Long loggedInUserId = loggedInUserIdOpt.get();
             Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
 
             if (!loggedInUserId.equals(questionAuthorId)) {
                 throw new MemberAccessDeniedException();
             }
 
+
+            for (String tagName : tagNames) {
+                Optional<Tag> tagOptional = tagRepository.findByTagName(tagName);
+                if (tagOptional.isEmpty()) {
+                    throw new TagNotFoundException();
+                }
+            }
+
             // 기존에 연결된 태그들을 가져와서 삭제할 수 있도록 처리
             List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
             List<QuestionTag> tagsToRemove = new ArrayList<>();
+
             for (QuestionTag tag : existingTags) {
                 if (!tagNames.contains(tag.getTag().getTagName())) {
                     tagsToRemove.add(tag);
@@ -155,13 +185,14 @@ public class QuestionService {
                 .orElseThrow(QuestionNotFoundException::new);
 
         if (SecurityUtil.isLogin()) {
+            Long loggedInUserId = SecurityUtil.getCurrentId();
 
-            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-            if (!loggedInUserIdOpt.isPresent()) {
+            Optional<Member> currentMemberOptional = memberRepository.findById(loggedInUserId);
+
+            if (currentMemberOptional.isEmpty()) {
                 throw new MemberNotFoundException();
             }
 
-            Long loggedInUserId = loggedInUserIdOpt.get();
             Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
 
             if (!loggedInUserId.equals(questionAuthorId)) {
@@ -181,12 +212,7 @@ public class QuestionService {
 
         if (SecurityUtil.isLogin()) {
 
-            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-            if (!loggedInUserIdOpt.isPresent()) {
-                throw new MemberNotFoundException();
-            }
-
-            Long currentId = loggedInUserIdOpt.get();
+            Long currentId = SecurityUtil.getCurrentId();
 
             Member currentMember = memberRepository.findById(currentId)
                     .orElseThrow(MemberNotFoundException::new);
