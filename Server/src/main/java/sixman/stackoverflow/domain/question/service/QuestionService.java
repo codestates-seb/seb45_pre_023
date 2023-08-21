@@ -115,60 +115,70 @@ public class QuestionService {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-        if (!loggedInUserIdOpt.isPresent()) {
+        if (SecurityUtil.isLogin()) {
+
+            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+            if (!loggedInUserIdOpt.isPresent()) {
+                throw new MemberNotFoundException();
+            }
+
+            Long loggedInUserId = loggedInUserIdOpt.get();
+            Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
+
+            if (!loggedInUserId.equals(questionAuthorId)) {
+                throw new MemberAccessDeniedException();
+            }
+
+            // 기존에 연결된 태그들을 가져와서 삭제할 수 있도록 처리
+            List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
+            List<QuestionTag> tagsToRemove = new ArrayList<>();
+            for (QuestionTag tag : existingTags) {
+                if (!tagNames.contains(tag.getTag().getTagName())) {
+                    tagsToRemove.add(tag);
+                }
+            }
+
+            existingTags.removeAll(tagsToRemove);
+
+            // 새로운 태그들을 가져와서 추가할 수 있도록 처리
+            List<Tag> newTags = tagRepository.findAllByTagNameIn(tagNames);
+            List<QuestionTag> newQuestionTags = newTags.stream()
+                    .filter(tag -> existingTags.stream().noneMatch(questionTag -> questionTag.getTag().equals(tag)))
+                    .map(tag -> QuestionTag.createQuestionTag(existingQuestion, tag))
+                    .collect(Collectors.toList());
+            existingTags.addAll(newQuestionTags);
+
+            existingQuestion.setTitle(title);
+            existingQuestion.setDetail(detail);
+            existingQuestion.setExpect(expect);
+
+            return questionRepository.save(existingQuestion);
+        }else{
             throw new MemberBadCredentialsException();
         }
-
-        Long loggedInUserId = loggedInUserIdOpt.get();
-        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
-
-        if (!loggedInUserId.equals(questionAuthorId)) {
-            throw new MemberAccessDeniedException();
-        }
-
-        // 기존에 연결된 태그들을 가져와서 삭제할 수 있도록 처리
-        List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
-        List<QuestionTag> tagsToRemove = new ArrayList<>();
-        for (QuestionTag tag : existingTags) {
-            if (!tagNames.contains(tag.getTag().getTagName())) {
-                tagsToRemove.add(tag);
-            }
-        }
-
-        existingTags.removeAll(tagsToRemove);
-
-        // 새로운 태그들을 가져와서 추가할 수 있도록 처리
-        List<Tag> newTags = tagRepository.findAllByTagNameIn(tagNames);
-        List<QuestionTag> newQuestionTags = newTags.stream()
-                .filter(tag -> existingTags.stream().noneMatch(questionTag -> questionTag.getTag().equals(tag)))
-                .map(tag -> QuestionTag.createQuestionTag(existingQuestion, tag))
-                .collect(Collectors.toList());
-        existingTags.addAll(newQuestionTags);
-
-        existingQuestion.setTitle(title);
-        existingQuestion.setDetail(detail);
-        existingQuestion.setExpect(expect);
-
-        return questionRepository.save(existingQuestion);
     }
 
     public void deleteQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-        if (!loggedInUserIdOpt.isPresent()) {
+        if (SecurityUtil.isLogin()) {
+
+            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+            if (!loggedInUserIdOpt.isPresent()) {
+                throw new MemberNotFoundException();
+            }
+
+            Long loggedInUserId = loggedInUserIdOpt.get();
+            Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
+
+            if (!loggedInUserId.equals(questionAuthorId)) {
+                throw new MemberAccessDeniedException();
+            }
+            questionRepository.delete(question);
+        }else{
             throw new MemberBadCredentialsException();
         }
-
-        Long loggedInUserId = loggedInUserIdOpt.get();
-        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
-
-        if (!loggedInUserId.equals(questionAuthorId)) {
-            throw new MemberAccessDeniedException();
-        }
-        questionRepository.delete(question);
     }
 
 
