@@ -1,8 +1,12 @@
 package sixman.stackoverflow.integration;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.support.StandardServletPartUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.client.HttpClientErrorException;
 import sixman.stackoverflow.auth.jwt.dto.LoginDto;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
@@ -14,21 +18,27 @@ import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.global.response.PageInfo;
+import sixman.stackoverflow.module.aws.service.S3Service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.DynamicTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.springframework.http.MediaType.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("회원 조회, 수정, 삭제 통합 테스트")
 public class MemberIntegrationTest extends IntegrationTest{
+
+    @Autowired S3Service s3Service;
 
     Member member;
     String memberPassword = "1q2w3e4r!";
@@ -528,4 +538,117 @@ public class MemberIntegrationTest extends IntegrationTest{
         assertThat(deleteMember.isEnabled()).isFalse();
     }
 
+    @Test
+    @DisplayName("멤버 탈퇴 실패 테스트 - 다른 회원의 id 값으로 탈퇴 시도 시 403 에러 반환")
+    void deleteMemberAccessDenied() throws Exception {
+        //given
+        Long memberId = member.getMemberId();
+
+        ///when
+        ResultActions actions = mockMvc.perform(delete("/members/{member-id}", memberId)
+                .header("Authorization", otherAccessToken) // 다른 회원의 토큰
+                .contentType(APPLICATION_JSON));
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        //멤버가 삭제되지 않았는지 확인
+        Member deleteMember = memberRepository.findById(memberId).orElseThrow();
+        assertThat(deleteMember.isEnabled()).isTrue();
+    }
+
+    @TestFactory
+    @DisplayName("S3 버킷에 이미지 저장, 삭제 테스트")
+    Collection<DynamicTest> imageTest() {
+        //given
+        Long memberId = member.getMemberId();
+
+        return List.of(
+                dynamicTest("member 에 이미지를 업데이트 한다.", () -> {
+                    //given
+                    MockMultipartFile file =
+                            new MockMultipartFile(
+                                    "file",
+                                    "test.png",
+                                    IMAGE_PNG_VALUE,
+                                    "test".getBytes());
+
+
+                    //when
+                    ResultActions actions = mockMvc.perform(
+                            multipart("http://localhost:8080/members/{member-id}/image", memberId)
+                                    .file(file)
+                                    .header("Authorization", accessToken)
+                                    .contentType(MULTIPART_FORM_DATA)
+                                    .with(request -> {
+                                        request.setMethod("PATCH");
+                                        return request;
+                                    }));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isNoContent())
+                            .andExpect(header().exists("Location"));
+
+                    //member 정보에 이미지가 업데이트 되었는지 확인
+                    Member updatedMember = memberRepository.findById(memberId).orElseThrow();
+                    assertThat(updatedMember.getMyInfo().getImage()).isNotNull();
+
+                    //Location 에 있는 presignedUrl 로 접근할 수 있는지 학인
+                    String preSignedUrl = actions.andReturn().getResponse().getHeader("Location");
+                    ResponseEntity<byte[]> response = getResponseEntity(preSignedUrl);
+                    assertThat(response.getStatusCodeValue()).isEqualTo(200);
+                }),
+                dynamicTest("member 정보를 받으면 image 값으로 presignedUrl 을 받는다.", () -> {
+                    //when
+                    ResultActions actions = mockMvc.perform(get("/members/{member-id}", memberId)
+                            .header("Authorization", accessToken)
+                            .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isOk());
+
+                    //presignedUrl 로 접근할 수 있는지 확인
+                    MemberResponse memberResponse = getApiSingleResponseFromResult(actions, MemberResponse.class).getData();
+                    String preSignedUrl = memberResponse.getImage();
+                    ResponseEntity<byte[]> response = getResponseEntity(preSignedUrl);
+                    assertThat(response.getStatusCodeValue()).isEqualTo(200);
+                }),
+                dynamicTest("member 의 이미지를 삭제한다.", () -> {
+                    //given
+                    Member member = memberRepository.findById(memberId).orElseThrow();
+                    String preSignedUrl = s3Service.getPreSignedUrl(member.getMyInfo().getImage()); //미리 presignedUrl 을 받아둔다.
+
+                    //when
+                    ResultActions actions = mockMvc.perform(delete("/members/{member-id}/image", memberId)
+                            .header("Authorization", accessToken)
+                            .contentType(APPLICATION_JSON));
+
+                    //then
+                    actions
+                            .andDo(print())
+                            .andExpect(status().isNoContent());
+
+                    //미리 받아둔 presignedUrl 로 접근할 수 있는지 확인 (404 에러)
+                    assertThatThrownBy(
+                            () -> getResponseEntity(preSignedUrl))
+                            .isInstanceOf(HttpClientErrorException.NotFound.class);
+
+                    //member 의 image 값이 null 인지 확인
+                    Member updatedMember = memberRepository.findById(memberId).orElseThrow();
+                    assertThat(updatedMember.getMyInfo().getImage()).isNull();
+                })
+        );
+    }
+
+    private ResponseEntity<byte[]> getResponseEntity(String url) throws UnsupportedEncodingException {
+        return restTemplate.getForEntity(
+                URLDecoder.decode(url, "UTF-8"),
+                byte[].class);
+    }
 }

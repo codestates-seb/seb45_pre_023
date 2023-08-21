@@ -71,10 +71,10 @@ public abstract class IntegrationTest {
     @Autowired protected AnswerRecommendRepository answerRecommendRepository;
     @Autowired protected PasswordEncoder passwordEncoder;
     @Autowired protected EntityManager entityManager;
+    @Autowired protected RestTemplate restTemplate;
 
     @MockBean protected MailService mailService;
     @MockBean protected RedisService redisService;
-    @MockBean protected RestTemplate restTemplate;
     @MockBean protected DefaultOAuth2UserService defaultOAuth2UserService;
 
     protected void deleteAll(){

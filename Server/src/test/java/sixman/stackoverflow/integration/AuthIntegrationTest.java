@@ -1,24 +1,58 @@
 package sixman.stackoverflow.integration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import sixman.stackoverflow.auth.jwt.dto.LoginDto;
+import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
+import sixman.stackoverflow.auth.jwt.service.TokenProvider;
 import sixman.stackoverflow.auth.oauth.service.Provider;
+import sixman.stackoverflow.domain.answer.entitiy.Answer;
+import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
+import sixman.stackoverflow.domain.answerrecommend.answerrecommendrepository.AnswerRecommendRepository;
 import sixman.stackoverflow.domain.member.controller.dto.MemberCreateApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberFindPasswordApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberMailAuthApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberMailConfirmApiRequest;
+import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.domain.member.entity.Member;
+import sixman.stackoverflow.domain.member.entity.MyInfo;
+import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.question.entity.Question;
+import sixman.stackoverflow.domain.question.repository.QuestionRepository;
+import sixman.stackoverflow.domain.questionrecommend.repository.QuestionRecommendRepository;
+import sixman.stackoverflow.domain.questiontag.QuestionTagRepository;
+import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
+import sixman.stackoverflow.domain.reply.entity.Reply;
+import sixman.stackoverflow.domain.reply.repository.ReplyRepository;
+import sixman.stackoverflow.domain.tag.entity.Tag;
+import sixman.stackoverflow.domain.tag.repository.TagRepository;
+import sixman.stackoverflow.module.email.service.MailService;
+import sixman.stackoverflow.module.redis.service.RedisService;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,14 +61,30 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("회원 인증/가입 통합 테스트")
-@Rollback
-public class AuthIntegrationTest extends IntegrationTest{
+@SpringBootTest
+@ActiveProfiles("local")
+@AutoConfigureMockMvc
+@Transactional
+public class AuthIntegrationTest {
+
+    @Autowired protected MockMvc mockMvc;
+    @Autowired protected ObjectMapper objectMapper;
+    @Autowired protected MemberRepository memberRepository;
+    @Autowired protected PasswordEncoder passwordEncoder;
+
+    @MockBean
+    protected MailService mailService;
+    @MockBean protected RedisService redisService;
+    @MockBean protected RestTemplate restTemplate;
+    @MockBean protected DefaultOAuth2UserService defaultOAuth2UserService;
 
     @AfterEach
     void tearDown() {
@@ -187,7 +237,7 @@ public class AuthIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    @DisplayName("회원가입 실패 테스트 - 이메일 인증을 완료하지 않았을 때 회원가입을 시도하면 400 에러를 반환한다.")
+    @DisplayName("회원가입 실패 테스트 - 이메일 인증을 완료하지 않았을 때 회원가입을 시도하면 401 에러를 반환한다.")
     void signupEmailAuthNotComplete() throws Exception {
         //given
         String email = "test@google.com";
@@ -210,7 +260,7 @@ public class AuthIntegrationTest extends IntegrationTest{
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("이메일 인증이 완료되지 않았습니다."));
     }
 
@@ -508,7 +558,7 @@ public class AuthIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    @DisplayName("비밀번호 찾기 실패 테스트 - 이메일 인증을 완료하지 않았을 때 비밀번호 찾기를 시도하면 400 에러를 반환한다.")
+    @DisplayName("비밀번호 찾기 실패 테스트 - 이메일 인증을 완료하지 않았을 때 비밀번호 찾기를 시도하면 401 에러를 반환한다.")
     void findPasswordEmailAuthNotComplete() throws Exception {
 
         String email = "test@google.com";
@@ -532,7 +582,7 @@ public class AuthIntegrationTest extends IntegrationTest{
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("이메일 인증이 완료되지 않았습니다."));
     }
 
@@ -657,5 +707,52 @@ public class AuthIntegrationTest extends IntegrationTest{
 
         given(defaultOAuth2UserService.loadUser(any(OAuth2UserRequest.class)))
                 .willReturn(defaultOAuth2User);
+    }
+
+
+    private UserDetails createUserDetails(Member member) {
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
+
+        return new CustomUserDetails(
+                member.getMemberId(),
+                String.valueOf(member.getEmail()),
+                member.getPassword(),
+                Collections.singleton(grantedAuthority)
+        );
+    }
+
+    private Member createAndSaveMember(String email){
+
+        Member member = createMember(email);
+
+        return memberRepository.save(member);
+    }
+
+    private Member createAndSaveMember(String email, String password){
+
+        Member member = createMember(email);
+        member.updatePassword(passwordEncoder.encode(password));
+
+        return memberRepository.save(member);
+    }
+
+    private Member createAndSaveMemberDisable(String email){
+
+        Member member = createMember(email);
+        member.disable();
+
+        return memberRepository.save(member);
+    }
+
+    private Member createMember(String email) {
+        Member member = Member.builder()
+                .email(email)
+                .nickname("test")
+                .password(passwordEncoder.encode("1234abcd!"))
+                .authority(Authority.ROLE_USER)
+                .myInfo(MyInfo.builder().build())
+                .enabled(true)
+                .build();
+        return member;
     }
 }
