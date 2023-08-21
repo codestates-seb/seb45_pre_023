@@ -31,5 +31,9 @@ public class Tag extends BaseEntity {
     public void setTagName(String tagName) {
         this.tagName = tagName;
     }
+
+    public Tag(String tagName) {
+        this.tagName = tagName;
+    }
 }
 

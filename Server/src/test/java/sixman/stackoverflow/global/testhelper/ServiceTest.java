@@ -33,6 +33,7 @@ import sixman.stackoverflow.module.email.service.MailService;
 import sixman.stackoverflow.module.redis.service.RedisService;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Collections;
 
 @Transactional
@@ -140,6 +141,17 @@ public abstract class ServiceTest {
                 .content("test")
                 .question(question)
                 .recommend(num)
+                .build();
+    }
+
+    protected Answer createanswerdetail2(Member member, Question question, int num) {
+        return Answer.builder()
+                .member(member)
+                .content("test")
+                .question(question)
+                .recommend(num)
+                .answerRecommends(new ArrayList<>())
+                .replies(new ArrayList<>())
                 .build();
     }
 

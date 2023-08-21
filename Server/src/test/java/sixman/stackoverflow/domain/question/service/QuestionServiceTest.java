@@ -33,6 +33,7 @@ import sixman.stackoverflow.domain.tag.repository.TagRepository;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.tagexception.TagNotFoundException;
 import sixman.stackoverflow.global.response.ApiPageResponse;
@@ -47,8 +48,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 import static org.assertj.core.api.Assertions.*;
@@ -181,81 +181,94 @@ public class QuestionServiceTest extends ServiceTest {
         }
     }
 
-//    @Test
-//    @DisplayName("입력받은 tagName에 해당하는 질문이 없으면 TagNotFoundException 예외 발생")
-//    public void getLatestQuestionsTagException(){
-//        //given
-//        String nonExistentTagName = "nonExistentTag";
-//
-//        // when & then
-//        assertThrows(TagNotFoundException.class, () -> {
-//            questionService.getLatestQuestions(Pageable.unpaged(), nonExistentTagName);
-//        });
-//    }
+    @Test
+    @DisplayName("질문 목록을 조회할때 tagName이 DB에 없을때 TagNotFoundException() 예외처리가 되는지 테스트")
+    public void getLatestQuestionsTagNotFoundException() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(QuestionSortRequest.CREATED_DATE.getValue()).descending());
+        String tagName = "nonExistentTag";
+
+        // when & then
+        assertThrows(TagNotFoundException.class, () -> {
+            questionService.getLatestQuestions(pageable,tagName);
+        });
+
+    }
+
+    @Test
+    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
+    public void getQuestionById(){
+        // given
+        Member member = createMember();
+        Question question = createQuestionDetail(member,0);
+        Answer answer = createanswerdetail2(member, question,0);
+
+        Tag tag1 = createTag("tag1");
+        Tag tag2 = createTag("tag2");
+
+        QuestionTag questionTag1 = QuestionTag.builder()
+                .question(question)
+                .tag(tag1)
+                .build();
+
+        QuestionTag questionTag2 = QuestionTag.builder()
+                .question(question)
+                .tag(tag2)
+                .build();
+
+        question.setQuestionTags(List.of(questionTag1, questionTag2));
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+        answerRepository.save(answer);
+        tagRepository.save(tag1);
+        tagRepository.save(tag2);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        // when
+        QuestionDetailResponse result = questionService.getQuestionById(question.getQuestionId());
+
+        // then
+
+        assertThat(result).isNotNull();
+        assertThat(result.getQuestionId()).isEqualTo(question.getQuestionId());
+        assertThat(result.getTitle()).isEqualTo(question.getTitle());
+        assertThat(result.getDetail()).isEqualTo(question.getDetail());
+        assertThat(result.getExpect()).isEqualTo(question.getExpect());
+        assertThat(result.getMember().getMemberId()).isEqualTo(question.getMember().getMemberId());
+        assertThat(result.getViews()).isEqualTo(101);
+        assertThat(result.getRecommend()).isEqualTo(question.getRecommend());
+
+        // 태그 확인
+        assertThat(result.getTags()).isNotNull();
+        List<String> actualTags = result.getTags().stream()
+                .map(QuestionTagResponse::getTagName)
+                .collect(Collectors.toList());
+
+        List<String> expectedTags = question.getQuestionTags().stream()
+                .map(tag -> tag.getTag().getTagName())
+                .collect(Collectors.toList());
+
+        assertThat(actualTags).containsExactlyInAnyOrderElementsOf(expectedTags);
+
+        assertThat(result.getAnswer().getAnswers()).hasSize(1); // 답변이 1개인지 확인
+        assertThat(result.getCreatedDate()).isEqualTo(question.getCreatedDate());
+        assertThat(result.getUpdatedDate()).isEqualTo(question.getModifiedDate());
+    }
 
 
-//    @Test
-//    @DisplayName("questionId를 받아서 해당 질문글을 조회한다.")
-//    public void getQuestionById(){
-//        // given
-//        Member member = createMember();
-//        Question question = createQuestionDetail(member,0);
-//        Answer answer = createanswer(member, question);
-//
-//        Tag tag1 = createTag("tag1");
-//        Tag tag2 = createTag("tag2");
-//
-//        QuestionTag questionTag1 = QuestionTag.builder()
-//                .question(question)
-//                .tag(tag1)
-//                .build();
-//
-//        QuestionTag questionTag2 = QuestionTag.builder()
-//                .question(question)
-//                .tag(tag2)
-//                .build();
-//
-//        question.setQuestionTags(List.of(questionTag1, questionTag2));
-//
-//        memberRepository.save(member);
-//        questionRepository.save(question);
-//        answerRepository.save(answer);
-//        tagRepository.save(tag1);
-//        tagRepository.save(tag2);
-//
-//        setDefaultAuthentication(member.getMemberId());
-//
-//        // when
-//        QuestionDetailResponse result = questionService.getQuestionById(question.getQuestionId());
-//
-//        // then
-//
-//        assertThat(result).isNotNull();
-//        assertThat(result.getQuestionId()).isEqualTo(question.getQuestionId());
-//        assertThat(result.getTitle()).isEqualTo(question.getTitle());
-//        assertThat(result.getDetail()).isEqualTo(question.getDetail());
-//        assertThat(result.getExpect()).isEqualTo(question.getExpect());
-//        assertThat(result.getMember().getMemberId()).isEqualTo(question.getMember().getMemberId());
-//        assertThat(result.getViews()).isEqualTo(101);
-//        assertThat(result.getRecommend()).isEqualTo(question.getRecommend());
-//
-//        // 태그 확인
-//        assertThat(result.getTags()).isNotNull();
-//        List<String> actualTags = result.getTags().stream()
-//                .map(QuestionTagResponse::getTagName)
-//                .collect(Collectors.toList());
-//
-//        List<String> expectedTags = question.getQuestionTags().stream()
-//                .map(tag -> tag.getTag().getTagName())
-//                .collect(Collectors.toList());
-//
-//        assertThat(actualTags).containsExactlyInAnyOrderElementsOf(expectedTags);
-//
-//        assertThat(result.getAnswer().getAnswers()).hasSize(1); // 답변이 1개인지 확인
-//        assertThat(result.getCreatedDate()).isEqualTo(question.getCreatedDate());
-//        assertThat(result.getUpdatedDate()).isEqualTo(question.getModifiedDate());
-//    }
+    @Test
+    @DisplayName("questionId에 해당하는 글이 없으면 QuestionNotFoundException() 예외처리가 되는지 테스트.")
+    public void getQuestionByIdException() {
+        //given
+        Long questionId = 123L;
 
+        // When, Then
+        assertThrows(QuestionNotFoundException.class, () -> {
+            questionService.getQuestionById(questionId);
+        });
+    }
 
     @Test
     @DisplayName("생성된 question의 questionId를 반환한다.")
@@ -283,6 +296,59 @@ public class QuestionServiceTest extends ServiceTest {
         assertThat(findQuestion.getViews()).isEqualTo(0);
         assertThat(findQuestion.getRecommend()).isEqualTo(0);
         assertThat(findQuestion.getQuestionTags()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("질문 생성 시 tagName이 비어있을경우 TagNotFoundException() 예외처리가 되는지 테스트")
+    void createQuestionTagNotFoundExceptionEmptyTest(){
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+
+        List<String> tagNames = Arrays.asList();
+
+        // when & then
+        assertThrows(TagNotFoundException.class, () -> {
+            questionService.createQuestion(question,tagNames);
+        });
+    }
+
+    @Test
+    @DisplayName("질문 생성 시 tagName 이 tag DB에 없는 경우 TagNotFoundException() 예외처리가 되는지 테스트")
+    void createQuestionTagNotFoundException(){
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+        List<String> tagNames = Arrays.asList("tag3", "tag4");
+
+        // when & then
+        assertThrows(TagNotFoundException.class, () -> {
+            questionService.createQuestion(question,tagNames);
+        });
+    }
+
+    @Test
+    @DisplayName("질문 생성시 DB에 로그인한 사용자의 Id가 없을때 MemberNotFoundException() 예외처리가 되는지 테스트")
+    void createQuestionMemberNotFoundException(){
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
+                .title("Title")
+                .detail("Detail")
+                .expect("Expect")
+                .tagNames(Arrays.asList("tag1", "tag2"))
+                .build();
+
+        memberRepository.delete(member);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        // when & then
+        assertThrows(MemberNotFoundException.class, () -> {
+            questionController.createQuestion(request);
+        });
     }
 
     @Test
@@ -336,7 +402,91 @@ public class QuestionServiceTest extends ServiceTest {
         assertThat(findQuestion.getQuestionTags().stream().map(
                 questionTag -> questionTag.getTag().getTagName()
         )).containsAll(updateTagNames);
+    }
 
+    @Test
+    @DisplayName("질문 수정시 DB에 로그인한 사용자의 Id가 없을때 MemberNotFoundException() 예외처리가 되는지 테스트")
+    void updateQuestionMemberNotFoundException(){
+        // given
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+
+        String title = "title";
+        String detail = "detail";
+        String expect = "expect";
+        List<String> tags = Arrays.asList("tag1, tag2");
+
+        memberRepository.delete(member);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        // when & then
+        assertThrows(MemberNotFoundException.class, () -> {
+            questionService.updateQuestion(question.getQuestionId(),title,detail,expect,tags);
+        });
+    }
+
+    @Test
+    @DisplayName("questionId에 해당하는 글이 없으면 QuestionNotFoundException() 예외처리가 되는지 테스트")
+    public void updateQuestionQuestionNotFoundException(){
+        //given
+        Long questionId = 123L;
+        String title = "title";
+        String detail = "detail";
+        String expect = "expect";
+        List<String> tags = Arrays.asList("tag1", "tag2");
+
+        // When, Then
+        assertThrows(QuestionNotFoundException.class, () -> {
+            questionService.updateQuestion(questionId,title,detail,expect,tags);
+        });
+    }
+
+    @Test
+    @DisplayName("DB에 입력받은 tagName이 존재하지 않을때 테스트")
+    public void updateQuestionTagNotFoundException(){
+        //given
+        Member member = createMember();
+        Tag tag1 = createTag("tag1");
+        Tag tag2 = createTag("tag2");
+        Tag tag3 = createTag("tag3");
+        Question question = createQuestion(member);
+
+        QuestionTag questionTag1 = QuestionTag.builder()
+                .question(question)
+                .tag(tag1)
+                .build();
+
+        QuestionTag questionTag2 = QuestionTag.builder()
+                .question(question)
+                .tag(tag2)
+                .build();
+
+        question.setQuestionTags(List.of(questionTag1, questionTag2));
+
+        memberRepository.save(member);
+        tagRepository.save(tag1);
+        tagRepository.save(tag2);
+        tagRepository.save(tag3);
+        questionRepository.save(question);
+
+        tagRepository.delete(tag3);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        String updateTitle = "updateTitle";
+        String updateDetail = "updateDetail";
+        String updateExpect = "updateExpect";
+        List<String> updateTagNames = List.of(tag2.getTagName(), tag3.getTagName());
+
+
+        //when, then
+        assertThrows(TagNotFoundException.class, () -> {
+            questionService.updateQuestion(question.getQuestionId(),updateTitle,updateDetail,updateExpect,updateTagNames);
+        });
 
     }
 
@@ -359,6 +509,38 @@ public class QuestionServiceTest extends ServiceTest {
         //then
         Optional<Question> findQuestion = questionRepository.findById(question.getQuestionId());
         assertFalse(findQuestion.isPresent());
+    }
+
+    @Test
+    @DisplayName("질문 삭제시 DB에 로그인한 사용자의 Id가 없을때 MemberNotFoundException() 예외처리가 되는지 테스트")
+    void deleteQuestionMemberNotFoundException(){
+        // given
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+
+        memberRepository.delete(member);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        // when & then
+        assertThrows(MemberNotFoundException.class, () -> {
+            questionService.deleteQuestion(question.getQuestionId());
+        });
+    }
+
+    @Test
+    @DisplayName("questionId에 해당하는 글이 없으면 QuestionNotFoundException() 예외처리가 되는지 테스트")
+    public void deleteQuestionQuestionNotFoundException(){
+        //given
+        Long questionId = 123L;
+
+        // When, Then
+        assertThrows(QuestionNotFoundException.class, () -> {
+            questionService.deleteQuestion(questionId);
+        });
     }
 
     @Test
@@ -391,8 +573,42 @@ public class QuestionServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("questionId에 해당하는 글이 없으면 QuestionNotFoundException() 예외처리가 되는지 테스트")
+    public void addQuestionRecommendQuestionNotFoundException(){
+        //given
+        Long questionId = 123L;
+        TypeEnum type = TypeEnum.UPVOTE;
+
+        // When, Then
+        assertThrows(QuestionNotFoundException.class, () -> {
+            questionService.addQuestionRecommend(questionId, type);
+        });
+    }
+
+    @Test
+    @DisplayName("currentId에 해당하는 member가 존재하지 않으면 MemberNotFoundException() 예외처리가 되는지 테스트")
+    public void addQuestionRecommendMemberNotFoundException(){
+        // given
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+        questionRepository.save(question);
+        memberRepository.save(member);
+        memberRepository.delete(member);
+
+        TypeEnum type = TypeEnum.UPVOTE;
+
+        setDefaultAuthentication(member.getMemberId());
+
+        // when & then
+        assertThrows(MemberNotFoundException.class, () -> {
+            questionService.addQuestionRecommend(question.getQuestionId(),type);
+        });
+    }
+
+    @Test
     @DisplayName("질문을 추천하고 다시 추천을 누르면 취소가 되는지 테스트")
-    public void addQuestionRecommendUpvotecancel(){
+    public void addQuestionRecommendCancel(){
         //given
         Member member = createMember();
 
@@ -422,7 +638,7 @@ public class QuestionServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("질문을 추천하고 비추천을 누르면 추천이 취소가 되고 비추천이 되는지 테스트")
-    public void addQuestionRecommendUpvoteSwitching(){
+    public void addQuestionRecommendSwitching(){
         //given
         Member member = createMember();
 
@@ -451,8 +667,8 @@ public class QuestionServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("로그인을 하지 않으면 질문을 등록할 수 없다.")
-    public void createQuestionException(){
+    @DisplayName("로그인을 하지 않으면 질문을 생성 할 수 없다.")
+    public void createQuestionMemberBadCredentialsException(){
         // given
         Member member = createMember();
         Question question = createQuestion(member);
@@ -524,7 +740,7 @@ public class QuestionServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("로그인을 하지 않으면 질문 추천을 할 수 없다.")
-    public void addQuestionRecommendException() {
+    public void addQuestionRecommendMemberBadCredentialsException() {
         // Given
         Member member = createMember();
         Question question = createQuestionDetail(member,0);
@@ -536,6 +752,28 @@ public class QuestionServiceTest extends ServiceTest {
         // When & Then
         assertThrows(MemberBadCredentialsException.class, () -> {
             questionService.addQuestionRecommend(question.getQuestionId(), TypeEnum.UPVOTE);
+        });
+    }
+
+    @Test
+    @DisplayName("로그인을 하지 않으면 질문 수정을 할 수 없다.")
+    public void updateQuestionMemberBadCredentialsException(){
+        // Given
+        Member member = createMember();
+        Question question = createQuestionDetail(member,0);
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+
+        String title = "update title";
+        String detail = "update detail";
+        String expect = "update expect";
+        List<String> tags = Arrays.asList("tag1", "tag2");
+
+
+        // When & Then
+        assertThrows(MemberBadCredentialsException.class, () -> {
+            questionService.updateQuestion(question.getQuestionId(), title, detail, expect, tags);
         });
     }
 
