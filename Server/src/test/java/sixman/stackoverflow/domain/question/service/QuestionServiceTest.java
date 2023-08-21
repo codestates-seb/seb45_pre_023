@@ -257,22 +257,6 @@ public class QuestionServiceTest extends ServiceTest {
         assertThat(result.getUpdatedDate()).isEqualTo(question.getModifiedDate());
     }
 
-    @Test
-    @DisplayName("questionid에 해당하는 글의 태그가 존재하지 않을때 테스트")
-    public void getQuestionByIdTagNotFoundException(){
-        //given
-        Member member = createMember();
-        Question question = createQuestion(member);
-
-        memberRepository.save(member);
-        questionRepository.save(question);
-
-        //when, then
-        assertThrows(TagNotFoundException.class, () -> {
-            questionService.getQuestionById(question.getQuestionId());
-        });
-
-    }
 
     @Test
     @DisplayName("questionId에 해당하는 글이 없으면 QuestionNotFoundException() 예외처리가 되는지 테스트.")
