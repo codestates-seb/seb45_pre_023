@@ -84,22 +84,30 @@ public class QuestionController {
     public ResponseEntity<ApiSingleResponse<QuestionDetailResponse>> createQuestion(
             @RequestBody @Valid QuestionCreateApiRequest questionCreateApiRequest) {
 
-        Long memberId = SecurityUtil.getCurrentId();
+        if (SecurityUtil.isLogin()) {
 
-        if (memberId==null) {
+            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+            if (!loggedInUserIdOpt.isPresent()) {
+                throw new MemberNotFoundException();
+            }
+            Long currentId = loggedInUserIdOpt.get();
+
+            Optional<Member> optionalMember = memberRepository.findById(currentId);
+
+            if(!optionalMember.isPresent()){
+                throw new MemberNotFoundException();
+            }
+
+            Member member = optionalMember.get();
+            Question question = questionCreateApiRequest.toEntity(member);
+            Long questionId = questionService.createQuestion(question, questionCreateApiRequest.getTagNames());
+
+            URI uri = URI.create("/questions/" + questionId);
+
+            return ResponseEntity.created(uri).build();
+        }else{
             throw new MemberBadCredentialsException();
         }
-
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-
-
-        Member member = optionalMember.get();
-        Question question = questionCreateApiRequest.toEntity(member);
-        Long questionId = questionService.createQuestion(question, questionCreateApiRequest.getTagNames());
-
-        URI uri = URI.create("/questions/" + questionId);
-
-        return ResponseEntity.created(uri).build();
     }
 
     // 질문글 추천 기능
