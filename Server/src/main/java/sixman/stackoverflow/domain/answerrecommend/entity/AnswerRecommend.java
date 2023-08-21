@@ -35,4 +35,12 @@ public class AnswerRecommend extends BaseEntity {
     @JoinColumn(name = "answer_id")
     private Answer answer;
 
+    public TypeEnum getRecommendTypeCurrentUser(Long currentUserId) {
+        if (this.member.getMemberId().equals(currentUserId)) {
+            return this.type;
+        } else {
+            return null;
+        }
+    }
+
 }
