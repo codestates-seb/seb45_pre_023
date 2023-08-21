@@ -1,9 +1,8 @@
 const redirectUrl =
   'http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com'; //'http://localhost:3000';
-const Google_CLIENT_ID =
-  '690166915653-paa941cs02li19r4b778hldnjbaldp1h.apps.googleusercontent.com';
-const Github_CLIENT_ID = '482acf418bf96174b896';
-const Kakao_CLIENT_ID = '0c96492a94d3847f094fda7ec7a29407';
+const Google_CLIENT_ID = process.env.Google_CLIENT_ID;
+const Github_CLIENT_ID = process.env.Github_CLIENT_ID;
+const Kakao_CLIENT_ID = process.env.Kakao_CLIENT_ID;
 
 export const handleGoogleLogin = () => {
   return window.location.assign(

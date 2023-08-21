@@ -42,6 +42,7 @@ export default function LoginForm() {
       })
       .catch((err) => {
         dispatch(errmsg('Login is failed'));
+        console.log(err)
       });
   };
 

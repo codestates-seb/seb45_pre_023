@@ -33,6 +33,11 @@ const AskSlice = createSlice({
     addtags: (state, action) => {
       state.value.tags = [...state.value.tags, action.payload];
     },
+    removetags: (state) => {
+      state.value.tags = state.value.tags.filter(
+        (el, idx) => idx !== state.value.tags.length - 1
+      );
+    },
     initValue: (state) => {
       state.value = { title: '', detail: '', expect: '', tags: [] };
     },
@@ -67,6 +72,7 @@ export const {
   expect,
   tags,
   addtags,
+  removetags,
   initValue,
   titleError,
   detailError,

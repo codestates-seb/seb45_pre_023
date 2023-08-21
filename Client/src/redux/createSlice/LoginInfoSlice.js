@@ -1,12 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const LoginInfoSlice = createSlice({
-  name: 'LoginInfo', // action 이름
-  initialState: { value: { email: '', password: '' }, token: '', myid: '' }, // 초기값
+  name: 'LoginInfo',
+  initialState: { value: { email: '', password: '' }, token: '', myid: '' },
   reducers: {
-    // reducer들 모음
     email: (state, action) => {
-      state.value.email = action.payload; // action에서 값을 받으면 action.payload 으로 들어옴
+      state.value.email = action.payload;
     },
     password: (state, action) => {
       state.value.password = action.payload;

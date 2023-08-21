@@ -1,7 +1,7 @@
 import NextBtn from './button/NextBtn';
 import TipTags from './Tips/TipTags';
 import { useSelector, useDispatch } from 'react-redux';
-import { addtags } from '../../redux/createSlice/AskSlice';
+import { addtags, removetags } from '../../redux/createSlice/AskSlice';
 import { tipbox } from '../../redux/createSlice/TipboxSlice';
 import TagsDropdown from './TagsDropdown/TagsDropdown';
 import { setTagMode } from '../../redux/createSlice/AskSlice';
@@ -20,6 +20,10 @@ export default function Tags() {
       if (e.target.value && !TagsData.includes(e.target.value)) {
         dispatch(addtags(e.target.value));
         e.target.value = '';
+      }
+    } else if (e.key === 'Backspace') {
+      if (TagsData.length) {
+        dispatch(removetags());
       }
     }
   };
@@ -40,16 +44,14 @@ export default function Tags() {
           ))}
         </ul>
         <input
-          className="py-1.5 pl-2 text-sm w-full"
+          className="py-1.5 pl-2 text-sm w-full focus:outline-none"
           onKeyUp={(e) => addTagList(e)}
           placeholder="e.g. (mysql, json, typescript)"
           onFocus={() => {
             dispatch(tipbox('tags'));
             dispatch(setTagMode(true));
           }}
-          onBlur={() => {
-            dispatch(setTagMode(false));
-          }}
+          onBlur={() => setTimeout(() => dispatch(setTagMode(false)), 100)}
           disabled={Next < 4}
         />
       </div>
@@ -58,7 +60,7 @@ export default function Tags() {
 
       <div className="my-1 text-xs text-red-500">{ErrorMsg.tags}</div>
 
-      {Next === 4 ? <NextBtn /> : null}
+      {Next === 4 && <NextBtn />}
       {tipboxName === 'tags' && <TipTags />}
     </div>
   );
