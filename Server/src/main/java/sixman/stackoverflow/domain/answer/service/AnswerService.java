@@ -75,7 +75,7 @@ public class AnswerService {
         return answer.getAnswerId();
 
     }
-    @Transactional(readOnly = true)
+
     public AnswerResponse findAnswer(long answerId) {
 
         Long memberId = SecurityUtil.getCurrentId();
