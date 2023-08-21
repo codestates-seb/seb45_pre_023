@@ -34,7 +34,7 @@ class ReplyRepositoryTest extends RepositoryTest {
     private AnswerRepository answerRepository;
 
     @Test
-    @DisplayName("answerId에 관련된 모든 reply을 page로 받아온다")
+    @DisplayName("answerId에 관련된 모든 reply을 page로 받아와서 페이지 사이즈를 비교한다.")
     void findAllRepliesByAnswer() {
 
         // Given
@@ -52,17 +52,27 @@ class ReplyRepositoryTest extends RepositoryTest {
         replies.add(createReply(answer, "댓글 1"));
         replies.add(createReply(answer, "댓글 2"));
         replies.add(createReply(answer, "댓글 3"));
+        replies.add(createReply(answer, "댓글 4"));
+        replies.add(createReply(answer, "댓글 5"));
+        replies.add(createReply(answer, "댓글 6"));
+        replies.add(createReply(answer, "댓글 7"));
+        replies.add(createReply(answer, "댓글 8"));
+        replies.add(createReply(answer, "댓글 9"));
+
         replyRepository.saveAll(replies);
 
-        Pageable pageable = PageRequest.of(0, 10); // 페이지 0, 페이지 당 최대 10개 아이템
+        Pageable pageable = PageRequest.of(0, 5); // 페이지 0, 페이지 당 최대 5개 아이템
 
         // When
         Page<Reply> replyPage = replyRepository.findByAnswer(answer, pageable);
 
         // Then
-        assertThat(replyPage.getContent()).hasSize(replies.size());
+        assertThat(replyPage.getContent()).hasSize(pageable.getPageSize());
 
     }
+
+
+
 
     private Answer createAnswer(Question question) {
         return Answer.builder()
