@@ -6,12 +6,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
 import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.question.controller.dto.AnswerSortRequest;
+import sixman.stackoverflow.domain.question.controller.dto.QuestionSortRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.question.service.QuestionService;
@@ -24,6 +30,10 @@ import sixman.stackoverflow.global.exception.businessexception.questionexception
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
 import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -149,7 +159,50 @@ class AnswerServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("questionId 를 통해 답변 목록을 페이징으로 찾아서 반환한다.")
-    void findAnswers() { // 정우님이랑 이야기
+    void findAnswers() {
+        // given
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+        for(int i=0; i<5; i++) {
+            Answer answer = createanswerdetail(member, question,i);
+            answerRepository.save(answer);
+        }
+
+        memberRepository.save(member);
+        questionRepository.save(question);
+
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(AnswerSortRequest.CREATED_DATE.getValue()).descending());
+//        Pageable pageable2 = PageRequest.of(0, 5, Sort.by(AnswerSortRequest.RECOMMEND.getValue()).descending());
+
+        //when
+        Page<AnswerResponse> result = answerService.findAnswers(question.getQuestionId(), pageable);
+//        Page<AnswerResponse> result2 = answerService.findAnswers(question.getQuestionId(), pageable2);
+
+        // then
+        assertThat(result.getContent()).hasSize(5);
+
+        List<AnswerResponse> answerList = result.getContent();
+        Instant previousCreatedDate = Instant.now();
+
+        for (AnswerResponse answer : answerList) {
+            LocalDateTime currentLocalDateTime = answer.getCreatedDate();
+            Instant currentCreatedDate = currentLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
+
+            assertThat(currentCreatedDate).isBeforeOrEqualTo(previousCreatedDate);
+            previousCreatedDate = currentCreatedDate;
+        }
+
+//        assertThat(result2.getContent()).hasSize(5);
+//
+//        List<AnswerResponse> answerList = result2.getContent();
+//        int previousRecommend = Integer.MAX_VALUE;
+//
+//        for (AnswerResponse answer : answerList) {
+//            assertThat(answer.getRecommend()).isLessThanOrEqualTo(previousRecommend);
+//            previousRecommend = answer.getRecommend();
+//        }
+
     }
 
 

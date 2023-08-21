@@ -23,6 +23,7 @@ import sixman.stackoverflow.domain.question.service.QuestionService;
 import sixman.stackoverflow.domain.question.service.response.QuestionDetailResponse;
 import sixman.stackoverflow.domain.question.service.response.QuestionResponse;
 import sixman.stackoverflow.global.entity.TypeEnum;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberBadCredentialsException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.InvalidPageParameterException;
 import sixman.stackoverflow.global.response.ApiPageResponse;
@@ -85,11 +86,12 @@ public class QuestionController {
 
         Long memberId = SecurityUtil.getCurrentId();
 
+        if (memberId==null) {
+            throw new MemberBadCredentialsException();
+        }
+
         Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-        if (optionalMember.isEmpty()) {
-            throw new MemberNotFoundException();
-        }
 
         Member member = optionalMember.get();
         Question question = questionCreateApiRequest.toEntity(member);
