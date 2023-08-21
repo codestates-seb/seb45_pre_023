@@ -3,15 +3,18 @@ package sixman.stackoverflow.domain.question.service.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import sixman.stackoverflow.auth.utils.SecurityUtil;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.question.entity.Question;
+import sixman.stackoverflow.domain.questionrecommend.entity.QuestionRecommend;
 import sixman.stackoverflow.domain.questiontag.entity.QuestionTag;
 import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.response.PageInfo;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -41,6 +44,16 @@ public class QuestionDetailResponse {
     }
 
     public static QuestionDetailResponse of(Question question, QuestionAnswer answer) {
+        Long currentUserId = SecurityUtil.getCurrentId();
+        TypeEnum recommendType = null;
+
+        for (QuestionRecommend recommend : question.getQuestionRecommends()) {
+            TypeEnum type = recommend.getRecommendTypeCurrentUser(currentUserId);
+            if (type != null) {
+                recommendType = type;
+                break;
+            }
+        }
 
         return QuestionDetailResponse.builder()
                 .questionId(question.getQuestionId())
@@ -50,6 +63,7 @@ public class QuestionDetailResponse {
                 .member(MemberInfo.of(question.getMember()))
                 .views(question.getViews())
                 .recommend(question.getRecommend())
+                .recommendType(recommendType)
                 .tags(QuestionTagResponse.of(question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toList())))
                 .answer(answer)
                 .createdDate(question.getCreatedDate())

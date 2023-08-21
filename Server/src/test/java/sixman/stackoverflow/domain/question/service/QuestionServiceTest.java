@@ -445,13 +445,11 @@ public class QuestionServiceTest extends ServiceTest {
 //    public void addQuestionRecommendException() {
 //        // Given
 //        Member member = createMember();
-//        Question question = createQuestion(member);
+//        Question question = createQuestionDetail(member,0);
 //
 //        memberRepository.save(member);
 //        questionRepository.save(question);
 //
-//        // Simulate not logged in by setting SecurityContextHolder authentication to null
-//        SecurityContextHolder.getContext().setAuthentication(null);
 //
 //        // When & Then
 //        assertThrows(MemberBadCredentialsException.class, () -> {
@@ -486,6 +484,7 @@ public class QuestionServiceTest extends ServiceTest {
                 .expect("expect")
                 .views(100+num)
                 .recommend(num)
+                .questionRecommends(new ArrayList<>())
                 .questionTags(new ArrayList<>())
                 .answers(new ArrayList<>())
                 .build();

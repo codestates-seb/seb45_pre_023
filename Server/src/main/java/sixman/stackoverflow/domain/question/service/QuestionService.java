@@ -115,10 +115,12 @@ public class QuestionService {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Long loggedInUserId = SecurityUtil.getCurrentId();
-        if(loggedInUserId==null){
+        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+        if (!loggedInUserIdOpt.isPresent()) {
             throw new MemberBadCredentialsException();
         }
+
+        Long loggedInUserId = loggedInUserIdOpt.get();
         Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
 
         if (!loggedInUserId.equals(questionAuthorId)) {
@@ -155,10 +157,12 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Long loggedInUserId = SecurityUtil.getCurrentId();
-        if(loggedInUserId==null){
+        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+        if (!loggedInUserIdOpt.isPresent()) {
             throw new MemberBadCredentialsException();
         }
+
+        Long loggedInUserId = loggedInUserIdOpt.get();
         Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
 
         if (!loggedInUserId.equals(questionAuthorId)) {
@@ -173,10 +177,12 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Long currentId = SecurityUtil.getCurrentId();
-        if (currentId == null) {
+        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+        if (!loggedInUserIdOpt.isPresent()) {
             throw new MemberBadCredentialsException();
         }
+
+        Long currentId = loggedInUserIdOpt.get();
 
         Member currentMember = memberRepository.findById(currentId)
                 .orElseThrow(MemberNotFoundException::new);
