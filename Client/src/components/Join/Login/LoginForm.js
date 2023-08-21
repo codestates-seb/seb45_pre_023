@@ -41,8 +41,16 @@ export default function LoginForm() {
         nevigate(RouteConst.Main);
       })
       .catch((err) => {
-        dispatch(errmsg('Login is failed'));
-        console.log(err)
+        if (err.response.data.code === 400) {
+          dispatch(errmsg(`Please check your information (${err.response.data.code})`));
+          alert(`${err.response.data.message} (${err.response.data.code})`);
+        } else if (err.response.data.code === 401) {
+          dispatch(errmsg(`This account has been withdrawn. (${err.response.data.code})`));
+          alert(`${err.response.data.message} (${err.response.data.code})`);
+        } else {
+          dispatch(errmsg(`Login is failed`));
+          alert(`${err.response.data.message} (${err.response.data.code})`);
+        }
       });
   };
 
@@ -132,6 +140,7 @@ export default function LoginForm() {
           onClick={(e) => {
             e.preventDefault();
             handleLogin();
+            dispatch(errmsg(''))
           }}
           type="submit"
         >

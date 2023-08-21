@@ -28,9 +28,8 @@ export default function ReviewBtn() {
     } else {
       dispatch(expectError(''));
     }
-    if (!AskData.tags.length) {
+    if (!AskData.tagNames.length) {
       dispatch(tagsError('Please add the relevant tags'));
-      return;
     } else {
       dispatch(tagsError(''));
     }
@@ -38,7 +37,7 @@ export default function ReviewBtn() {
       AskData.title &&
       AskData.detail &&
       AskData.expect &&
-      AskData.tags.length
+      AskData.tagNames.length
     ) {
       dispatch(next());
       dispatch(initError());

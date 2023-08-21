@@ -16,8 +16,13 @@ const LoginInfoSlice = createSlice({
     myid: (state, action) => {
       state.myid = action.payload;
     },
+    initLogin: (state) => {
+      state.value.email = '';
+      state.value.password = '';
+      state.token = '';
+    },
   },
 });
 
 export default LoginInfoSlice;
-export const { email, password, logintoken, myid } = LoginInfoSlice.actions;
+export const { email, password, logintoken, myid, initLogin } = LoginInfoSlice.actions;

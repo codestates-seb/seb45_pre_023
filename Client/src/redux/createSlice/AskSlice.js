@@ -7,7 +7,7 @@ const AskSlice = createSlice({
       title: '',
       detail: '',
       expect: '',
-      tags: [],
+      tagNames: [],
     },
     errmsg: {
       title: '',
@@ -28,18 +28,18 @@ const AskSlice = createSlice({
       state.value.expect = action.payload;
     },
     tags: (state, action) => {
-      state.value.tags = [...action.payload];
+      state.value.tagNames = [...action.payload];
     },
     addtags: (state, action) => {
-      state.value.tags = [...state.value.tags, action.payload];
+      state.value.tagNames = [...state.value.tagNames, action.payload];
     },
     removetags: (state) => {
-      state.value.tags = state.value.tags.filter(
-        (el, idx) => idx !== state.value.tags.length - 1
+      state.value.tagNames = state.value.tagNames.filter(
+        (el, idx) => idx !== state.value.tagNames.length - 1
       );
     },
     initValue: (state) => {
-      state.value = { title: '', detail: '', expect: '', tags: [] };
+      state.value = { title: '', detail: '', expect: '', tagNames: [] };
     },
     titleError: (state, action) => {
       state.errmsg.title = action.payload;
@@ -54,7 +54,10 @@ const AskSlice = createSlice({
       state.errmsg.tags = action.payload;
     },
     initError: (state) => {
-      state.errmsg = { title: '', detail: '', expect: '', tags: '' };
+      state.errmsg.title = '';
+      state.errmsg.detail = '';
+      state.errmsg.expect = '';
+      state.errmsg.tags = '';
     },
     setTagList: (state, action) => {
       state.tagsdata.tagslist = action.payload;

@@ -46,7 +46,7 @@ export default function Review() {
         </div>
       )}
 
-      {Next === 5 ? <ReviewBtn /> : null}
+      {Next === 5 && <ReviewBtn />}
       {tipboxName === 'review' && <TipReview />}
     </div>
   );

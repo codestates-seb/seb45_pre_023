@@ -13,7 +13,7 @@ import { setTagList } from '../../redux/createSlice/AskSlice';
 
 export default function Ask() {
   const dispatch = useDispatch();
-  const Next = useSelector((state) => state.tipbox.position);
+  const Next = useSelector((state) => state.tipbox.nextbtn);
 
   const getTags = () => {
     return axios

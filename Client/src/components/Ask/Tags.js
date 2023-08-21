@@ -12,8 +12,10 @@ export default function Tags() {
   const Next = useSelector((state) => state.tipbox.nextbtn);
   const tipboxName = useSelector((state) => state.tipbox.tipboxName);
   const ErrorMsg = useSelector((state) => state.ask.errmsg);
-  const TagsData = useSelector((state) => state.ask.value.tags);
+  const TagsData = useSelector((state) => state.ask.value.tagNames);
   const TagsMode = useSelector((state) => state.ask.tagsdata.mode);
+
+  console.log(Next)
 
   const addTagList = (e) => {
     if (e.key === 'Enter') {

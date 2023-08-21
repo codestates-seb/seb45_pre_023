@@ -1,34 +1,43 @@
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 import {
   findpassword,
   findmodemodal,
   findinit,
+  findmsg,
 } from '../../../../redux/createSlice/FindInfoSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 
 export default function FindPassword() {
   const dispatch = useDispatch();
   const FindInfo = useSelector((state) => state.findinfo);
 
-  console.log({ email: FindInfo.email, password: FindInfo.password });
-
   const handleNewPW = () => {
+    if (!FindInfo.password) {
+      return dispatch(findmsg('Please enter a new password.'));
+    }
+
     return axios
       .patch(
         'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/password',
         { email: FindInfo.email, password: FindInfo.password }
       )
       .then((res) => {
+        alert('비밀번호 변경이 완료되었습니다.');
         dispatch(findmodemodal());
         dispatch(findinit());
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        dispatch(
+          findmsg(`Please enter a vaild password. (${err.response.data.code})`)
+        );
+        console.log(err.response);
+      });
   };
 
   return (
     <div>
       <div className="flex flex-col justify-center items-center">
-        <span className="mt-2 w-72 text-left text-md font-semibold">
+        <span className="mt-2 pl-1 w-72 text-left text-md font-semibold">
           New password
         </span>
         <input
@@ -37,6 +46,10 @@ export default function FindPassword() {
           value={FindInfo.password}
           onChange={(e) => dispatch(findpassword(e.target.value))}
         />
+        <span className="my-1 pl-1 w-72 text-xs text-gray-400">
+          Passwords must contain at least nine characters, including at least 1
+          special character and 1 number.
+        </span>
       </div>
 
       <button

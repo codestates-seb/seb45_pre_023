@@ -3,7 +3,7 @@ import { addtags } from '../../../redux/createSlice/AskSlice';
 
 export default function TagsDropList({ el }) {
   const dispatch = useDispatch();
-  const TagsData = useSelector((state) => state.ask.value.tags);
+  const TagsData = useSelector((state) => state.ask.value.tagNames);
 
   const addTagList = (tagName) => {
     if (!TagsData.includes(tagName)) {

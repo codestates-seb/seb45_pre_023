@@ -1,12 +1,12 @@
-import { useSelector, useDispatch } from "react-redux";
-import { code } from "../../../redux/createSlice/SignUpInfoSlice";
-import { errmsg } from "../../../redux/createSlice/ErrMsgSlice";
-import axios from "axios";
+import { useSelector, useDispatch } from 'react-redux';
+import { code } from '../../../redux/createSlice/SignUpInfoSlice';
+import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
+import axios from 'axios';
 
 export default function CodeBox() {
-    const SignUpInfo = useSelector((state) => state.signupinfo.value);
-    const Code = useSelector((state) => state.signupinfo.code);
-    const dispatch = useDispatch();
+  const SignUpInfo = useSelector((state) => state.signupinfo.value);
+  const Code = useSelector((state) => state.signupinfo.code);
+  const dispatch = useDispatch();
 
   const handleVerifyCode = () => {
     console.log({ email: SignUpInfo.email, code: Code });
@@ -15,10 +15,22 @@ export default function CodeBox() {
         'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/members/email/confirm',
         { email: SignUpInfo.email, code: Code }
       )
-      .then((res) => dispatch(errmsg('Verified with a valid code.')))
-      .catch((err) =>
-        dispatch(errmsg('Please enter the correct verification code'))
-      );
+      .then((res) => {
+        if (res.data.data) {
+          alert('성공적으로 이메일 인증이 완료되었습니다');
+          dispatch(errmsg('Verified with a valid code.'));
+        } else {
+          alert('이메일 인증에 실패했습니다.');
+          dispatch(errmsg(`Invalid authorization code.`));
+        }
+      })
+      .catch((err) => {
+        if (err.response.data.code === 400) {
+          dispatch(errmsg('Please enter authorization code'));
+        } else {
+          alert(`이메일 인증에 실패했습니다. ${err.response.data.code}`);
+        }
+      });
   };
 
   return (

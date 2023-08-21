@@ -24,6 +24,7 @@ export default function SubmitBtn() {
         { headers }
       )
       .then((res) => {
+        alert('성공적으로 질문이 작성되었습니다.')
         navigate(RouteConst.Main);
         dispatch(initValue());
       })

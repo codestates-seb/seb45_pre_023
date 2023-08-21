@@ -2,6 +2,7 @@ import {
   findcode,
   findmodeentercode,
   findmodeenterpw,
+  findmsg,
 } from '../../../../redux/createSlice/FindInfoSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
@@ -11,17 +12,29 @@ export default function FindCodeBox() {
   const FindInfo = useSelector((state) => state.findinfo);
 
   const handleCode = () => {
+    dispatch(findmsg(''));
     return axios
       .post(
         'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/email/confirm',
         { email: FindInfo.email, code: FindInfo.code }
       )
       .then((res) => {
-        console.log(res)
-        dispatch(findmodeentercode(false));
-        dispatch(findmodeenterpw(true));
+        if (res.data.data) {
+          dispatch(findmodeentercode(false));
+          dispatch(findmodeenterpw(true));
+        } else {
+          dispatch(findmsg(`Invalid authorization code.`));
+        }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err.response.data.code === 400) {
+          dispatch(
+            findmsg(
+              `Please enter the authorization code. (${err.response.data.code})`
+            )
+          );
+        }
+      });
   };
 
   return (
@@ -30,7 +43,7 @@ export default function FindCodeBox() {
 
       <div className="flex justify-between items-center mt-2 mb-4 w-60 h-9">
         <input
-          className="w-28 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
+          className="w-28 h-9 text-sm text-center border-2 border-solid border-gray rounded-md"
           type="text"
           value={FindInfo.code}
           onChange={(e) => dispatch(findcode(e.target.value))}

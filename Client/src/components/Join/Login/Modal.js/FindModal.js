@@ -16,6 +16,7 @@ export default function FindModal() {
   const FindInfo = useSelector((state) => state.findinfo);
 
   const handleEmail = () => {
+    dispatch(findmsg(''));
     if (!FindInfo.email) {
       return dispatch(findmsg('Please enter your Email'));
     }
@@ -24,8 +25,21 @@ export default function FindModal() {
         'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/email',
         { email: FindInfo.email }
       )
-      .then((res) => dispatch(findmodeentercode(true)))
-      .catch((err) => dispatch(findmsg('This email does not exist.')));
+      .then((res) => {
+        dispatch(findmodeentercode(true));
+        dispatch(findmsg(`Your email has been sent successfully.`));
+      })
+      .catch((err) => {
+        if (err.response.data.code === 400) {
+          dispatch(
+            findmsg(`Please enter a valid email (${err.response.data.code})`)
+          );
+        } else {
+          dispatch(
+            findmsg(`This email does not exist. (${err.response.data.code})`)
+          );
+        }
+      });
   };
 
   return (
@@ -59,7 +73,6 @@ export default function FindModal() {
             value={FindInfo.email}
             onChange={(e) => dispatch(findemail(e.target.value))}
           />
-          <div className="my-1 text-sm text-red-500">{FindInfo.msg}</div>
         </div>
 
         <button
@@ -71,6 +84,7 @@ export default function FindModal() {
 
         {CanEnterCode && <FindCodeBox />}
         {CanEnterPW && <FindPassword />}
+        <div className="my-1 text-sm text-red-500">{FindInfo.msg}</div>
       </div>
     </div>
   );
