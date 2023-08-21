@@ -13,12 +13,15 @@ import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
 
 import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
+import sixman.stackoverflow.domain.answerrecommend.answerrecommendrepository.AnswerRecommendRepository;
+import sixman.stackoverflow.domain.answerrecommend.entity.AnswerRecommend;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.reply.repository.ReplyRepository;
+import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.exception.businessexception.answerexception.AnswerNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
@@ -38,14 +41,18 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final ReplyRepository replyRepository;
 
+    private final AnswerRecommendRepository answerRecommendRepository;
+
     public AnswerService(AnswerRepository answerRepository,
                          MemberRepository memberRepository,
                          QuestionRepository questionRepository,
-                         ReplyRepository replyRepository) {
+                         ReplyRepository replyRepository,
+                         AnswerRecommendRepository answerRecommendRepository) {
         this.answerRepository = answerRepository;
         this.memberRepository = memberRepository;
         this.questionRepository = questionRepository;
         this.replyRepository = replyRepository;
+        this.answerRecommendRepository = answerRecommendRepository;
     }
 
 
@@ -66,10 +73,20 @@ public class AnswerService {
     }
     @Transactional(readOnly = true)
     public AnswerResponse findAnswer(long answerId) {
+
+        Long memberId = SecurityUtil.getCurrentId();
+
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        Member member = memberOptional.orElseThrow(MemberNotFoundException::new);
+
         Optional<Answer> answerOptional = answerRepository.findById(answerId);
         Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
 
-        return AnswerResponse.createAnswerResponse(answer);
+        TypeEnum answerRecommendType = getRecommendTypeForMemberAndAnswer(member, answer);
+
+        return AnswerResponse.createAnswerResponse(answer, answerRecommendType);
+
+
     }
 
 
@@ -135,5 +152,11 @@ public class AnswerService {
             throw new MemberAccessDeniedException();
         }
     }
+
+    private TypeEnum getRecommendTypeForMemberAndAnswer(Member member, Answer answer) {
+        Optional<AnswerRecommend> answerRecommendOptional = answerRecommendRepository.findByMemberAndAnswer(member, answer);
+        return answerRecommendOptional.map(AnswerRecommend::getType).orElse(null);
+    }
+
 }
 

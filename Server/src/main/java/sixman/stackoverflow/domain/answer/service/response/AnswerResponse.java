@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answerrecommend.entity.AnswerRecommend;
+import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberInfo;
 import sixman.stackoverflow.domain.reply.entity.Reply;
 import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
@@ -13,7 +14,10 @@ import sixman.stackoverflow.global.entity.TypeEnum;
 import sixman.stackoverflow.global.response.PageInfo;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -29,6 +33,8 @@ public class AnswerResponse {
     private AnswerReply reply;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+    private List<MemberInfo> recommendingMembers;
+
 
     @Getter
     @Builder
@@ -38,19 +44,21 @@ public class AnswerResponse {
         private List<ReplyResponse> replies;
         private PageInfo pageInfo;
     }
-    public static AnswerResponse createAnswerResponse(Answer answer) {
+    public static AnswerResponse createAnswerResponse(Answer answer, TypeEnum answerRecommendType) {
 
         return AnswerResponse.builder()
 
                 .answerId(answer.getAnswerId())
                 .content(answer.getContent())
                 .member(MemberInfo.of(answer.getMember()))
+                .recommendType(answerRecommendType)
                 .updatedDate(answer.getCreatedDate())
                 .createdDate(answer.getModifiedDate())
-                .recommendType(null)
                 .build();
 
     }
+
+
 
     public static AnswerResponse of(Answer answer, Page<Reply> replyPage) {
         List<ReplyResponse> replyResponses = replyPage.getContent().stream()

@@ -120,7 +120,6 @@ class AnswerServiceTest extends ServiceTest {
         AnswerResponse answerResponse = answerService.findAnswer(answer.getAnswerId());
 
         //then
-        assertNotNull(answerResponse);
         assertThat(answerResponse.getContent()).isEqualTo(answer.getContent());
         assertThat(answerResponse.getMember().getMemberId()).isEqualTo(member.getMemberId());
         assertThat(answerResponse.getAnswerId()).isEqualTo(answer.getAnswerId());
