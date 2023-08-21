@@ -16,7 +16,6 @@ import java.util.List;
 public class MemberUpdateApiRequest {
 
     @Size(min = 1, max = 15, message = "{validation.size}")
-    @NotBlank(message = "{validation.member.nickname}")
     private String nickname;
     private String myIntro;
     private String title;
