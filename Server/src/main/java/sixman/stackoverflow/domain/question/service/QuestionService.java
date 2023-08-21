@@ -177,41 +177,46 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-        if (!loggedInUserIdOpt.isPresent()) {
+        if (SecurityUtil.isLogin()) {
+
+            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+            if (!loggedInUserIdOpt.isPresent()) {
+                throw new MemberNotFoundException();
+            }
+
+            Long currentId = loggedInUserIdOpt.get();
+
+            Member currentMember = memberRepository.findById(currentId)
+                    .orElseThrow(MemberNotFoundException::new);
+
+            Optional<QuestionRecommend> existingRecommend = question.getQuestionRecommends().stream()
+                    .filter(recommend -> recommend.getMember().equals(currentMember))
+                    .findFirst();
+
+            if (existingRecommend.isPresent()) {
+                QuestionRecommend recommend = existingRecommend.get();
+
+                // 같은 타입의 추천을 취소하거나 반대 타입의 추천으로 변경
+                if (type == recommend.getType()) {
+                    question.getQuestionRecommends().remove(recommend);
+                } else {
+                    recommend.setType(type); // 추천 타입 변경
+                }
+            } else {
+                // 새로운 추천 또는 비추천 추가
+                QuestionRecommend newRecommend = QuestionRecommend.builder()
+                        .type(type)
+                        .member(currentMember)
+                        .question(question)
+                        .build();
+                question.getQuestionRecommends().add(newRecommend);
+            }
+
+            // 추천 정보 변경 후 추천수 업데이트
+            question.applyRecommend();
+            questionRepository.save(question);
+        }else{
             throw new MemberBadCredentialsException();
         }
-
-        Long currentId = loggedInUserIdOpt.get();
-
-        Member currentMember = memberRepository.findById(currentId)
-                .orElseThrow(MemberNotFoundException::new);
-
-        Optional<QuestionRecommend> existingRecommend = question.getQuestionRecommends().stream()
-                .filter(recommend -> recommend.getMember().equals(currentMember))
-                .findFirst();
-
-        if (existingRecommend.isPresent()) {
-            QuestionRecommend recommend = existingRecommend.get();
-
-            // 같은 타입의 추천을 취소하거나 반대 타입의 추천으로 변경
-            if (type == recommend.getType()) {
-                question.getQuestionRecommends().remove(recommend);
-            } else {
-                recommend.setType(type); // 추천 타입 변경
-            }
-        } else {
-            // 새로운 추천 또는 비추천 추가
-            QuestionRecommend newRecommend = QuestionRecommend.builder()
-                    .type(type)
-                    .member(currentMember)
-                    .question(question)
-                    .build();
-            question.getQuestionRecommends().add(newRecommend);
-        }
-
-        // 추천 정보 변경 후 추천수 업데이트
-        question.applyRecommend();
-        questionRepository.save(question);
     }
 }
