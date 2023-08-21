@@ -4,7 +4,7 @@ export const RouteConst ={
     Question:'/questions/:questionId',
     Ask:'/questions/add',
     SignUp:'/auth/signup',
-    memberMain:'/members/:id',
+    memberMain:'/members',
     memberProfile:'/members/profile/:id',
     memberEdit:'/members/edit/:id',
     memberDelete:'/members/delete/:id',
