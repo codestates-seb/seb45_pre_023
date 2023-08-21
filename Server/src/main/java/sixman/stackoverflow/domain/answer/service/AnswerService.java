@@ -2,8 +2,11 @@ package sixman.stackoverflow.domain.answer.service;
 
 import lombok.Getter;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sixman.stackoverflow.auth.utils.SecurityUtil;
@@ -17,6 +20,7 @@ import sixman.stackoverflow.domain.answerrecommend.answerrecommendrepository.Ans
 import sixman.stackoverflow.domain.answerrecommend.entity.AnswerRecommend;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.question.controller.dto.AnswerSortRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.reply.entity.Reply;
@@ -97,9 +101,10 @@ public class AnswerService {
             Question question = optionalQuestion.get();
 
             Page<Answer> answers = answerRepository.findAllByQuestion(question, pageable);
+            Pageable replyPageable = PageRequest.of(0,5, Sort.by(AnswerSortRequest.CREATED_DATE.getValue()).descending());
 
             Page<AnswerResponse> answerResponses = answers.map(answer -> {
-                Page<Reply> replyPage = replyRepository.findByAnswer(answer, pageable);
+                Page<Reply> replyPage = replyRepository.findByAnswer(answer, replyPageable);
                 return AnswerResponse.of(answer, replyPage);
             });
 
