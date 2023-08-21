@@ -182,6 +182,20 @@ public class QuestionServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("질문 목록을 조회할때 tagName이 DB에 없을때 TagNotFoundException() 예외처리가 되는지 테스트")
+    public void getLatestQuestionsTagNotFoundException() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(QuestionSortRequest.CREATED_DATE.getValue()).descending());
+        String tagName = "nonExistentTag";
+
+        // when & then
+        assertThrows(TagNotFoundException.class, () -> {
+            questionService.getLatestQuestions(pageable,tagName);
+        });
+
+    }
+
+    @Test
     @DisplayName("입력받은 tagName에 해당하는 질문이 없으면 TagNotFoundException 예외 발생")
     public void getLatestQuestionsTagException(){
         //given
@@ -273,44 +287,6 @@ public class QuestionServiceTest extends ServiceTest {
 
     }
 
-//    @Test
-//    @DisplayName("questionid에 해당하는 글의 태그가 DB에 존재하지 않을때 테스트")
-//    public void getQuestionByIdTagNotFoundException2(){
-//        // given
-//        Member member = createMember();
-//        Question question = createQuestionDetail(member,0);
-//
-//        memberRepository.save(member);
-//
-//        Tag tag1 = createTag("tag1");
-//        Tag tag2 = createTag("tag2");
-//
-//
-//        tagRepository.save(tag1);
-//
-//
-//        QuestionTag questionTag1 = QuestionTag.builder()
-//                .question(question)
-//                .tag(tag1)
-//                .build();
-//
-//        QuestionTag questionTag2 = QuestionTag.builder()
-//                .question(question)
-//                .tag(tag2)
-//                .build();
-//
-//        question.setQuestionTags(List.of(questionTag1, questionTag2));
-//
-//        questionRepository.save(question);
-//
-//
-//
-//        //when, then
-//        assertThrows(TagNotFoundException.class, () -> {
-//            questionService.getQuestionById(question.getQuestionId());
-//        });
-//    }
-
     @Test
     @DisplayName("questionId에 해당하는 글이 없으면 QuestionNotFoundException() 예외처리가 되는지 테스트.")
     public void getQuestionByIdException() {
@@ -352,19 +328,25 @@ public class QuestionServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("질문 생성 시 tagName이 비어있을경우 TagNotFoundException() 예외처리가 되는지 테스트")
+    void createQuestionTagNotFoundExceptionEmptyTest(){
+        Member member = createMember();
+        Question question = createQuestion(member);
+
+
+        List<String> tagNames = Arrays.asList();
+
+        // when & then
+        assertThrows(TagNotFoundException.class, () -> {
+            questionService.createQuestion(question,tagNames);
+        });
+    }
+
+    @Test
     @DisplayName("질문 생성 시 tagName 이 tag DB에 없는 경우 TagNotFoundException() 예외처리가 되는지 테스트")
     void createQuestionTagNotFoundException(){
         Member member = createMember();
         Question question = createQuestion(member);
-
-        memberRepository.save(member);
-        questionRepository.save(question);
-
-        Tag tag1 = createTag("tag1");
-        Tag tag2 = createTag("tag2");
-
-        tagRepository.save(tag1);
-        tagRepository.save(tag2);
 
         List<String> tagNames = Arrays.asList("tag3", "tag4");
 
