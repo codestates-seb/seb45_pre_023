@@ -76,8 +76,10 @@ public class AnswerService {
 
     }
 
-    public AnswerResponse findAnswer(long answerId) {
-
+    public AnswerResponse findAnswer(Long answerId) {
+        if (answerId == null) {
+            throw new AnswerNotFoundException();
+        }
         Long memberId = SecurityUtil.getCurrentId();
 
         Optional<Member> memberOptional = memberRepository.findById(memberId);

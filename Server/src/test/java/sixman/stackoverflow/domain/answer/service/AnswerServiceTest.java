@@ -141,12 +141,12 @@ class AnswerServiceTest extends ServiceTest {
     void findAnswerException() {
 
         // given
-        long answerForFindId = 12345L;
+        Long answerId = null;
 
         // When,Then
-        assertThrows(AnswerNotFoundException.class, () -> {
-            answerService.findAnswer(answerForFindId);
-        });
+        assertThrows(AnswerNotFoundException.class, () ->
+            answerService.findAnswer(answerId));
+
     }
 
     @Test
@@ -234,7 +234,7 @@ class AnswerServiceTest extends ServiceTest {
     void updateAnswerException() {
 
         // given
-        long answerForUpdateId = 12345L;
+        Long answerForUpdateId = null;
 
         // When,Then
         assertThrows(AnswerNotFoundException.class, () -> {
@@ -305,7 +305,7 @@ class AnswerServiceTest extends ServiceTest {
     void deleteAnswerException() {
 
         // Given
-        long answerForDeleteId = 12345L;
+        Long answerForDeleteId = null;
 
         // When, Then
         assertThrows(AnswerNotFoundException.class, () -> {

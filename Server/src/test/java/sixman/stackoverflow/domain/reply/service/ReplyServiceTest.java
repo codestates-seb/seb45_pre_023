@@ -272,9 +272,7 @@ class ReplyServiceTest extends ServiceTest {
         // Then
         Optional<Reply> deletedReply = replyRepository.findById(reply.getReplyId());
         assertThat(deletedReply).isEmpty();
-//        assertThat(deletedReply.get().getContent()).isNull();
-//        assertThat(deletedReply.get().getMember()).isNull();
-//        assertThat(deletedReply.get().getAnswer()).isNull();
+
     }
 
     @Test
