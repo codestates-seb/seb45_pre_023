@@ -462,8 +462,7 @@ public class QuestionServiceTest extends ServiceTest {
         QuestionCreateApiRequest request = QuestionCreateApiRequest.builder()
                 .title("title")
                 .detail("detail")
-                .expect("expect")
-                .tagNames(new ArrayList<>())
+                .expect("expect") //제목 내용 각각 테스트 완료
                 .build();
 
         // When & Then
