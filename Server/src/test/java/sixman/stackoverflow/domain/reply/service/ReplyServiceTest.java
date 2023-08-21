@@ -195,15 +195,11 @@ class ReplyServiceTest extends ServiceTest {
                 .build();
         replyRepository.save(reply);
 
-
-
         setDefaultAuthentication(member.getMemberId());
-
-
-
 
         //when
         ReplyResponse replyResponse = replyService.findReply(reply.getReplyId());
+
         //then
         assertThat(replyResponse).isNotNull();
         assertThat(replyResponse.getReplyId()).isEqualTo(reply.getReplyId());
@@ -232,9 +228,7 @@ class ReplyServiceTest extends ServiceTest {
                 .build();
         replyRepository.save(reply);
 
-
         setDefaultAuthentication(member.getMemberId());
-
 
         String newContent = "new Content";
 
@@ -254,7 +248,6 @@ class ReplyServiceTest extends ServiceTest {
         // given
         Member member = createMember();
         memberRepository.save(member);
-
 
         Question question = createQuestion(member);
         questionRepository.save(question);
@@ -279,9 +272,7 @@ class ReplyServiceTest extends ServiceTest {
         // Then
         Optional<Reply> deletedReply = replyRepository.findById(reply.getReplyId());
         assertThat(deletedReply).isEmpty();
-//        assertThat(deletedReply.get().getContent()).isNull();
-//        assertThat(deletedReply.get().getMember()).isNull();
-//        assertThat(deletedReply.get().getAnswer()).isNull();
+
     }
 
     @Test
@@ -289,6 +280,7 @@ class ReplyServiceTest extends ServiceTest {
     void deleteNonExistentReply() {
         // Given
         long replyId = 12345L;
+
         // When, Then
         assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }

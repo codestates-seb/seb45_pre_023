@@ -38,7 +38,7 @@ public class AnswerResponse {
         private List<ReplyResponse> replies;
         private PageInfo pageInfo;
     }
-    public static AnswerResponse createAnswerResponse(Answer answer) {
+    public static AnswerResponse createAnswerResponse(Answer answer, TypeEnum answerRecommendType) {
 
         return AnswerResponse.builder()
 
@@ -46,6 +46,7 @@ public class AnswerResponse {
                 .content(answer.getContent())
                 .member(MemberInfo.of(answer.getMember()))
                 .recommend(answer.getRecommend())
+                .recommendType(answerRecommendType)
                 .updatedDate(answer.getCreatedDate())
                 .createdDate(answer.getModifiedDate())
                 .build();

@@ -64,12 +64,8 @@ class AnswerServiceTest extends ServiceTest {
         Member member = createMember();
         memberRepository.save(member);
 
-
         Question question = createQuestion(member);
         questionRepository.save(question);
-
-
-
 
         setDefaultAuthentication(member.getMemberId());
 
@@ -128,19 +124,15 @@ class AnswerServiceTest extends ServiceTest {
         Answer answer = createanswer(member, question);
         answerRepository.save(answer);
 
-
-
         setDefaultAuthentication(member.getMemberId());
-
-
 
         //when
         AnswerResponse answerResponse = answerService.findAnswer(answer.getAnswerId());
 
         //then
-        assertNotNull(answerResponse);
         assertThat(answerResponse.getContent()).isEqualTo(answer.getContent());
         assertThat(answerResponse.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(answerResponse.getAnswerId()).isEqualTo(answer.getAnswerId());
     }
 
 
@@ -149,12 +141,12 @@ class AnswerServiceTest extends ServiceTest {
     void findAnswerException() {
 
         // given
-        long answerForFindId = 12345L;
+        Long answerId = null;
 
         // When,Then
-        assertThrows(AnswerNotFoundException.class, () -> {
-            answerService.findAnswer(answerForFindId);
-        });
+        assertThrows(AnswerNotFoundException.class, () ->
+            answerService.findAnswer(answerId));
+
     }
 
     @Test
@@ -207,7 +199,7 @@ class AnswerServiceTest extends ServiceTest {
 
 
     @Test
-    @DisplayName("answerId, content 를 통해 답변을 수정한다.") // 깨지는 애
+    @DisplayName("answerId, content 를 통해 답변을 수정한다.")
     void updateAnswer() {
 
         //given
@@ -221,9 +213,6 @@ class AnswerServiceTest extends ServiceTest {
         answerRepository.save(answer);
 
 
-
-
-
         setDefaultAuthentication(member.getMemberId());
 
         String newContent = "Updated Content";
@@ -234,6 +223,8 @@ class AnswerServiceTest extends ServiceTest {
         // Then
         assertThat(updatedAnswer).isNotNull();
         assertThat(updatedAnswer.getContent()).isEqualTo(newContent);
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
     }
 
 
@@ -243,16 +234,12 @@ class AnswerServiceTest extends ServiceTest {
     void updateAnswerException() {
 
         // given
-        long answerForUpdateId = 12345L;
+        Long answerForUpdateId = null;
 
         // When,Then
         assertThrows(AnswerNotFoundException.class, () -> {
             answerService.findAnswer(answerForUpdateId);
         });
-
-
-
-
     }
 
     @Test
@@ -303,8 +290,6 @@ class AnswerServiceTest extends ServiceTest {
         //When
         answerService.deleteAnswer(answer.getAnswerId());
 
-
-
         //Then
         boolean answerExists = answerRepository.existsById(answer.getAnswerId());
         org.junit.jupiter.api.Assertions.assertFalse(answerExists, "답변이 삭제되었으므로 해당 answerId의 답변이 더 이상 존재해서는 안됩니다.");
@@ -320,7 +305,7 @@ class AnswerServiceTest extends ServiceTest {
     void deleteAnswerException() {
 
         // Given
-        long answerForDeleteId = 12345L;
+        Long answerForDeleteId = null;
 
         // When, Then
         assertThrows(AnswerNotFoundException.class, () -> {

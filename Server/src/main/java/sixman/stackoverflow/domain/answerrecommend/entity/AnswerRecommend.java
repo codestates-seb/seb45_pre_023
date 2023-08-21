@@ -23,6 +23,7 @@ public class AnswerRecommend extends BaseEntity {
         this.type = type;
     }
 
+
     @Enumerated(EnumType.STRING)
     private TypeEnum type;
 
