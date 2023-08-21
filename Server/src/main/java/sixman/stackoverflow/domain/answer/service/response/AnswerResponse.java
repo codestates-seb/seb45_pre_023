@@ -45,6 +45,7 @@ public class AnswerResponse {
                 .answerId(answer.getAnswerId())
                 .content(answer.getContent())
                 .member(MemberInfo.of(answer.getMember()))
+                .recommend(answer.getRecommend())
                 .updatedDate(answer.getCreatedDate())
                 .createdDate(answer.getModifiedDate())
                 .build();
