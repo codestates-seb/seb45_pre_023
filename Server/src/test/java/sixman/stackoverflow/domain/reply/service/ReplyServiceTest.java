@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
@@ -18,6 +19,7 @@ import sixman.stackoverflow.domain.answer.repository.AnswerRepository;
 import sixman.stackoverflow.domain.answer.service.request.AnswerCreateServiceRequest;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.repository.MemberRepository;
+import sixman.stackoverflow.domain.question.controller.dto.AnswerSortRequest;
 import sixman.stackoverflow.domain.question.entity.Question;
 import sixman.stackoverflow.domain.question.repository.QuestionRepository;
 import sixman.stackoverflow.domain.reply.entity.Reply;
@@ -107,9 +109,7 @@ class ReplyServiceTest extends ServiceTest {
         // When, Then
         assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }
-    @Test
-    @DisplayName("Reply 목록을 최신 순으로 불러온다.")
-    void SortByCreatedAt() {}
+
 
 
     @Test
@@ -141,6 +141,7 @@ class ReplyServiceTest extends ServiceTest {
 
         // Then
         assertThat(replyResponsesPage.getContent()).hasSize(5);
+        assertThat(replyResponsesPage.getTotalPages()).isEqualTo(2);
     }
 
     @Test
@@ -172,6 +173,7 @@ class ReplyServiceTest extends ServiceTest {
 
         // Then
         assertThat(replyResponsesPage.getContent()).hasSize(4);
+        assertThat(replyResponsesPage.getTotalPages()).isEqualTo(1);
     }
 
     @Test
