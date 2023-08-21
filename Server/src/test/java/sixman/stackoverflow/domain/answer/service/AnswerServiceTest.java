@@ -54,12 +54,8 @@ class AnswerServiceTest extends ServiceTest {
         Member member = createMember();
         memberRepository.save(member);
 
-
         Question question = createQuestion(member);
         questionRepository.save(question);
-
-
-
 
         setDefaultAuthentication(member.getMemberId());
 
@@ -118,11 +114,7 @@ class AnswerServiceTest extends ServiceTest {
         Answer answer = createanswer(member, question);
         answerRepository.save(answer);
 
-
-
         setDefaultAuthentication(member.getMemberId());
-
-
 
         //when
         AnswerResponse answerResponse = answerService.findAnswer(answer.getAnswerId());
@@ -131,6 +123,7 @@ class AnswerServiceTest extends ServiceTest {
         assertNotNull(answerResponse);
         assertThat(answerResponse.getContent()).isEqualTo(answer.getContent());
         assertThat(answerResponse.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(answerResponse.getAnswerId()).isEqualTo(answer.getAnswerId());
     }
 
 
@@ -154,7 +147,7 @@ class AnswerServiceTest extends ServiceTest {
 
 
     @Test
-    @DisplayName("answerId, content 를 통해 답변을 수정한다.") // 깨지는 애
+    @DisplayName("answerId, content 를 통해 답변을 수정한다.")
     void updateAnswer() {
 
         //given
@@ -168,9 +161,6 @@ class AnswerServiceTest extends ServiceTest {
         answerRepository.save(answer);
 
 
-
-
-
         setDefaultAuthentication(member.getMemberId());
 
         String newContent = "Updated Content";
@@ -181,6 +171,8 @@ class AnswerServiceTest extends ServiceTest {
         // Then
         assertThat(updatedAnswer).isNotNull();
         assertThat(updatedAnswer.getContent()).isEqualTo(newContent);
+        assertThat(updatedAnswer.getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(updatedAnswer.getAnswerId()).isEqualTo(answer.getAnswerId());
     }
 
 
@@ -249,8 +241,6 @@ class AnswerServiceTest extends ServiceTest {
 
         //When
         answerService.deleteAnswer(answer.getAnswerId());
-
-
 
         //Then
         boolean answerExists = answerRepository.existsById(answer.getAnswerId());

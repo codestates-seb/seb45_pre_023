@@ -8,7 +8,7 @@ import sixman.stackoverflow.domain.member.entity.Member;
 
 import java.util.Optional;
 
-@Repository
+
 public interface AnswerRecommendRepository extends JpaRepository<AnswerRecommend,Long> {
 
     AnswerRecommend findByAnswerAndMember(Answer answer, Member member);

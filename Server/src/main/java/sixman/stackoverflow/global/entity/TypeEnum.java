@@ -8,6 +8,7 @@ public enum TypeEnum implements BaseEnum{
     DOWNVOTE("비추천");
 
 
+
     private final String stepDescription;
     @Override
     public String getName() {

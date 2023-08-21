@@ -140,10 +140,5 @@ public abstract class ServiceTest {
                 .build();
     }
 
-    protected Reply createReply3123(Answer answer) {
-        return Reply.builder()
-                .content("testReply")
-                .answer(answer)
-                .build();
-    }
+
 }
