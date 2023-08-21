@@ -274,7 +274,7 @@ public class AuthIntegrationTest extends IntegrationTest{
                     //then
                     actionsFail
                             .andDo(print())
-                            .andExpect(status().isUnauthorized())
+                            .andExpect(status().isBadRequest())
                             .andExpect(jsonPath("$.message").value("로그인 정보를 확인해주세요."));
                 }),
                 dynamicTest("password 가 다르면 로그인에 실패한다.", () -> {
@@ -289,7 +289,7 @@ public class AuthIntegrationTest extends IntegrationTest{
                     //then
                     actionsFail
                             .andDo(print())
-                            .andExpect(status().isUnauthorized())
+                            .andExpect(status().isBadRequest())
                             .andExpect(jsonPath("$.message").value("로그인 정보를 확인해주세요."));
                 }),
                 dynamicTest("휴면 회원이면 로그인에 실패한다. (message = \"탈퇴한 회원입니다.\")", () -> {
