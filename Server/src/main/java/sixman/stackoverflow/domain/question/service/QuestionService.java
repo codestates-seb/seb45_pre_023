@@ -115,60 +115,70 @@ public class QuestionService {
         Question existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-        if (!loggedInUserIdOpt.isPresent()) {
+        if (SecurityUtil.isLogin()) {
+
+            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+            if (!loggedInUserIdOpt.isPresent()) {
+                throw new MemberNotFoundException();
+            }
+
+            Long loggedInUserId = loggedInUserIdOpt.get();
+            Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
+
+            if (!loggedInUserId.equals(questionAuthorId)) {
+                throw new MemberAccessDeniedException();
+            }
+
+            // 기존에 연결된 태그들을 가져와서 삭제할 수 있도록 처리
+            List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
+            List<QuestionTag> tagsToRemove = new ArrayList<>();
+            for (QuestionTag tag : existingTags) {
+                if (!tagNames.contains(tag.getTag().getTagName())) {
+                    tagsToRemove.add(tag);
+                }
+            }
+
+            existingTags.removeAll(tagsToRemove);
+
+            // 새로운 태그들을 가져와서 추가할 수 있도록 처리
+            List<Tag> newTags = tagRepository.findAllByTagNameIn(tagNames);
+            List<QuestionTag> newQuestionTags = newTags.stream()
+                    .filter(tag -> existingTags.stream().noneMatch(questionTag -> questionTag.getTag().equals(tag)))
+                    .map(tag -> QuestionTag.createQuestionTag(existingQuestion, tag))
+                    .collect(Collectors.toList());
+            existingTags.addAll(newQuestionTags);
+
+            existingQuestion.setTitle(title);
+            existingQuestion.setDetail(detail);
+            existingQuestion.setExpect(expect);
+
+            return questionRepository.save(existingQuestion);
+        }else{
             throw new MemberBadCredentialsException();
         }
-
-        Long loggedInUserId = loggedInUserIdOpt.get();
-        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
-
-        if (!loggedInUserId.equals(questionAuthorId)) {
-            throw new MemberAccessDeniedException();
-        }
-
-        // 기존에 연결된 태그들을 가져와서 삭제할 수 있도록 처리
-        List<QuestionTag> existingTags = existingQuestion.getQuestionTags();
-        List<QuestionTag> tagsToRemove = new ArrayList<>();
-        for (QuestionTag tag : existingTags) {
-            if (!tagNames.contains(tag.getTag().getTagName())) {
-                tagsToRemove.add(tag);
-            }
-        }
-
-        existingTags.removeAll(tagsToRemove);
-
-        // 새로운 태그들을 가져와서 추가할 수 있도록 처리
-        List<Tag> newTags = tagRepository.findAllByTagNameIn(tagNames);
-        List<QuestionTag> newQuestionTags = newTags.stream()
-                .filter(tag -> existingTags.stream().noneMatch(questionTag -> questionTag.getTag().equals(tag)))
-                .map(tag -> QuestionTag.createQuestionTag(existingQuestion, tag))
-                .collect(Collectors.toList());
-        existingTags.addAll(newQuestionTags);
-
-        existingQuestion.setTitle(title);
-        existingQuestion.setDetail(detail);
-        existingQuestion.setExpect(expect);
-
-        return questionRepository.save(existingQuestion);
     }
 
     public void deleteQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-        if (!loggedInUserIdOpt.isPresent()) {
+        if (SecurityUtil.isLogin()) {
+
+            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+            if (!loggedInUserIdOpt.isPresent()) {
+                throw new MemberNotFoundException();
+            }
+
+            Long loggedInUserId = loggedInUserIdOpt.get();
+            Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
+
+            if (!loggedInUserId.equals(questionAuthorId)) {
+                throw new MemberAccessDeniedException();
+            }
+            questionRepository.delete(question);
+        }else{
             throw new MemberBadCredentialsException();
         }
-
-        Long loggedInUserId = loggedInUserIdOpt.get();
-        Long questionAuthorId = questionRepository.findMemberIdByQuestionId(questionId);
-
-        if (!loggedInUserId.equals(questionAuthorId)) {
-            throw new MemberAccessDeniedException();
-        }
-        questionRepository.delete(question);
     }
 
 
@@ -177,41 +187,46 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(QuestionNotFoundException::new);
 
-        Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
-        if (!loggedInUserIdOpt.isPresent()) {
+        if (SecurityUtil.isLogin()) {
+
+            Optional<Long> loggedInUserIdOpt = Optional.ofNullable(SecurityUtil.getCurrentId());
+            if (!loggedInUserIdOpt.isPresent()) {
+                throw new MemberNotFoundException();
+            }
+
+            Long currentId = loggedInUserIdOpt.get();
+
+            Member currentMember = memberRepository.findById(currentId)
+                    .orElseThrow(MemberNotFoundException::new);
+
+            Optional<QuestionRecommend> existingRecommend = question.getQuestionRecommends().stream()
+                    .filter(recommend -> recommend.getMember().equals(currentMember))
+                    .findFirst();
+
+            if (existingRecommend.isPresent()) {
+                QuestionRecommend recommend = existingRecommend.get();
+
+                // 같은 타입의 추천을 취소하거나 반대 타입의 추천으로 변경
+                if (type == recommend.getType()) {
+                    question.getQuestionRecommends().remove(recommend);
+                } else {
+                    recommend.setType(type); // 추천 타입 변경
+                }
+            } else {
+                // 새로운 추천 또는 비추천 추가
+                QuestionRecommend newRecommend = QuestionRecommend.builder()
+                        .type(type)
+                        .member(currentMember)
+                        .question(question)
+                        .build();
+                question.getQuestionRecommends().add(newRecommend);
+            }
+
+            // 추천 정보 변경 후 추천수 업데이트
+            question.applyRecommend();
+            questionRepository.save(question);
+        }else{
             throw new MemberBadCredentialsException();
         }
-
-        Long currentId = loggedInUserIdOpt.get();
-
-        Member currentMember = memberRepository.findById(currentId)
-                .orElseThrow(MemberNotFoundException::new);
-
-        Optional<QuestionRecommend> existingRecommend = question.getQuestionRecommends().stream()
-                .filter(recommend -> recommend.getMember().equals(currentMember))
-                .findFirst();
-
-        if (existingRecommend.isPresent()) {
-            QuestionRecommend recommend = existingRecommend.get();
-
-            // 같은 타입의 추천을 취소하거나 반대 타입의 추천으로 변경
-            if (type == recommend.getType()) {
-                question.getQuestionRecommends().remove(recommend);
-            } else {
-                recommend.setType(type); // 추천 타입 변경
-            }
-        } else {
-            // 새로운 추천 또는 비추천 추가
-            QuestionRecommend newRecommend = QuestionRecommend.builder()
-                    .type(type)
-                    .member(currentMember)
-                    .question(question)
-                    .build();
-            question.getQuestionRecommends().add(newRecommend);
-        }
-
-        // 추천 정보 변경 후 추천수 업데이트
-        question.applyRecommend();
-        questionRepository.save(question);
     }
 }
