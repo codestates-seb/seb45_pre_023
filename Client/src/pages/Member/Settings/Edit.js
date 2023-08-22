@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Buttons from '../../../components/Members/Buttons';
 import MemberInfo from '../../../components/Members/MemberInfo';
 import { RouteConst } from '../../../Interface/RouteConst';
@@ -6,7 +6,7 @@ import RightSidebar from '../../../components/SideBar/RightSidebar';
 import LeftSidebar from '../../../components/SideBar/LeftSidebar';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function MemberEdit() {
   const memberId = useSelector((state) => state.logininfo.myid); //member Id값 불러오기
@@ -16,18 +16,21 @@ export default function MemberEdit() {
   const myIntro = useSelector((state) => state.memberinfo.value.myIntro);
   const account = useSelector((state) => state.memberinfo.value.account);
   const token = useSelector((state) => state.logininfo.token);
+  const navigate = useNavigate();
 
-  const [name, setName] = useState(nickName);
+  const [Nickname, setNickName] = useState(nickName);
   const [locate, setLocate] = useState(locations);
   const [Title, SetTitle] = useState(title);
   const [intro, setIntro] = useState(myIntro);
-  const [myAccount, setMyAccount] = useState(account);
-
+  const [accounts, setAccounts] = useState(account);
+  const [file, setFile] = useState(null); // 추가된 file 상태값
+  const [image, setImage] = useState(null);
+  console.log(image);
   const handleText = (e) => {
     const { name, value } = e.target;
     switch (name) {
       case 'nickname':
-        setName(value);
+        setNickName(value);
         break;
       case 'location':
         setLocate(value);
@@ -39,22 +42,54 @@ export default function MemberEdit() {
         setIntro(value);
         break;
       case 'account':
-        setMyAccount(value);
+        setAccounts([value]);
         break;
       default:
         break;
     }
   };
+  // useEffect(() => {}, [file]);
+  // const handleFile = (e) => {
+  //   setFile(e.target.files[0]); // 파일 정보 업데이트
+  //   if (!file.type.match('image.*')) {
+  //     alert('이미지 파일만 업로드 가능합니다.');
+  //     return;
+  //   }
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onload = () => {
+  //     setImage(reader.result);
+  //   };
+  // };
+  // const handleSubmit = () => {
+  //   // 파일 업로드 로직 추가
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   return axios
+  //     .patch(
+  //       `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/${memberId}/image`,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //           Authorization: token,
+  //         },
+  //       },
+  //       formData
+  //     )
+  //     .then((res) => console.log(res))
+  //     .catch((err) => console.log(err));
+  // };
   const data = {
-    nickname: name,
+    nickname: Nickname,
     myIntro: intro,
     title: Title,
-    accounts: [myAccount],
+    accounts: accounts,
     location: locate,
   };
+  console.log(data);
   const changeInfo = () => {
     console.log(data);
-    axios
+    return axios
       .patch(
         `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/${memberId}`,
         data,
@@ -64,10 +99,20 @@ export default function MemberEdit() {
           },
         }
       )
-      .then((res) => alert('프로필이 변경 되었습니다.'))
-      .then(window.location.reload())
+      .then(alert('프로필이 변경 되었습니다.'))
+      .then(navigate(`${RouteConst.memberMain}`))
       .catch((err) => console.log(err));
   };
+  // window.onload = function () {
+  //   const fileInput = document.getElementById('file');
+  //   if (fileInput == null) {
+  //     console.error('요소를 찾을 수 없습니다.');
+  //     return;
+  //   }
+
+  //   const fileType = fileInput.type;
+  //   console.log(fileType);
+  // };
 
   return (
     <div className="flex min-h-[70rem]">
@@ -105,14 +150,33 @@ export default function MemberEdit() {
               <div className="pb-1">
                 <div className=" font-bold">profile image</div>
                 <div className="relative">
-                  <img
-                    src="https://img.freepik.com/free-vector/cute-cat-sitting-cartoon-vector-icon-illustration-animal-nature-icon-concept-isolated-premium-vector-flat-cartoon-style_138676-4148.jpg?q=10&h=200"
-                    alt="memberImg"
-                    className="w-40 h-40 rounded-xl"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 w-40 h-10 hover:bg-opacity-60 hover:cursor-pointer rounded-b-xl bg-black bg-opacity-40 flex items-center justify-center">
+                  <label
+                    htmlFor="file"
+                    className="hover:bg-opacity-60 hover:cursor-pointer absolute bottom-0 left-0 right-0 w-40 h-10 rounded-b-xl bg-black bg-opacity-40 flex items-center justify-center"
+                  >
                     <span className="text-white">Change picture</span>
-                  </div>
+                  </label>
+                  <input
+                    type="file"
+                    id="file"
+                    style={{ display: 'none' }}
+                    // onChange={handleFile}
+                    accept=".png,.jpg,.jpeg"
+                  />
+                  {
+                    !image ? (
+                      <img
+                        src="https://img.freepik.com/free-vector/cute-cat-sitting-cartoon-vector-icon-illustration-animal-nature-icon-concept-isolated-premium-vector-flat-cartoon-style_138676-4148.jpg?q=10&h=200"
+                        alt="memberImg"
+                        className="w-40 h-40 rounded-xl"
+                      />
+                    ) : null
+                    // <img
+                    //   src={image}
+                    //   alt="memberImg"
+                    //   className="w-40 h-40 rounded-xl"
+                    // />
+                  }
                 </div>
               </div>
               <div className="py-1">
@@ -121,7 +185,7 @@ export default function MemberEdit() {
                   type="text"
                   className="border-[1px] border-black w-[25rem]"
                   name="nickname"
-                  value={name}
+                  value={Nickname}
                   onChange={handleText}
                 ></input>
               </div>
@@ -151,7 +215,7 @@ export default function MemberEdit() {
                   type="text"
                   className="border-[1px] border-black w-[25rem]"
                   name="account"
-                  value={myAccount}
+                  value={accounts}
                   onChange={handleText}
                 ></input>
               </div>
