@@ -49,14 +49,14 @@ export default function SignUpForm() {
       .catch((err) => {
         console.log(err.response.data);
         if (err.response.data.code === 400) {
-          alert(err.response.data.message);
-          dispatch(errmsg('이메일 인증이 완료되지 않았습니다.'));
+          alert('패스워드를 확인해주세요. (숫자, 문자, 특수문자 포함)');
+          dispatch(errmsg('Please confirm your password.'));
         } else if (err.response.data.code === 401) {
-          alert(err.response.data.message);
-          dispatch(errmsg('이메일 인증이 완료되지 않았습니다.'));
+          alert('이메일 인증이 완료되지 않았습니다.');
+          dispatch(errmsg('Please verify your email'));
         } else {
-          dispatch(errmsg(`SignUp is failed (${err.response.data.code})`));
           alert('회원가입에 실패했습니다.');
+          dispatch(errmsg(`SignUp is failed (${err.response.data.code})`));
         }
       });
   };
@@ -104,7 +104,7 @@ export default function SignUpForm() {
         <li
           className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(github);
+            dispatch(github());
             handleGoogleLogin();
           }}
         >
@@ -118,7 +118,7 @@ export default function SignUpForm() {
         <li
           className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(kakao);
+            dispatch(kakao());
             handleGithubLogin();
           }}
         >
@@ -128,7 +128,7 @@ export default function SignUpForm() {
         <li
           className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(google);
+            dispatch(google());
             handleKakaoLogin();
           }}
         >
