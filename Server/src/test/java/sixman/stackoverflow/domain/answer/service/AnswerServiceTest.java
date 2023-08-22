@@ -26,6 +26,7 @@ import sixman.stackoverflow.domain.reply.service.dto.request.ReplyCreateServiceR
 import sixman.stackoverflow.domain.reply.service.dto.response.ReplyResponse;
 import sixman.stackoverflow.global.exception.businessexception.answerexception.AnswerNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberAccessDeniedException;
+import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 import sixman.stackoverflow.global.exception.businessexception.questionexception.QuestionNotFoundException;
 import sixman.stackoverflow.global.testhelper.ServiceTest;
 
@@ -106,8 +107,54 @@ class AnswerServiceTest extends ServiceTest {
         assertThrows(QuestionNotFoundException.class, () -> {
             questionService.getQuestionById(questionId);
         });
+    }
+
+    @Test
+    @DisplayName("답변 생성 시 존재하지 않는 questionId 이면 QuestionNotFoundException 이 발생한다.") // o
+    void createAnswerException2() {
+
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        setDefaultAuthentication(member.getMemberId());
 
 
+        // Given
+        Long questionId = 1234566L;
+        String content = "hi";
+
+        AnswerCreateServiceRequest request = new AnswerCreateServiceRequest(content);
+
+        // When, Then
+        assertThrows(QuestionNotFoundException.class, () -> {
+            answerService.createAnswer(request, questionId);
+        });
+    }
+    @Test
+    @DisplayName("답변 생성 시 로그인하지 않은 사용자라면 MemberNotFoundException 이 발생한다.") // o
+    void createAnswerException3() {
+
+        // Given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Member member1 = createMember();
+        memberRepository.save(member1);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        String content = "hi";
+
+        AnswerCreateServiceRequest request = new AnswerCreateServiceRequest(content);
+
+        // When, Then
+        assertThrows(MemberNotFoundException.class, () -> {
+            answerService.createAnswer(request,question.getQuestionId());
+        });
     }
 
     @Test
@@ -217,7 +264,6 @@ class AnswerServiceTest extends ServiceTest {
 
     }
 
-
     @Test
     @DisplayName("answerId, content 를 통해 답변을 수정한다.")
     void updateAnswer() {
@@ -261,6 +307,7 @@ class AnswerServiceTest extends ServiceTest {
             answerService.findAnswer(answerForUpdateId);
         });
     }
+
 
     @Test
     @DisplayName("답변 수정 시 다른 사람의 answer 를 수정하려고 하면 MemberAccessDeniedException 이 발생한다.") // ㅇ
@@ -313,10 +360,6 @@ class AnswerServiceTest extends ServiceTest {
         //Then
         boolean answerExists = answerRepository.existsById(answer.getAnswerId());
         org.junit.jupiter.api.Assertions.assertFalse(answerExists, "답변이 삭제되었으므로 해당 answerId의 답변이 더 이상 존재해서는 안됩니다.");
-
-
-
-
 
     }
 

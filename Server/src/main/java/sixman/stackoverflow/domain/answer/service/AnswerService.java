@@ -63,6 +63,11 @@ public class AnswerService {
     public Long createAnswer(AnswerCreateServiceRequest request, Long questionId) {
 
         Long memberId = SecurityUtil.getCurrentId();
+
+        if (memberId == null) {
+            throw new MemberNotFoundException();
+        }
+
         Optional<Member> memberOptional = memberRepository.findById(memberId);
         Member member = memberOptional.orElseThrow(MemberNotFoundException::new);
 
