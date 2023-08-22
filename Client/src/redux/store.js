@@ -7,6 +7,8 @@ import ErrMsgSlice from './createSlice/ErrMsgSlice';
 import SignUpInfoSlice from './createSlice/SignUpInfoSlice';
 import questionSlice from './createSlice/QuestionSlice';
 import questionDetailSlice from './createSlice/QuestionDetailSlice';
+import answerSlice from './createSlice/AnswerSlice';
+import replySlice from './createSlice/ReplySlice';
 import { combineReducers } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer } from 'redux-persist';
@@ -22,6 +24,8 @@ const reducers = combineReducers({
   questions:questionSlice.reducer,
   detail:questionDetailSlice.reducer,
   memberinfo:MemberSlice.reducer,
+  answerCRUD: answerSlice.reducer,
+  replyCRUD: replySlice.reducer,
 });
 
 const persistConfig = {
@@ -34,7 +38,6 @@ const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = configureStore({
   reducer: persistedReducer
-
 });
 
 export default store;
