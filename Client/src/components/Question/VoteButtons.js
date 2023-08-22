@@ -9,7 +9,7 @@ export default function VoteButtons() {
 
   const handleUpVote = () => {
     return axios.patch(
-      `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions/${questionId}/upvote`,
+      `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions/${questionId}/upvote`,
       {
         headers: {
           Authorization: token,
@@ -20,7 +20,7 @@ export default function VoteButtons() {
 
   const handleDownVote = () => {
     return axios.patch(
-      `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions/${questionId}/downvote`,
+      `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions/${questionId}/downvote`,
       {
         headers: {
           Authorization: token,

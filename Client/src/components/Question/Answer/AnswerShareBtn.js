@@ -22,7 +22,7 @@ export default function ShareButton({
 
   const handleAnswerPatch = () => {
     return axios.patch(
-      `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/answers/${answerId}`,
+      `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/answers/${answerId}`,
       { content },
       {
         headers: {

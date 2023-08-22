@@ -5,7 +5,7 @@ export default function FilteringButton() {
 
   // 최신순
   const handleNewest = () => {
-    return axios.get("http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions?page=1&sort=CREATED_DATE&tag=tag1")
+    return axios.get("http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions?page=1&sort=CREATED_DATE&tag=tag1")
     .then((res) => {
       console.log(res);
     })
@@ -16,7 +16,7 @@ export default function FilteringButton() {
 
   // 조회순
   const handleActive = () => {
-    return axios.get("http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions?page=1&sort=VIEWS&tag=tag1")
+    return axios.get("http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions?page=1&sort=VIEWS&tag=tag1")
     .then((res) => {
       console.log(res);
     })
@@ -27,7 +27,7 @@ export default function FilteringButton() {
 
   // 추천순
   const handleRecommend = () => {
-    return axios.get("http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions?page=1&RECOMMEND&tag=tag1")
+    return axios.get("http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions?page=1&RECOMMEND&tag=tag1")
     .then((res) => {
       console.log(res);
     })

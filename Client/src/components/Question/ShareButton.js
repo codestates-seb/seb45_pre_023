@@ -20,7 +20,7 @@ export default function ShareButton({ editMode, setEditMode }) {
   const handleDelete = () => {
     return axios
     .delete(
-      `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions/${questionId}`,
+      `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions/${questionId}`,
       {
         headers: {
           Authorization: token,
