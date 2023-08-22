@@ -7,7 +7,7 @@ const AskSlice = createSlice({
       title: '',
       detail: '',
       expect: '',
-      tags: [],
+      tagNames: [],
     },
     errmsg: {
       title: '',
@@ -15,6 +15,7 @@ const AskSlice = createSlice({
       expect: '',
       tags: '',
     },
+    tagsdata: { tagslist: [], mode: false },
   },
   reducers: {
     title: (state, action) => {
@@ -27,10 +28,18 @@ const AskSlice = createSlice({
       state.value.expect = action.payload;
     },
     tags: (state, action) => {
-      state.value.tags = action.payload;
+      state.value.tagNames = [...action.payload];
     },
-    initValue: (state, action) => {
-      state.value = { title: '', detail: '', expect: '', tags: [] };
+    addtags: (state, action) => {
+      state.value.tagNames = [...state.value.tagNames, action.payload];
+    },
+    removetags: (state) => {
+      state.value.tagNames = state.value.tagNames.filter(
+        (el, idx) => idx !== state.value.tagNames.length - 1
+      );
+    },
+    initValue: (state) => {
+      state.value = { title: '', detail: '', expect: '', tagNames: [] };
     },
     titleError: (state, action) => {
       state.errmsg.title = action.payload;
@@ -44,8 +53,17 @@ const AskSlice = createSlice({
     tagsError: (state, action) => {
       state.errmsg.tags = action.payload;
     },
-    initError: (state, action) => {
-      state.errmsg = { title: '', detail: '', expect: '', tags: '' };
+    initError: (state) => {
+      state.errmsg.title = '';
+      state.errmsg.detail = '';
+      state.errmsg.expect = '';
+      state.errmsg.tags = '';
+    },
+    setTagList: (state, action) => {
+      state.tagsdata.tagslist = action.payload;
+    },
+    setTagMode: (state, action) => {
+      state.tagsdata.mode = action.payload;
     },
   },
 });
@@ -56,10 +74,14 @@ export const {
   detail,
   expect,
   tags,
+  addtags,
+  removetags,
   initValue,
   titleError,
   detailError,
   expectError,
   tagsError,
-  initError
+  initError,
+  setTagList,
+  setTagMode,
 } = AskSlice.actions;

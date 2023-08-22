@@ -19,15 +19,22 @@ export default function SubmitBtn() {
   const handleSubmit = () => {
     return axios
       .post(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions',
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions',
         AskData,
         { headers }
       )
       .then((res) => {
+        alert('성공적으로 질문이 작성되었습니다.');
         navigate(RouteConst.Main);
         dispatch(initValue());
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err.response.data.code === 400) {
+          alert(`모든 정보를 입력해주세요. ${err.response.data.code}`);
+        } else {
+          alert(`질문 제출에 실패했습니다. ${err.response.data.code}`);
+        }
+      });
   };
 
   return (

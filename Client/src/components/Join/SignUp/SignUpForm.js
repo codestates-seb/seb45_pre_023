@@ -30,34 +30,64 @@ export default function SignUpForm() {
 
   const handleSignUp = () => {
     if (!SignUpInfo.nickname || !SignUpInfo.email || !SignUpInfo.password) {
+      alert('모든 정보를 입력해주세요.');
       return dispatch(errmsg('Please enter all information.'));
     } else if (!CheckedOption.robot) {
+      alert('당신은 로봇입니까?');
       return dispatch(errmsg(`Please check the box.`));
     }
     return axios
       .post(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/signup',
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/auth/signup',
         SignUpInfo
       )
       .then((res) => {
+        alert('성공적으로 회원가입 되었습니다.');
+        dispatch(errmsg(''));
         navigate(RouteConst.Login);
       })
       .catch((err) => {
         console.log(err.response.data);
-        dispatch(errmsg('SignUp is failed'));
+        if (err.response.data.code === 400) {
+          alert(err.response.data.message);
+          dispatch(errmsg('이메일 인증이 완료되지 않았습니다.'));
+        } else if (err.response.data.code === 401) {
+          alert(err.response.data.message);
+          dispatch(errmsg('이메일 인증이 완료되지 않았습니다.'));
+        } else {
+          dispatch(errmsg(`SignUp is failed (${err.response.data.code})`));
+        }
       });
   };
 
   const handleSendEmail = () => {
+    if (!SignUpInfo.email) {
+      alert('이메일을 입력해주세요.');
+      return dispatch(errmsg('Please enter your email'));
+    }
     return axios
       .post(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/members/email',
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/email',
         { email: SignUpInfo.email }
       )
-      .then((res) =>
-        dispatch(errmsg('A verification code has been sent to your email.'))
-      )
-      .catch((err) => dispatch(errmsg('SignUp is failed')));
+      .then((res) => {
+        dispatch(checkedsend(true));
+        dispatch(errmsg('A verification code has been sent to your email.'));
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        if (err.response.data.code === 400) {
+          dispatch(errmsg('유효한 이메일이 아닙니다.'));
+        } else if (err.response.data.code === 401) {
+          dispatch(errmsg('탈퇴한 회원입니다.'));
+        } else if (err.response.data.code === 409) {
+          dispatch(errmsg('이미 회원가입 된 이메일입니다.'));
+        } else {
+          dispatch(
+            errmsg(`이메일 전송에 실패했습니다. ${err.response.data.message}`)
+          );
+        }
+      });
   };
 
   return (
@@ -103,6 +133,7 @@ export default function SignUpForm() {
         </li>
       </ul>
 
+      {/* 회원가입 Form */}
       <div className="flex flex-col justify-center items-center w-80 mt-3 bg-white border border-solid border-gray rounded-md shadow-xss">
         <div className="flex flex-col justify-center items-center mt-4">
           <span className="mt-2 w-68 text-left text-md font-semibold">
@@ -119,19 +150,16 @@ export default function SignUpForm() {
           <span className="mt-2 w-68 text-left text-md font-semibold">
             Email
           </span>
-          <div className="flex flex-row justify-between items-center w-68 h-9">
+          <div className="flex flex-row justify-between items-center my-1 w-68 h-9">
             <input
-              className="my-1 w-52 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
+              className="w-52 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
               type="text"
               placeholder="ex) test@google.com"
               onChange={(e) => dispatch(email(e.target.value))}
             ></input>
             <button
               className="w-14 h-9 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
-              onClick={() => {
-                dispatch(checkedsend(true));
-                handleSendEmail();
-              }}
+              onClick={handleSendEmail}
             >
               Send
             </button>
@@ -150,8 +178,8 @@ export default function SignUpForm() {
             onChange={(e) => dispatch(password(e.target.value))}
           ></input>
           <span className="w-68 text-xs text-gray-400">
-            Passwords must contain at least eight characters, including at least
-            1 letter and 1 number.
+            Passwords must contain at least nine characters, including at least
+            1 special character, 1 letter and 1 number.
           </span>
         </div>
 
@@ -189,7 +217,7 @@ export default function SignUpForm() {
 
         <button
           className="flex flex-col justify-center items-center w-68 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
-          onClick={handleSignUp}
+          onClick={handleSignUp} // sign-up 됐을때 에러메시지 초기화
           disabled={false}
         >
           Sign up
@@ -197,15 +225,15 @@ export default function SignUpForm() {
 
         <div className="w-66 my-6 text-xs">
           By clicking “Sign up”, you agree to our{' '}
-          <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
+          <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
             terms of service
           </span>{' '}
           and acknowledge that you have read and understand our{' '}
-          <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
+          <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
             privacy policy
           </span>{' '}
           and
-          <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
+          <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
             code of conduct.
           </span>
         </div>
@@ -214,14 +242,17 @@ export default function SignUpForm() {
       <div className="w-68 mt-8 text-sm text-center">
         Already have an account?{' '}
         <Link to={RouteConst.Login}>
-          <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
+          <button
+            className="text-sky-500 hover:text-sky-600 cursor-pointer"
+            onClick={() => dispatch(errmsg(''))}
+          >
             Log in
-          </span>{' '}
+          </button>{' '}
         </Link>
       </div>
       <div className="w-68 my-3 text-sm text-center mb-18">
         Are you an employer?{' '}
-        <span className=" text-sky-500 hover:text-sky-600 cursor-pointer">
+        <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
           Sign up on Talent
         </span>{' '}
       </div>

@@ -1,40 +1,68 @@
 import NextBtn from './button/NextBtn';
 import TipTags from './Tips/TipTags';
 import { useSelector, useDispatch } from 'react-redux';
-import { tags } from '../../redux/createSlice/AskSlice';
+import { addtags, removetags } from '../../redux/createSlice/AskSlice';
 import { tipbox } from '../../redux/createSlice/TipboxSlice';
+import TagsDropdown from './TagsDropdown/TagsDropdown';
+import { setTagMode } from '../../redux/createSlice/AskSlice';
+import TagsList from './TagsList';
 
 export default function Tags() {
   const dispatch = useDispatch();
-  const Next = useSelector((state) => state.tipbox.position);
+  const Next = useSelector((state) => state.tipbox.nextbtn);
   const tipboxName = useSelector((state) => state.tipbox.tipboxName);
-  const InputValue = useSelector((state) => state.ask.value);
   const ErrorMsg = useSelector((state) => state.ask.errmsg);
+  const TagsData = useSelector((state) => state.ask.value.tagNames);
+  const TagsMode = useSelector((state) => state.ask.tagsdata.mode);
+
+  console.log(Next)
+
+  const addTagList = (e) => {
+    if (e.key === 'Enter') {
+      if (e.target.value && !TagsData.includes(e.target.value)) {
+        dispatch(addtags(e.target.value));
+        e.target.value = '';
+      }
+    } else if (e.key === 'Backspace') {
+      if (TagsData.length) {
+        dispatch(removetags());
+      }
+    }
+  };
 
   return (
     <div className="relative flex flex-col my-2 px-6 py-5 w-212 bg-white border-2 border-solid border-gray rounded-md">
-      <div className="font-semibold">Tags</div>
+      <div className={`font-semibold ${Next < 4 && 'text-gray-300'}`}>Tags</div>
 
-      <div className="my-1 text-xs">
+      <div className={`my-1 text-xs ${Next < 4 && 'text-gray-300'}`}>
         Add up to 5 tags to describe what your question is about. Start typing
         to see suggestions.
       </div>
 
-      <input
-        className="mt-1 mb-3 py-1.5 pl-2 text-sm bg-white border-2 border-solid border-gray rounded-md"
-        value={InputValue.tags}
-        onChange={(e) => {
-          dispatch(tags(e.target.value));
-        }}
-        placeholder="e.g. (mysql json typescript)"
-        onFocus={() => {
-          dispatch(tipbox('tags'));
-        }}
-      ></input>
+      <div className="flex justify-start items-center my-1 pl-1 h-11 bg-white border-2 border-solid border-gray rounded-md">
+        <ul className="flex flex-row justify-start items-center p-0">
+          {TagsData.map((el, idx) => (
+            <TagsList key={idx} el={el} />
+          ))}
+        </ul>
+        <input
+          className="py-1.5 pl-2 text-sm w-full focus:outline-none"
+          onKeyUp={(e) => addTagList(e)}
+          placeholder="e.g. (mysql, json, typescript)"
+          onFocus={() => {
+            dispatch(tipbox('tags'));
+            dispatch(setTagMode(true));
+          }}
+          onBlur={() => setTimeout(() => dispatch(setTagMode(false)), 100)}
+          disabled={Next < 4}
+        />
+      </div>
 
-      <div className='my-1 text-xs text-red-500'>{ErrorMsg.tags}</div>
+      {TagsMode && <TagsDropdown />}
 
-      {Next === 4 ? <NextBtn /> : null}
+      <div className="my-1 text-xs text-red-500">{ErrorMsg.tags}</div>
+
+      {Next === 4 && <NextBtn />}
       {tipboxName === 'tags' && <TipTags />}
     </div>
   );

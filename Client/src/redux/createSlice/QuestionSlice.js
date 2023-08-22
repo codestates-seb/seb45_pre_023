@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const questionSlice = createSlice({
   name: 'questions',
+
   initialState: { value: [], pageInfo: { totalSize : 0 } },
   reducers: {
     setQuestions: (state, action) => {
@@ -15,4 +16,6 @@ const questionSlice = createSlice({
 
 export default questionSlice;
 
+
 export const { setQuestions, pageInfo } = questionSlice.actions;
+

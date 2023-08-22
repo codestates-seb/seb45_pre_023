@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const questionDetailSlice = createSlice({
   name: 'questionDetail',
+  
   initialState: {
     value: [],
     content: '',
@@ -33,6 +34,7 @@ const questionDetailSlice = createSlice({
 });
 
 export default questionDetailSlice;
+
 
 export const { detail, content, member, vote, answerAdd, replyAdd } =
   questionDetailSlice.actions;

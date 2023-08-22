@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
-import { logintoken } from '../../redux/createSlice/LoginInfoSlice';
-import { oauthtoken } from '../../redux/createSlice/OAuthSlice';
-import { RouteConst } from '../../Interface/RouteConst';
+import { initLogin } from '../../../redux/createSlice/LoginInfoSlice';
+import { oauthtoken } from '../../../redux/createSlice/OAuthSlice';
+import { RouteConst } from '../../../Interface/RouteConst';
 import { useNavigate } from 'react-router-dom';
 
 export default function DropdownMenu() {
@@ -22,7 +22,7 @@ export default function DropdownMenu() {
         <span
           className="ml-3 hover:text-sky-700"
           onClick={() => {
-            dispatch(logintoken(''));
+            dispatch(initLogin());
             dispatch(oauthtoken(''));
             nevigate(RouteConst.Login);
           }}

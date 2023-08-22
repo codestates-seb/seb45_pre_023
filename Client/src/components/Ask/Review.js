@@ -4,31 +4,30 @@ import { useState } from 'react';
 import ReviewBtn from './button/ReviewBtn';
 import TipReview from './Tips/TipReview';
 import { useSelector, useDispatch } from 'react-redux';
-// import { title } from '../../redux/createSlice/AskSlice';
 import { tipbox } from '../../redux/createSlice/TipboxSlice';
 
 export default function Review() {
   const dispatch = useDispatch();
-  const Next = useSelector((state) => state.tipbox.position);
+  const Next = useSelector((state) => state.tipbox.nextbtn);
   const tipboxName = useSelector((state) => state.tipbox.tipboxName);
 
   const [isOpen, setisopen] = useState(false);
 
   return (
     <div className="relative flex flex-col my-2 px-6 py-5 w-212 bg-white border-2 border-solid border-gray rounded-md">
-      <div className="font-semibold">
+      <div className={`font-semibold ${Next < 5 && 'text-gray-300'}`}>
         Review questions already on Stack Overflow to see if your question is a
         duplicate.
       </div>
 
-      <div className="my-1 text-xs">
+      <div className={`my-1 text-xs ${Next < 5 && 'text-gray-300'}`}>
         Clicking on these questions will open them in a new tab for you to
         review. Your progress here will be saved so you can come back and
         continue.
       </div>
 
       <div
-        className="flex flex-row justify-between items-center mt-4 py-2 px-2 text-base text-gray-500 bg-gray-100 border-2 border-solid border-gray rounded-t-md active:border-black"
+        className={`flex flex-row justify-between items-center mt-4 py-2 px-2 text-base ${Next < 5 ? 'text-gray-300' : 'text-gray-500'} bg-gray-100 border-2 border-solid border-gray rounded-t-md active:border-black`}
         onClick={() => {
           setisopen(!isOpen);
           dispatch(tipbox('review'));
@@ -47,7 +46,7 @@ export default function Review() {
         </div>
       )}
 
-      {Next === 5 ? <ReviewBtn /> : null}
+      {Next === 5 && <ReviewBtn />}
       {tipboxName === 'review' && <TipReview />}
     </div>
   );
