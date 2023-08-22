@@ -7,6 +7,7 @@ import sixman.stackoverflow.auth.jwt.service.CustomUserDetails;
 import sixman.stackoverflow.domain.member.entity.Authority;
 import sixman.stackoverflow.global.exception.businessexception.memberexception.MemberNotFoundException;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SecurityUtil {

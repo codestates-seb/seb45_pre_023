@@ -104,6 +104,121 @@ class ReplyServiceTest extends ServiceTest {
                 .build();
     }
 
+    @Test
+    @DisplayName("댓글 생성 시 존재하지 않는 answerId 이면 AnswerNotFoundException 을 반환한다.")
+    void createReplyAnswerNotFoundException() {
+
+        // given
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        setDefaultAuthentication(member.getMemberId());
+
+        Long answerId = 12333L;
+
+        String content = "content1";
+
+        ReplyCreateServiceRequest request = new ReplyCreateServiceRequest(content);
+
+        // when, then
+        assertThrows(AnswerNotFoundException.class, () -> replyService.createReply(request,answerId));
+    }
+
+    @Test
+    @DisplayName("댓글 생성 시 로그인하지 않은 memberId 이면 MemberNotFoundException 을 발생한다.") // o
+    void createReplyMemberException() {
+        // Given
+        Member myMember = createMember();
+        memberRepository.save(myMember);
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = Answer.builder()
+                .content("BADS")
+                .question(question)
+                .member(member)
+                .build();
+
+        answerRepository.save(answer);
+
+        String content = "content2";
+        ReplyCreateServiceRequest request = new ReplyCreateServiceRequest(content);
+
+
+
+        // When, Then
+        assertThrows(MemberNotFoundException.class, () -> replyService.createReply(request, answer.getAnswerId()));
+    }
+
+    @Test
+    @DisplayName("댓글 업데이트 시 작성자와 로그인 한 사용자가 다르면 이면 MemberAccessDeniedException 을 발생한다.") //
+    void updateReplyMemberDeniedException() {
+        // Given
+        Member myMember = createMember();
+        memberRepository.save(myMember);
+
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        Reply reply = Reply.builder()
+                .content("BADS")
+                .answer(answer)
+                .member(member)
+                .build();
+
+        replyRepository.save(reply);
+
+        String content = "content2";
+        setDefaultAuthentication(myMember.getMemberId()); //myMember 로 로그인
+
+        // When, Then
+        assertThrows(MemberAccessDeniedException.class, () -> replyService.updateReply(reply.getReplyId(), content));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 시 작성자와 로그인 한 사용자가 다르면 이면 MemberAccessDeniedException 을 발생한다.") //
+    void deleteReplyMemberDeniedException() {
+        // Given
+        Member myMember = createMember();
+        memberRepository.save(myMember);
+
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        Reply reply = Reply.builder()
+                .content("BADS")
+                .member(member)
+                .answer(answer)
+                .build();
+
+        replyRepository.save(reply);
+
+        setDefaultAuthentication(myMember.getMemberId()); //myMember 로 로그인
+
+        // When, Then
+        assertThrows(MemberAccessDeniedException.class, () -> replyService.deleteReply(reply.getReplyId()));
+    }
 
     @Test
     @DisplayName("댓글 조회 시 존재하지 않는 replyId 이면 ReplyNotFoundException 을 반환한다.") // o
@@ -113,10 +228,6 @@ class ReplyServiceTest extends ServiceTest {
         // When, Then
         assertThrows(ReplyNotFoundException.class, () -> replyService.findReply(replyId));
     }
-
-
-
-
 
     @Test
     @DisplayName("answerId 를 통해 댓글 목록을 페이징으로 찾아서 반환한다.(10개의 경우)") // ㅇ
@@ -232,6 +343,38 @@ class ReplyServiceTest extends ServiceTest {
         // Then
         assertThat(replyResponsesPage.getContent()).hasSize(4);
         assertThat(replyResponsesPage.getTotalPages()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("answerId가 없으면 댓글 목록을 페이징으로 찾을 때 answerNotFoundException을 발생시킨다") // ㅇ
+    void getRepliesPagedException() {
+        // given
+        Long answerId = 123132L;
+
+        Member member = createMember();
+        memberRepository.save(member);
+
+        Question question = createQuestion(member);
+        questionRepository.save(question);
+
+        Answer answer = createAnswer(question);
+        answerRepository.save(answer);
+
+        for (int i = 0; i < 4; i++) {
+            Reply reply = Reply.builder()
+                    .content("Reply Content " + i)
+                    .member(member)
+                    .answer(answer)
+                    .build();
+            replyRepository.save(reply);
+        }
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+
+        // When, Then
+        assertThrows(AnswerNotFoundException.class, () ->
+                replyService.getRepliesPaged(answerId, pageable));
     }
 
     @Test

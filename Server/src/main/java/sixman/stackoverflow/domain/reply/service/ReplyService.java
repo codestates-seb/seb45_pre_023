@@ -45,10 +45,13 @@ public class ReplyService {
     }
 
     public Long createReply(ReplyCreateServiceRequest request, Long answerId) {
+
         Long memberId = SecurityUtil.getCurrentId(); // 사실 인증만 하고, 멤버 id는 밑에 값에서 넣어야 더 깔끔할 것 같다.
 
+        if (memberId == null) {
+            throw new MemberNotFoundException();}
         Optional<Member> memberOptional = memberRepository.findById(memberId);
-        Member member = memberOptional.orElseThrow(MemberNotFoundException::new);
+        Member member = memberOptional.orElseThrow(MemberAccessDeniedException::new);
 
         Optional<Answer> answerOptional = answerRepository.findById(answerId);
         Answer answer = answerOptional.orElseThrow(AnswerNotFoundException::new);
