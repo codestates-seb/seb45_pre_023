@@ -19,26 +19,26 @@ export default function ShareButton({ editMode, setEditMode }) {
 
   const handleDelete = () => {
     return axios
-    .delete(
-      `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions/${questionId}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    )
-    .then((res) => {
-      console.log(res);
-      navigate(RouteConst.Main);
-    })
-    .catch((err) => {
-      console.log(err);
-    }
-  )};
+      .delete(
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions/${questionId}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res);
+        navigate(RouteConst.Main);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <>
-      <div className="w-[200px] flex justify-around my-6 ">
+      <div className="w-[250px] flex justify-around my-6 ">
         <button className="text-[#e0e0e0] hover:text-[black]">Share</button>
         <button className="text-[#e0e0e0] hover:text-[black]">With</button>
         <button className="text-[#e0e0e0] hover:text-[black]">Follow</button>
@@ -50,7 +50,10 @@ export default function ShareButton({ editMode, setEditMode }) {
             >
               {editMode ? 'Save' : 'Edit'}
             </button>
-            <button onClick={handleDelete} className="text-[#e0e0e0] hover:text-[black]">
+            <button
+              onClick={handleDelete}
+              className="text-[#e0e0e0] hover:text-[black]"
+            >
               Delete
             </button>
           </>

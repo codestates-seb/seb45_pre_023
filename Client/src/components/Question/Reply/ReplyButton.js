@@ -12,8 +12,8 @@ export default function ReplyButton({
   const handleEdit = () => {
     return axios
       .patch(
-        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/replies/${replyId}`, 
-        {content : replyContent},
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/replies/${replyId}`,
+        { content: replyContent },
         {
           headers: {
             Authorization: token,
@@ -56,11 +56,16 @@ export default function ReplyButton({
             handleEdit();
           }
         }}
-        className="text-[#e0e0e0] hover:text-[black]"
+        className="w-[55px] text-[#e0e0e0] border-2 rounded-2xl hover:text-[black]"
       >
         {replyEditMode ? 'Save' : 'Edit'}
       </button>
-      <button onClick={handleReplyDelete}>Delete</button>
+      <button
+        onClick={handleReplyDelete}
+        className="w-[55px] ml-4 text-[#e0e0e0] border-2 rounded-2xl hover:text-[black]"
+      >
+        Delete
+      </button>
     </div>
   );
 }

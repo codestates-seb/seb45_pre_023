@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import  getTimeDifference  from '../Question/Time';
 
-
 export default function QuestionData( {el} ) {
     const inputTime = el.createdDate;
     const hoursAgo = getTimeDifference(inputTime);
@@ -37,6 +36,7 @@ export default function QuestionData( {el} ) {
                 ))}
               </div>
               <div className="flex justify-between">
+                <img src="https://i.pinimg.com/564x/40/dc/af/40dcaf3511a13efabcfc4d741a632324.jpg" alt='짱구 이미지' className='w-[20px] h-[20px]' />
                 <p className="ml-4 text-sm text-[#4FC3F7]">{el.member.nickname}</p>
                 <p className="ml-6 text-sm text-[#9e9e9e]">{hoursAgo} hour ago</p>
               </div>

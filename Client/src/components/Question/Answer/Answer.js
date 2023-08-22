@@ -10,7 +10,6 @@ import AnswerList from './AnswerList';
 export default function Answer() {
 
   const answerObjectData = useSelector((state) => state.detail.answer);
-  console.log(answerObjectData);
   const answerData = Object.values(answerObjectData);
 
   return (
