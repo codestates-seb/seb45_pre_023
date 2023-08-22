@@ -1,0 +1,416 @@
+{
+    "data" : {
+      "questionId" : 1,
+      "title" : "title",
+      "detail" : "detail",
+      "expect" : "expect",
+      "member" : {
+        "memberId" : 1,
+        "nickname" : "test",
+        "imageUrl" : "test url"
+      },
+      "views" : 100,
+      "recommend" : 10,
+      "recommendType" : "UPVOTE",
+      "tags" : [ {
+        "questionTagId" : 1,
+        "tagName" : "tag1"
+      }, {
+        "questionTagId" : 2,
+        "tagName" : "tag2"
+      } ],
+      "answer" : {
+        "answers" : [ {
+          "answerId" : 1,
+          "member" : {
+            "memberId" : 1,
+            "nickname" : "test",
+            "imageUrl" : "test url"
+          },
+          "content" : "content",
+          "recommend" : 10,
+          "recommendType" : "DOWNVOTE",
+          "reply" : {
+            "replies" : [ {
+              "replyId" : 6,
+              "content" : "content",
+              "member" : {
+                "memberId" : 1,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 7,
+              "content" : "content",
+              "member" : {
+                "memberId" : 2,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 8,
+              "content" : "content",
+              "member" : {
+                "memberId" : 3,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 9,
+              "content" : "content",
+              "member" : {
+                "memberId" : 4,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 10,
+              "content" : "content",
+              "member" : {
+                "memberId" : 5,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            } ],
+            "pageInfo" : {
+              "page" : 1,
+              "size" : 5,
+              "totalPage" : 4,
+              "totalSize" : 20,
+              "first" : true,
+              "last" : false,
+              "hasNext" : true,
+              "hasPrevious" : false
+            }
+          },
+          "createdDate" : "2023-08-17T00:12:34.5101231",
+          "updatedDate" : "2023-08-17T00:12:34.5101231"
+        }, {
+          "answerId" : 2,
+          "member" : {
+            "memberId" : 2,
+            "nickname" : "test",
+            "imageUrl" : "test url"
+          },
+          "content" : "content",
+          "recommend" : 10,
+          "recommendType" : "UPVOTE",
+          "reply" : {
+            "replies" : [ {
+              "replyId" : 11,
+              "content" : "content",
+              "member" : {
+                "memberId" : 1,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 12,
+              "content" : "content",
+              "member" : {
+                "memberId" : 2,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 13,
+              "content" : "content",
+              "member" : {
+                "memberId" : 3,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 14,
+              "content" : "content",
+              "member" : {
+                "memberId" : 4,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 15,
+              "content" : "content",
+              "member" : {
+                "memberId" : 5,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            } ],
+            "pageInfo" : {
+              "page" : 1,
+              "size" : 5,
+              "totalPage" : 4,
+              "totalSize" : 20,
+              "first" : true,
+              "last" : false,
+              "hasNext" : true,
+              "hasPrevious" : false
+            }
+          },
+          "createdDate" : "2023-08-17T00:12:34.5101231",
+          "updatedDate" : "2023-08-17T00:12:34.5101231"
+        }, {
+          "answerId" : 3,
+          "member" : {
+            "memberId" : 3,
+            "nickname" : "test",
+            "imageUrl" : "test url"
+          },
+          "content" : "content",
+          "recommend" : 10,
+          "recommendType" : "DOWNVOTE",
+          "reply" : {
+            "replies" : [ {
+              "replyId" : 16,
+              "content" : "content",
+              "member" : {
+                "memberId" : 1,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 17,
+              "content" : "content",
+              "member" : {
+                "memberId" : 2,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 18,
+              "content" : "content",
+              "member" : {
+                "memberId" : 3,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 19,
+              "content" : "content",
+              "member" : {
+                "memberId" : 4,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 20,
+              "content" : "content",
+              "member" : {
+                "memberId" : 5,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            } ],
+            "pageInfo" : {
+              "page" : 1,
+              "size" : 5,
+              "totalPage" : 4,
+              "totalSize" : 20,
+              "first" : true,
+              "last" : false,
+              "hasNext" : true,
+              "hasPrevious" : false
+            }
+          },
+          "createdDate" : "2023-08-17T00:12:34.5101231",
+          "updatedDate" : "2023-08-17T00:12:34.5101231"
+        }, {
+          "answerId" : 4,
+          "member" : {
+            "memberId" : 4,
+            "nickname" : "test",
+            "imageUrl" : "test url"
+          },
+          "content" : "content",
+          "recommend" : 10,
+          "recommendType" : "UPVOTE",
+          "reply" : {
+            "replies" : [ {
+              "replyId" : 21,
+              "content" : "content",
+              "member" : {
+                "memberId" : 1,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 22,
+              "content" : "content",
+              "member" : {
+                "memberId" : 2,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 23,
+              "content" : "content",
+              "member" : {
+                "memberId" : 3,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 24,
+              "content" : "content",
+              "member" : {
+                "memberId" : 4,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 25,
+              "content" : "content",
+              "member" : {
+                "memberId" : 5,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            } ],
+            "pageInfo" : {
+              "page" : 1,
+              "size" : 5,
+              "totalPage" : 4,
+              "totalSize" : 20,
+              "first" : true,
+              "last" : false,
+              "hasNext" : true,
+              "hasPrevious" : false
+            }
+          },
+          "createdDate" : "2023-08-17T00:12:34.5101231",
+          "updatedDate" : "2023-08-17T00:12:34.5101231"
+        }, {
+          "answerId" : 5,
+          "member" : {
+            "memberId" : 5,
+            "nickname" : "test",
+            "imageUrl" : "test url"
+          },
+          "content" : "content",
+          "recommend" : 10,
+          "recommendType" : "DOWNVOTE",
+          "reply" : {
+            "replies" : [ {
+              "replyId" : 26,
+              "content" : "content",
+              "member" : {
+                "memberId" : 1,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 27,
+              "content" : "content",
+              "member" : {
+                "memberId" : 2,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 28,
+              "content" : "content",
+              "member" : {
+                "memberId" : 3,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 29,
+              "content" : "content",
+              "member" : {
+                "memberId" : 4,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            }, {
+              "replyId" : 30,
+              "content" : "content",
+              "member" : {
+                "memberId" : 5,
+                "nickname" : "test",
+                "imageUrl" : "test url"
+              },
+              "createdDate" : "2023-08-17T00:12:34.5101231",
+              "updatedDate" : "2023-08-17T00:12:34.5101231"
+            } ],
+            "pageInfo" : {
+              "page" : 1,
+              "size" : 5,
+              "totalPage" : 4,
+              "totalSize" : 20,
+              "first" : true,
+              "last" : false,
+              "hasNext" : true,
+              "hasPrevious" : false
+            }
+          },
+          "createdDate" : "2023-08-17T00:12:34.5101231",
+          "updatedDate" : "2023-08-17T00:12:34.5101231"
+        } ],
+        "pageInfo" : {
+          "page" : 1,
+          "size" : 5,
+          "totalPage" : 4,
+          "totalSize" : 20,
+          "first" : true,
+          "last" : false,
+          "hasNext" : true,
+          "hasPrevious" : false
+        }
+      },
+      "createdDate" : "2023-08-17T00:12:34.5111318",
+      "updatedDate" : "2023-08-17T00:12:34.5111318"
+    },
+    "code" : 200,
+    "status" : "OK",
+    "message" : "질문 조회 성공"
+  }

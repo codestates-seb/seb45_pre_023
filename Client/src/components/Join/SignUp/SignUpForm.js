@@ -1,0 +1,269 @@
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { Link } from 'react-router-dom';
+import { RouteConst } from '../../../Interface/RouteConst';
+import { useDispatch, useSelector } from 'react-redux';
+import { google, github, kakao } from '../../../redux/createSlice/OAuthSlice';
+import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
+import CodeBox from './CodeBox';
+import { useNavigate } from 'react-router-dom';
+import {
+  handleGoogleLogin,
+  handleGithubLogin,
+  handleKakaoLogin,
+} from '../../../OAuth/OAuth';
+import {
+  email,
+  password,
+  nickname,
+  checkedsend,
+  checkedrobot,
+} from '../../../redux/createSlice/SignUpInfoSlice';
+
+export default function SignUpForm() {
+  const SignUpInfo = useSelector((state) => state.signupinfo.value);
+  const ErrorMessage = useSelector((state) => state.errmsg.value);
+  const CheckedOption = useSelector((state) => state.signupinfo.checkedoption);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleSignUp = () => {
+    if (!SignUpInfo.nickname || !SignUpInfo.email || !SignUpInfo.password) {
+      alert('모든 정보를 입력해주세요.');
+      return dispatch(errmsg('Please enter all information.'));
+    } else if (!CheckedOption.robot) {
+      alert('당신은 로봇입니까?');
+      return dispatch(errmsg(`Please check the box.`));
+    }
+    return axios
+      .post(
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/auth/signup',
+        SignUpInfo
+      )
+      .then((res) => {
+        alert('성공적으로 회원가입 되었습니다.');
+        dispatch(errmsg(''));
+        navigate(RouteConst.Login);
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        if (err.response.data.code === 400) {
+          alert(err.response.data.message);
+          dispatch(errmsg('이메일 인증이 완료되지 않았습니다.'));
+        } else if (err.response.data.code === 401) {
+          alert(err.response.data.message);
+          dispatch(errmsg('이메일 인증이 완료되지 않았습니다.'));
+        } else {
+          dispatch(errmsg(`SignUp is failed (${err.response.data.code})`));
+          alert('회원가입에 실패했습니다.');
+        }
+      });
+  };
+
+  const handleSendEmail = () => {
+    if (!SignUpInfo.email) {
+      dispatch(errmsg('Please enter your email'));
+      alert('이메일을 입력해주세요.');
+      return;
+    }
+    return axios
+      .post(
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/email',
+        { email: SignUpInfo.email }
+      )
+      .then((res) => {
+        dispatch(checkedsend(true));
+        dispatch(errmsg('A verification code has been sent to your email.'));
+        alert('해당 이메일로 인증 코드가 발송되었습니다.');
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        if (err.response.data.code === 400) {
+          dispatch(errmsg('Invalid email.'));
+          alert('유효한 이메일이 아닙니다.');
+        } else if (err.response.data.code === 401) {
+          dispatch(errmsg('This account has been withdrawn.')); // 탈퇴원 회원이면 다시 비밀번호 찾기하게끔 유도하기.`
+          alert('탈퇴한 회원입니다.');
+          alert(`복구를 윈하면 새 비밀번호를 만들어주세요.`);
+        } else if (err.response.data.code === 409) {
+          dispatch(errmsg('This email is already registered.'));
+          alert('이미 회원가입 된 이메일입니다. 로그인 해주세요');
+        } else {
+          dispatch(
+            errmsg(`Failed to send email. ${err.response.data.message}`)
+          );
+          alert(`이메일 전송에 실패했습니다. ${err.response.data.message}`);
+        }
+      });
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <ul className="flex flex-col items-center mt-8">
+        <li
+          className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
+          onClick={() => {
+            dispatch(github);
+            handleGoogleLogin();
+          }}
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google"
+            className="w-4 h-4 mr-2"
+          />
+          <span className="text-sm">Sign up with Google</span>
+        </li>
+        <li
+          className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
+          onClick={() => {
+            dispatch(kakao);
+            handleGithubLogin();
+          }}
+        >
+          <FontAwesomeIcon icon={faGithub} className="w-4 h-4 mr-2" />
+          <span className="text-sm">Sign up with GitHub</span>
+        </li>
+        <li
+          className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
+          onClick={() => {
+            dispatch(google);
+            handleKakaoLogin();
+          }}
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg"
+            alt="KakaoTalk"
+            className="w-5 h-5 mr-2"
+          />
+          <span className="text-sm">Sign up with Kakao</span>
+        </li>
+      </ul>
+
+      {/* 회원가입 Form */}
+      <div className="flex flex-col justify-center items-center w-80 mt-3 bg-white border border-solid border-gray rounded-md shadow-xss">
+        <div className="flex flex-col justify-center items-center mt-4">
+          <span className="mt-2 w-68 text-left text-md font-semibold">
+            Display name
+          </span>
+          <input
+            className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
+            type="text"
+            onChange={(e) => dispatch(nickname(e.target.value))}
+          ></input>
+        </div>
+
+        <div className="flex flex-col justify-center items-center">
+          <span className="mt-2 w-68 text-left text-md font-semibold">
+            Email
+          </span>
+          <div className="flex flex-row justify-between items-center my-1 w-68 h-9">
+            <input
+              className="w-52 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
+              type="text"
+              placeholder="ex) test@google.com"
+              onChange={(e) => dispatch(email(e.target.value))}
+            ></input>
+            <button
+              className="w-14 h-9 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
+              onClick={handleSendEmail}
+            >
+              Send
+            </button>
+          </div>
+        </div>
+
+        {CheckedOption.send && <CodeBox />}
+
+        <div className="flex flex-col justify-center items-center">
+          <span className="mt-2 w-68 text-left text-md font-semibold">
+            Password
+          </span>
+          <input
+            className="my-1 w-68 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"
+            type="password"
+            onChange={(e) => dispatch(password(e.target.value))}
+          ></input>
+          <span className="w-68 text-xs text-gray-400">
+            Passwords must contain at least nine characters, including at least
+            1 special character, 1 letter and 1 number.
+          </span>
+        </div>
+
+        <div className="flex flex-col justify-center items-center w-68 h-44 my-3 bg-gray-200 rounded-sm">
+          <div className="flex flex-col justify-start items-center w-40 h-36 bg-gray-100 rounded-sm shadow-xss">
+            <div className="flex flex-row justify-center items-center my-8">
+              <input
+                className="w-7 h-7"
+                type="checkbox"
+                onClick={(e) => dispatch(checkedrobot(e.target.checked))}
+              ></input>
+              <span className="ml-2 text-sm">I'm not a robot</span>
+            </div>
+
+            <div className="flex flex-row justify-center items-center text-xss mt-3">
+              {/* <img src="" alt=""/> */}
+              reCAPTCHA
+            </div>
+
+            <div className="flex flex-row justify-center items-center w-68 text-xss">
+              Privacy ● Terms
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-row justify-between items-start w-68 my-1">
+          <input className="mt-1" type="checkbox"></input>
+          <span className="ml-2 pr-4 text-xs">
+            Opt-in to receive occasional product updates, user research
+            invitations, company announcements, and digests.
+          </span>
+        </div>
+
+        <div className="mt-2 text-sm text-red-500">{ErrorMessage}</div>
+
+        <button
+          className="flex flex-col justify-center items-center w-68 h-9 my-3 bg-sky-500 hover:bg-sky-600 text-sm text-white text-center rounded-md"
+          onClick={handleSignUp} // sign-up 됐을때 에러메시지 초기화
+          disabled={false}
+        >
+          Sign up
+        </button>
+
+        <div className="w-66 my-6 text-xs">
+          By clicking “Sign up”, you agree to our{' '}
+          <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
+            terms of service
+          </span>{' '}
+          and acknowledge that you have read and understand our{' '}
+          <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
+            privacy policy
+          </span>{' '}
+          and
+          <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
+            code of conduct.
+          </span>
+        </div>
+      </div>
+
+      <div className="w-68 mt-8 text-sm text-center">
+        Already have an account?{' '}
+        <Link to={RouteConst.Login}>
+          <button
+            className="text-sky-500 hover:text-sky-600 cursor-pointer"
+            onClick={() => dispatch(errmsg(''))}
+          >
+            Log in
+          </button>{' '}
+        </Link>
+      </div>
+      <div className="w-68 my-3 text-sm text-center mb-18">
+        Are you an employer?{' '}
+        <span className="text-sky-500 hover:text-sky-600 cursor-pointer">
+          Sign up on Talent
+        </span>{' '}
+      </div>
+    </div>
+  );
+}
