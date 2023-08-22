@@ -12,6 +12,7 @@ import sixman.stackoverflow.domain.tag.entity.Tag;
 import sixman.stackoverflow.global.testhelper.RepositoryTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -23,18 +24,9 @@ class TagRepositoryTest extends RepositoryTest {
     @DisplayName("tagId 로 tag list 를 조회한다.")
     void findAllByTagIdIn() {
         //given
-        Member member = createMember();
-
-        Question question = createQuestion(member);
-
         Tag tag1 = createTag("tag1");
         Tag tag2 = createTag("tag2");
 
-        QuestionTag.createQuestionTag(question, tag1);
-        QuestionTag.createQuestionTag(question, tag2);
-
-        em.persist(member);
-        em.persist(question);
         em.persist(tag1);
         em.persist(tag2);
         em.flush();
@@ -45,10 +37,10 @@ class TagRepositoryTest extends RepositoryTest {
 
         //then
         assertThat(allByTagIdIn).hasSize(2)
-                .extracting("tagId", "tagName")
+                .extracting("tagId", "tagName", "tagDetail")
                 .containsExactlyInAnyOrder(
-                        Tuple.tuple(tag1.getTagId(), tag1.getTagName()),
-                        Tuple.tuple(tag2.getTagId(), tag2.getTagName())
+                        Tuple.tuple(tag1.getTagId(), tag1.getTagName(), tag1.getTagDetail()),
+                        Tuple.tuple(tag2.getTagId(), tag2.getTagName(), tag2.getTagDetail())
                 );
     }
 
@@ -56,18 +48,9 @@ class TagRepositoryTest extends RepositoryTest {
     @DisplayName("tagName 리스트로 tag list 를 조회한다.")
     void findAllByTagNameIn() {
         //given
-        Member member = createMember();
-
-        Question question = createQuestion(member);
-
         Tag tag1 = createTag("tag1");
         Tag tag2 = createTag("tag2");
 
-        QuestionTag.createQuestionTag(question, tag1);
-        QuestionTag.createQuestionTag(question, tag2);
-
-        em.persist(member);
-        em.persist(question);
         em.persist(tag1);
         em.persist(tag2);
         em.flush();
@@ -78,11 +61,31 @@ class TagRepositoryTest extends RepositoryTest {
 
         //then
         assertThat(allByTagIdIn).hasSize(2)
-                .extracting("tagId","tagName")
+                .extracting("tagId", "tagName", "tagDetail")
                 .containsExactlyInAnyOrder(
-                        Tuple.tuple(tag1.getTagId(), tag1.getTagName()),
-                        Tuple.tuple(tag2.getTagId(), tag2.getTagName())
+                        Tuple.tuple(tag1.getTagId(), tag1.getTagName(), tag1.getTagDetail()),
+                        Tuple.tuple(tag2.getTagId(), tag2.getTagName(), tag2.getTagDetail())
                 );
+    }
+
+    @Test
+    @DisplayName("tagName 으로 tag 를 조회한다.")
+    void findByTagName() {
+        //given
+        Tag tag1 = createTag("tag1");
+
+        em.persist(tag1);
+        em.flush();
+        em.clear();
+
+        //when
+        Optional<Tag> findTag = tagRepository.findByTagName(tag1.getTagName());
+
+        //then
+        assertThat(findTag).isPresent()
+                .get()
+                .extracting("tagId", "tagName", "tagDetail")
+                .containsExactly(tag1.getTagId(), tag1.getTagName(), tag1.getTagDetail());
 
     }
 }

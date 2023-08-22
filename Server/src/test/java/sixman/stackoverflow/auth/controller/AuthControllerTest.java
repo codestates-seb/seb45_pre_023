@@ -85,7 +85,6 @@ class AuthControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(content));
 
-
         //then
         actions
                 .andDo(print())
@@ -306,7 +305,6 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.data[0].reason").value("OAuth 인증을 선택해주세요."));
     }
 
-
     private Member createMember(String email, String password) {
 
         Member member = Member.builder()
@@ -352,10 +350,6 @@ class AuthControllerTest {
         );
     }
 
-    private Attributes.Attribute getFormat(
-            final String value){
-        return new Attributes.Attribute("format",value);
-    }
 
     private String generateLinkCode(Class<?> clazz) {
         return String.format("link:../common/%s.html[%s 값 보기,role=\"popup\"]",

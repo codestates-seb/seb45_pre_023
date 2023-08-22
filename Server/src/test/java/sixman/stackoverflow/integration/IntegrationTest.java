@@ -220,38 +220,6 @@ public abstract class IntegrationTest {
         questionTagRepository.save(questionTag);
     }
 
-    //추천 기능이 완성되면 주석 풀 예정
-    /*protected void recommendQuestion(Member member, Question question, TypeEnum typeEnum) {
-
-        QuestionRecommend questionRecommend = QuestionRecommend.builder()
-                .member(member)
-                .question(question)
-                .type(typeEnum)
-                .build();
-
-        question.applyRecommend(TypeEnum.UPVOTE);
-
-        questionRepository.save(question);
-        questionRecommendRepository.save(questionRecommend);
-    }
-
-    protected void recommendAnswer(Member member, Answer answer, TypeEnum typeEnum) {
-
-        AnswerRecommend answerRecommend = AnswerRecommend.builder()
-                .member(member)
-                .answer(answer)
-                .type(typeEnum)
-                .build();
-
-        if(typeEnum == TypeEnum.UPVOTE)
-            answer.setRecommend(answer.getRecommend() + 1);
-        else
-            answer.setRecommend(answer.getRecommend() - 1);
-
-        answerRepository.save(answer);
-        answerRecommendRepository.save(answerRecommend);
-    }*/
-
     protected <T> ApiSingleResponse<T> getApiSingleResponseFromResult(ResultActions actions, Class<T> clazz) throws UnsupportedEncodingException, JsonProcessingException {
         String contentAsString = actions.andReturn().getResponse().getContentAsString();
 

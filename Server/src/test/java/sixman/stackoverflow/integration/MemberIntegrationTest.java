@@ -2,7 +2,6 @@ package sixman.stackoverflow.integration;
 
 import org.junit.jupiter.api.*;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.support.StandardServletPartUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.ResultActions;
@@ -10,7 +9,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import sixman.stackoverflow.auth.jwt.dto.LoginDto;
 import sixman.stackoverflow.domain.answer.entitiy.Answer;
 import sixman.stackoverflow.domain.answer.service.response.AnswerResponse;
-import sixman.stackoverflow.domain.member.controller.dto.MemberPasswordUpdateAPiRequest;
+import sixman.stackoverflow.domain.member.controller.dto.MemberPasswordUpdateApiRequest;
 import sixman.stackoverflow.domain.member.controller.dto.MemberUpdateApiRequest;
 import sixman.stackoverflow.domain.member.entity.Member;
 import sixman.stackoverflow.domain.member.service.dto.response.MemberResponse;
@@ -402,7 +401,7 @@ public class MemberIntegrationTest extends IntegrationTest{
         Long memberId = member.getMemberId();
         String newPassword = "newPassword12!!";
 
-        MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+        MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                 .password(memberPassword)
                 .newPassword(newPassword)
                 .build();
@@ -431,7 +430,7 @@ public class MemberIntegrationTest extends IntegrationTest{
         Long memberId = member.getMemberId();
         String newPassword = "newPassword12!!";
 
-        MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+        MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                 .password(memberPassword + "a") // 이전 비밀번호가 맞지 않음
                 .newPassword(newPassword)
                 .build();
@@ -462,7 +461,7 @@ public class MemberIntegrationTest extends IntegrationTest{
         Long memberId = member.getMemberId();
         String newPassword = "new!!"; // 유효하지 않은 비밀번호
 
-        MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+        MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                 .password(memberPassword)
                 .newPassword(newPassword)
                 .build();
@@ -493,7 +492,7 @@ public class MemberIntegrationTest extends IntegrationTest{
         Long memberId = member.getMemberId();
         String newPassword = "newPassword12!!";
 
-        MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+        MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                 .password(memberPassword)
                 .newPassword(newPassword)
                 .build();

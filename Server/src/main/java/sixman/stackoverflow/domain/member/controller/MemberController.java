@@ -1,8 +1,6 @@
 package sixman.stackoverflow.domain.member.controller;
 
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -76,7 +74,7 @@ public class MemberController {
 
     @PatchMapping("/{member-id}/password")
     public ResponseEntity<Void> updatePassword(@PathVariable("member-id") @Positive Long updateMemberId,
-                                             @RequestBody @Valid MemberPasswordUpdateAPiRequest request) {
+                                             @RequestBody @Valid MemberPasswordUpdateApiRequest request) {
 
         Long loginMemberId = SecurityUtil.getCurrentId();
 

@@ -130,7 +130,6 @@ public class AnswerIntegrationTest extends IntegrationTest {
                             .accept(APPLICATION_JSON)
                             .header("Authorization", accessToken));
 
-
                     //then
                     actions
                             .andDo(print())
