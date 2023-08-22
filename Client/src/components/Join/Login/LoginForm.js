@@ -30,7 +30,7 @@ export default function LoginForm() {
     }
     return axios
       .post(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/login',
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/auth/login',
         LoginInfo
       )
       .then((res) => {

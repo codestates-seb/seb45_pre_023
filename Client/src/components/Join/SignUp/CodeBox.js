@@ -12,7 +12,7 @@ export default function CodeBox() {
     console.log({ email: SignUpInfo.email, code: Code });
     return axios
       .post(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/members/email/confirm',
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/email/confirm',
         { email: SignUpInfo.email, code: Code }
       )
       .then((res) => {

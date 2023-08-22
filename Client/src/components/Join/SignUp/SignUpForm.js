@@ -38,7 +38,7 @@ export default function SignUpForm() {
     }
     return axios
       .post(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/signup',
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/auth/signup',
         SignUpInfo
       )
       .then((res) => {
@@ -67,7 +67,7 @@ export default function SignUpForm() {
     }
     return axios
       .post(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/members/email',
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/email',
         { email: SignUpInfo.email }
       )
       .then((res) => {

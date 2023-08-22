@@ -26,7 +26,7 @@ function App() {
   const getAccessToken = async (authorizationCode) => {
     return axios
       .get(
-        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/oauth?provider=${provider}&code=${authorizationCode}`
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/auth/oauth?provider=${provider}&code=${authorizationCode}`
       )
       .then((res) => {
         dispatch(oauthtoken(res.headers.Authorization));

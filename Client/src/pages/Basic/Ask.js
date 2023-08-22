@@ -18,7 +18,7 @@ export default function Ask() {
   const getTags = () => {
     return axios
       .get(
-        'http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/tags'
+        'http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/tags'
       )
       .then((res) => dispatch(setTagList(res.data.data)))
       .catch((err) => console.log(err));
