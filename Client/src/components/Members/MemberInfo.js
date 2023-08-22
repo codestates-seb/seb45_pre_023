@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { RouteConst } from "../../Interface/RouteConst";
+import { useSelector } from "react-redux";
 
 export default function MemberInfo() {
+  const nickName = useSelector((state)=>state.memberinfo.value.nickname)
   return (
     <div className="flex  w-220">
       <img
@@ -14,7 +16,7 @@ export default function MemberInfo() {
             Edit Profile
           </Link>
         </div>
-        <div className=" text-3xl mt-7">귀여운 고양이</div>
+        <div className=" text-3xl mt-7">{nickName}</div>
         <div className="pt-2">
           <span className=" pr-2 text-xs">Member for 2days</span>
           <span className=" pr-2 text-xs">Last seen this week</span>

@@ -2,10 +2,13 @@ import { Link } from 'react-router-dom';
 import Buttons from '../../../components/Members/Buttons';
 import MemberInfo from '../../../components/Members/MemberInfo';
 import { RouteConst } from '../../../Interface/RouteConst';
+import LeftSidebar from '../../../components/SideBar/LeftSidebar';
+import RightSidebar from '../../../components/SideBar/RightSidebar';
 
 export default function MemberDelete() {
   return (
-    <>
+    <div className='flex min-h-[70rem]'>
+      <LeftSidebar/>
       <div className="flex flex-col p-6">
         <MemberInfo />
         <Buttons />
@@ -84,6 +87,7 @@ export default function MemberDelete() {
           </div>
         </div>
       </div>
-    </>
+      <RightSidebar/>
+    </div>
   );
 }

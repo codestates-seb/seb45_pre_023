@@ -12,6 +12,7 @@ import replySlice from './createSlice/ReplySlice';
 import { combineReducers } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer } from 'redux-persist';
+import MemberSlice from './createSlice/memberSlice';
 
 const reducers = combineReducers({
   tipbox: tipboxSlice.reducer,
@@ -20,8 +21,9 @@ const reducers = combineReducers({
   logininfo: LoginInfoSlice.reducer,
   signupinfo: SignUpInfoSlice.reducer,
   errmsg: ErrMsgSlice.reducer,
-  questions: questionSlice.reducer,
-  detail: questionDetailSlice.reducer,
+  questions:questionSlice.reducer,
+  detail:questionDetailSlice.reducer,
+  memberinfo:MemberSlice.reducer,
   answerCRUD: answerSlice.reducer,
   replyCRUD: replySlice.reducer,
 });
@@ -29,7 +31,7 @@ const reducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['oauth', 'logininfo'],
+  whitelist: ['oauth', 'logininfo','memberinfo'],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

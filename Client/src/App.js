@@ -11,11 +11,8 @@ import MemberProfile from './pages/Member/Profile';
 import MemberEdit from './pages/Member/Settings/Edit';
 import MemberDelete from './pages/Member/Settings/Delete';
 import MemberMain from './pages/Member/memberMain';
-import LeftSidebar from './components/SideBar/LeftSidebar';
-import RightSidebar from './components/SideBar/RightSidebar';
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 import axios from 'axios';
 import { oauthtoken } from './redux/createSlice/OAuthSlice';
@@ -49,21 +46,17 @@ function App() {
   return (
     <BrowserRouter>
       <Header />
-      {/* <div className="flex ml-40 h-[80rem]"> */}
-      {/* <LeftSidebar /> */}
       <Routes>
         <Route path={RouteConst.Login} element={<Login />} />
         <Route path={RouteConst.SignUp} element={<SignUp />} />
+        <Route path={RouteConst.Ask} element={<Ask />} />
         <Route path={RouteConst.Main} element={<Main />} />
         <Route path={RouteConst.Question} element={<Question />} />
-        <Route path={RouteConst.Ask} element={<Ask />} />
         <Route path={RouteConst.memberMain} element={<MemberMain />} />
         <Route path={RouteConst.memberProfile} element={<MemberProfile />} />
         <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
         <Route path={RouteConst.memberDelete} element={<MemberDelete />} />
       </Routes>
-      {/* <RightSidebar /> */}
-      {/* </div> */}
       <Footer />
     </BrowserRouter>
   );
