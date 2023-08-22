@@ -99,6 +99,26 @@ public class QuestionTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("membedId에 해당하는 사용자와 로그인한 사용자가 다를경우 null을 반환한다.")
+    void getRecommendTypeCurrentUserNullTest(){
+        // given
+        Member member = createMemberDetail();
+        Long currentUserId = 2L;
+
+        QuestionRecommend recommend = QuestionRecommend.builder()
+                .member(member)
+                .type(TypeEnum.UPVOTE)
+                .build();
+
+
+        // when
+        TypeEnum result = recommend.getRecommendTypeCurrentUser(currentUserId);
+
+        // then
+        assertThat(result).isNull();
+    }
+
+    @Test
     @DisplayName("question과 tag를 받아 QuestionTag로 반환한다.")
     void createQuestionTag(){
         // given
