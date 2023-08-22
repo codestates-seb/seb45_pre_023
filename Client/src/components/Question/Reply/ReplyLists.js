@@ -38,12 +38,12 @@ export default function ReplyLists({ reply, answerIdx, idx }) {
   return (
     <li>
       {!replyEditMode ? (
-        <div className="h-[50px] text-xl ml-4 my-8">{reply.content}</div>
+        <div className="h-[80px] my-8 text-xl border-2 flex items-center">{reply.content}</div>
       ) : (
         <input
           value={reply.content}
           onChange={(e) => handleEditReply(e)}
-          className="h-[50px] text-xl ml-4 my-8"
+          className="h-[50px] text-xl my-8"
         />
       )}
       <ReplyButton

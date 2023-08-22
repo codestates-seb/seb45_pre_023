@@ -64,13 +64,13 @@ export default function Reply({ answerId }) {
             <div>
               <button
                 onClick={handleSubmit}
-                className="w-[100px] mt-4 ml-6 rounded-2xl bg-[#bac2c9] text-[white]"
+                className="w-[100px] h-[30px] mt-4 rounded-2xl bg-[#bac2c9] text-[white]"
               >
                 Submit
               </button>
               <button
                 onClick={toggleInputVisibility}
-                className="w-[100px] mt-4 ml-6 rounded-2xl bg-[#bac2c9] text-[white] hover:text-[#afdcf7] text-sm"
+                className="w-[100px] h-[30px] mt-4 ml-4 rounded-2xl bg-[#bac2c9] text-[white] hover:text-[#afdcf7] text-sm"
               >
                 Cancel
               </button>
@@ -78,7 +78,7 @@ export default function Reply({ answerId }) {
           ) : (
             <button
               onClick={toggleInputVisibility}
-              className="w-[100px] mt-4 ml-6 rounded-2xl bg-[#bac2c9] text-[white]"
+              className="w-[150px] mt-4 rounded-2xl bg-[#bac2c9] text-[white]"
             >
               Reply Comment
             </button>

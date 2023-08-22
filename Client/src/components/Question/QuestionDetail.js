@@ -18,7 +18,7 @@ import getTimeDifference from './Time';
 
 export default function QuestionDetail() {
   const { questionId } = useParams();
-  
+
   const question = useSelector((state) => state.detail.value); // 질문 데이터 가져오기
   const contents = useSelector((state) => state.detail.content); // 컨텐츠 데이터 가져오기
   const nickname = useSelector((state) => state.detail.member);
@@ -86,10 +86,9 @@ export default function QuestionDetail() {
               ) : (
                 <p className="h-[300px] ml-4 mt-6 text-xl">{contents}</p>
               )}
-              <p className="ml-4 mt-6 text-xl">{question.expect}</p>
+              <p className="ml-4 my-8 text-xl">{question.expect}</p>
 
               <div className="w-[1000px] flex justify-between">
-                <div className="mr-4">
                   {/* {question.tags.map((tag, index) => (
                     <button
                       key={index}
@@ -98,15 +97,21 @@ export default function QuestionDetail() {
                       {tag.tagName}
                     </button>
                   ))} */}
-                </div>
               </div>
 
               {/* Share, Edit Allow 버튼 */}
               <div className="flex justify-between">
                 <ShareButton editMode={editMode} setEditMode={setEditMode} />
-                <div className="w-[150px] h-[80px] mr-20 bg-[#afdcf7b4]">
-                  <p className="text-[#949292]">{nickname.nickname}</p>
-                  <p className="text-[#949292]">{hoursAgo} hour Ago</p>
+                <div className="w-[150px] h-[80px] mr-20">
+                  <div className="flex">
+                    <img
+                      src="https://i.pinimg.com/564x/40/dc/af/40dcaf3511a13efabcfc4d741a632324.jpg"
+                      alt="짱구 이미지"
+                      className="w-[20px] h-[20px] mr-4"
+                    />
+                    <p className="text-[#949292] ">{nickname.nickname}</p>
+                  </div>
+                  <p className="text-[#949292] text-sm mt-2">{hoursAgo} hour Ago</p>
                 </div>
               </div>
             </div>
