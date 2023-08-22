@@ -5,13 +5,17 @@ import LeftSidebar from '../../components/SideBar/LeftSidebar';
 import MemberSidebar from '../../components/SideBar/MemberSidebar';
 import RightSidebar from '../../components/SideBar/RightSidebar';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect} from 'react';
+import { useEffect } from 'react';
 import { myinfo } from '../../redux/createSlice/memberSlice';
+import { Link } from 'react-router-dom';
+import { RouteConst } from '../../Interface/RouteConst';
 
 export default function MemberMain() {
   const memberId = useSelector((state) => state.logininfo.myid); //member Id값 불러오기
-  const memberAnswer = useSelector((state) => state.memberinfo?.value.answer);
-  const memberQuestionList = useSelector((state)=>state.memberinfo?.value.question)
+  const memberAnswer = useSelector((state) => state.memberinfo.value.answer); //답변들 불러오기
+  const memberQuestionList = useSelector(
+    (state) => state.memberinfo?.value.question
+  ); //질문들 불러오기
   const dispatch = useDispatch();
   useEffect(() => {
     axios
@@ -41,9 +45,13 @@ export default function MemberMain() {
                   {memberAnswer ? (
                     memberAnswer.map((item) => {
                       return (
-                        <div key={item.answerId}>
-                          {item.content ? item.content : '댓글'} -
-                          {item.questionTitle ? item.questionTitle : ''}
+                        <div className="flex flex-col my-1">
+                          <Link
+                            to={`${RouteConst.Main}/${item.questionId}`}
+                            key={item.id}
+                          >
+                            {item.content}
+                          </Link>
                         </div>
                       );
                     })
@@ -57,7 +65,16 @@ export default function MemberMain() {
                 <div className=" border-gray-600 border-[1px] w-[40rem] min-h-[5rem] mt-5">
                   {memberQuestionList ? (
                     memberQuestionList.map((item) => {
-                      return <div key={item.id}>{item.title}</div>;
+                      return (
+                        <div className="flex flex-col my-1">
+                          <Link
+                            to={`${RouteConst.Main}/${item.questionId}`}
+                            key={item.id}
+                          >
+                            {item.title}
+                          </Link>
+                        </div>
+                      );
                     })
                   ) : (
                     <div>Loading</div>

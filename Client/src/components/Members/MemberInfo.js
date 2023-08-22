@@ -2,8 +2,13 @@ import { Link } from 'react-router-dom';
 import { RouteConst } from '../../Interface/RouteConst';
 import { useSelector } from 'react-redux';
 
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 export default function MemberInfo() {
   const nickName = useSelector((state) => state.memberinfo.value.nickname);
+  const location = useSelector((state)=> state.memberinfo.value.location)
+  const title = useSelector((state)=>state.memberinfo.value.title)
   return (
     <div className="flex  w-220">
       <img
@@ -20,11 +25,16 @@ export default function MemberInfo() {
             Edit Profile
           </Link>
         </div>
-        <div className=" text-3xl mt-7">{nickName}</div>
-        <div className="pt-2">
-          <span className=" pr-2 text-xs">Member for 2days</span>
-          <span className=" pr-2 text-xs">Last seen this week</span>
-          <span className="text-xs">visited 2days, 2 consecutive</span>
+        <div className="text-4xl mt-[-1.5rem]">{nickName}</div>
+        <div className="pt-2 text-gray-500 text-lg">{title}</div>
+        <div className='pt-2 mt-2'>
+          <span className=" pr-2 text-xs text-gray-500">Member for 2days</span>
+          <span className=" pr-2 text-xs text-gray-500">Last seen this week</span>
+          <span className="text-xs text-gray-500">visited 2days, 2 consecutive</span>
+        </div>
+        <div className='text-gray-500'>
+          <FontAwesomeIcon icon={faLocationDot} />
+          <span className='pl-2'>{location}</span>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ const questionDetailSlice = createSlice({
   name: 'questionDetail',
   
   initialState: {
-    value: [],
+    value: {},
     content: '',
     member: '',
     answer: {},
