@@ -24,10 +24,12 @@ export default function Ask() {
       .catch((err) => console.log(err));
   };
 
+  
+
   useEffect(() => {
     getTags();
   }, []);
-
+  
   return (
     <div className="flex flex-row min-w-full bg-gray-100">
       <div className="grow-2"></div>

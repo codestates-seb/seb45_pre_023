@@ -45,6 +45,7 @@ export default function MemberEdit() {
         break;
     }
   };
+
   const data = {
     nickname: name,
     myIntro: intro,
@@ -52,6 +53,9 @@ export default function MemberEdit() {
     accounts: [myAccount],
     location: locate,
   };
+
+  console.log(data)
+
   const changeInfo = () => {
     console.log(data);
     axios

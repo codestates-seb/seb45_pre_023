@@ -1,18 +1,22 @@
-import { Link } from "react-router-dom";
-import { RouteConst } from "../../Interface/RouteConst";
-import { useSelector } from "react-redux";
+import { Link } from 'react-router-dom';
+import { RouteConst } from '../../Interface/RouteConst';
+import { useSelector } from 'react-redux';
 
 export default function MemberInfo() {
-  const nickName = useSelector((state)=>state.memberinfo.value.nickname)
+  const nickName = useSelector((state) => state.memberinfo.value.nickname);
   return (
     <div className="flex  w-220">
       <img
         src="https://img.freepik.com/free-vector/cute-cat-sitting-cartoon-vector-icon-illustration-animal-nature-icon-concept-isolated-premium-vector-flat-cartoon-style_138676-4148.jpg?q=10&h=200"
-        alt="memeberImg" className=" w-40 h-40 rounded-3xl"
+        alt="memeberImg"
+        className=" w-40 h-40 rounded-3xl"
       />
       <div className="flex flex-col ml-[1rem] w-[45rem]">
         <div className="flex justify-end">
-          <Link to={RouteConst.memberEdit} className=" shadow-lg hover:bg-slate-200 border-black rounded-xl text-sm p-[0.25rem] mr-[2rem]">
+          <Link
+            to={RouteConst.memberEdit}
+            className=" shadow-lg hover:bg-slate-200 border-black rounded-xl text-sm p-[0.25rem] mr-[2rem]"
+          >
             Edit Profile
           </Link>
         </div>

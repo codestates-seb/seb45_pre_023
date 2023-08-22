@@ -3,10 +3,10 @@ import { tags } from '../../redux/createSlice/AskSlice';
 
 export default function TagsList({ el }) {
   const dispatch = useDispatch();
-  const TagsData = useSelector((state) => state.ask.value.tags);
+  const TagsData = useSelector((state) => state.ask.value.tagNames);
 
   const removeTagList = (el) => {
-    let newTagsData = TagsData.filter((tag) => tag !== el);
+    const newTagsData = TagsData.filter((tag) => tag !== el);
     dispatch(tags(newTagsData));
   };
 
