@@ -1,0 +1,50 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[Member]]
+= 회원 정보 API
+
+== 회원 정보 조회
+=== HTTP Request
+include::{snippets}/member/getmembers/http-request.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/getmembers/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/member/getmembers/http-response.adoc[]
+==== Response Body
+include::{snippets}/member/getmembers/response-body.adoc[]
+==== Response Fields
+include::{snippets}/member/getmembers/response-fields.adoc[]
+
+== 회원 작성 질문 조회
+=== HTTP Request
+include::{snippets}/member/getmemberquestion/http-request.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/getmemberquestion/path-parameters.adoc[]
+==== Request Query Parameter
+include::{snippets}/member/getmemberquestion/request-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/member/getmemberquestion/http-response.adoc[]
+==== Response Body
+include::{snippets}/member/getmemberquestion/response-body.adoc[]
+==== Response Fields
+include::{snippets}/member/getmemberquestion/response-fields.adoc[]
+
+== 회원 작성 답변 조회
+=== HTTP Request
+include::{snippets}/member/getmemberanswer/http-request.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/getmemberanswer/path-parameters.adoc[]
+==== Request Query Parameter
+include::{snippets}/member/getmemberanswer/request-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/member/getmemberanswer/http-response.adoc[]
+==== Response Body
+include::{snippets}/member/getmemberanswer/response-body.adoc[]
+==== Response Fields
+include::{snippets}/member/getmemberanswer/response-fields.adoc[]

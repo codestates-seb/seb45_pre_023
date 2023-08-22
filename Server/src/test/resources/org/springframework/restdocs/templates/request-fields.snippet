@@ -1,0 +1,11 @@
+|===
+|Path|Type|Description|Contraints|Optional
+
+{{#fields}}
+|{{#tableCellContent}}`+{{path}}+`{{/tableCellContent}}
+|{{#tableCellContent}}`+{{type}}+`{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+|{{#tableCellContent}}{{#constraints}}{{.}}{{/constraints}}{{/tableCellContent}}
+|{{#tableCellContent}}{{^optional}}필수{{/optional}}{{#optional}}선택{{/optional}}{{/tableCellContent}}
+{{/fields}}
+|===

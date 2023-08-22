@@ -1,0 +1,78 @@
+[[overview]]
+= Overview
+
+[[overview-host]]
+== Host
+
+|===
+| 환경 | Host
+| company
+| `codestates`
+
+| author
+| `sixman`
+
+| Github
+| `https://github.com/codestates-seb/seb45_pre_023`
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+|===
+| 상태 코드 | 설명
+
+| `200 OK`
+| 성공
+
+| `201 Created`
+| 생성 성공
+
+| `204 No Content`
+| 성공했지만 응답할 데이터 없음
+
+| `400 Bad Request`
+| 잘못된 요청, 값
+
+| `401 Unauthorized`
+| 비인증 상태
+
+| `403 Forbidden`
+| 권한 거부
+
+| `404 Not Found`
+| 존재하지 않는 요청 리소스
+
+| `405 Method Not Allowed`
+| 허용되지 않는 메소드
+
+| `409 Conflict`
+| 충돌되는 데이터 (중복)
+
+| `500 Internal Server Error`
+| 서버 에러 / 서버에서 처리하지 못한 오류
+|===
+
+== stub 로그인 데이터
+아래 id, pw 로 로그인하면 토큰이 발급됩니다.
+|===
+| id | pw
+| `test@google.com`
+| `1q2w3e4r!`
+|===
+
+[[overview-response]]
+== HTTP Response
+=== HTTP Response - Success
+include::{snippets}/common/basicapi/response-body.adoc[]
+include::{snippets}/common/basicapi/response-fields.adoc[]
+
+=== HTTP Response - Error(Validation 오류)
+include::{snippets}/common/exceptionvalidapi/response-body.adoc[]
+include::{snippets}/common/exceptionvalidapi/response-fields.adoc[]
+
+=== HTTP Response - Error(기타 오류)
+include::{snippets}/common/exceptionapi/response-body.adoc[]
+include::{snippets}/common/exceptionapi/response-fields.adoc[]
+
+

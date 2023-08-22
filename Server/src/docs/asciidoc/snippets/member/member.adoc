@@ -1,0 +1,69 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:docinfo: shared-head
+
+[[Member]]
+= 회원 수정, 삭제 API
+== 비밀번호 수정
+=== HTTP Request
+include::{snippets}/member/updatepassword/http-request.adoc[]
+==== Request Header
+include::{snippets}/member/updatepassword/request-headers.adoc[]
+==== Request Body
+include::{snippets}/member/updatepassword/request-body.adoc[]
+==== Request Fields
+include::{snippets}/member/updatepassword/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/member/updatepassword/http-response.adoc[]
+
+== 회원정보 수정
+=== HTTP Request
+include::{snippets}/member/updatemember/http-request.adoc[]
+==== Request Header
+include::{snippets}/member/updatemember/request-headers.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/updatemember/path-parameters.adoc[]
+==== Request Body
+include::{snippets}/member/updatemember/request-body.adoc[]
+==== Request Fields
+include::{snippets}/member/updatemember/request-fields.adoc[]
+=== HTTP Response
+include::{snippets}/member/updatemember/http-response.adoc[]
+
+== 회원정보(이미지) 수정
+=== HTTP Request
+include::{snippets}/member/updateimage/http-request.adoc[]
+==== Request Header
+include::{snippets}/member/updateimage/request-headers.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/updateimage/path-parameters.adoc[]
+==== Request Part
+include::{snippets}/member/updateimage/request-parts.adoc[]
+=== HTTP Response
+include::{snippets}/member/updateimage/http-response.adoc[]
+==== Response Header
+include::{snippets}/member/updateimage/response-headers.adoc[]
+
+== 회원정보(이미지) 삭제
+=== HTTP Request
+include::{snippets}/member/deleteimage/http-request.adoc[]
+==== Request Header
+include::{snippets}/member/deleteimage/request-headers.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/deleteimage/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/member/deleteimage/http-response.adoc[]
+
+== 회원 탈퇴
+=== HTTP Request
+include::{snippets}/member/deletemember/http-request.adoc[]
+==== Request Header
+include::{snippets}/member/deletemember/request-headers.adoc[]
+==== Request Path Parameter
+include::{snippets}/member/deletemember/path-parameters.adoc[]
+=== HTTP Response
+include::{snippets}/member/deletemember/http-response.adoc[]
