@@ -26,3 +26,4 @@ const LoginInfoSlice = createSlice({
 
 export default LoginInfoSlice;
 export const { email, password, logintoken, myid, initLogin } = LoginInfoSlice.actions;
+

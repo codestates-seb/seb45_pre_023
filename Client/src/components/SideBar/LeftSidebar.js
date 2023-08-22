@@ -8,7 +8,7 @@ export default function LeftSidebar() {
         <div className="py-2 font-bold">Home</div>
         <div className=" text-xs p-1 pt-4 decoration-gray-500">PUBLIC</div>
         <ul className="py-1 text-xs pl-4 decoration-gray-500">
-          <Link to={RouteConst.Question} className="py-1">Questions</Link>
+          <Link to={RouteConst.Main} className="py-1">Questions</Link>
           <li className="py-1">Tags</li>
           <li className="py-1">Users</li>
           <li className="py-1">Companies</li>

@@ -1,17 +1,20 @@
 import Paging from './Pagination/Paging';
 import FilteringButton from './FilteringButton';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect} from 'react';
 import QuestionData from './QuestionData';
 import { useDispatch, useSelector } from 'react-redux';
-import { setQuestions } from '../../redux/createSlice/QuestionSlice';
+import {
+  pageInfo,
+  setQuestions,
+} from '../../redux/createSlice/QuestionSlice';
 import { Link } from 'react-router-dom';
 
-import { useNavigate } from 'react-router-dom';
-import { RouteConst } from '../../Interface/RouteConst';
-
 export default function QuestionList() {
-  const [isData, setIsData] = useState([]);
+
+  const questionData = useSelector((state) => state.questions.value);
+  
+  const pageInfos = useSelector((state) => state.questions.pageInfo.totalSize);
 
   const dispatch = useDispatch();
 
@@ -22,15 +25,13 @@ export default function QuestionList() {
       )
       .then((res) => {
         dispatch(setQuestions(res.data.data));
+        dispatch(pageInfo(res.data.pageInfo));
         console.log(res);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
-
-  const questionData = useSelector((state) => state.questions.value);
-  console.log(questionData);
 
   return (
     <>
@@ -43,21 +44,17 @@ export default function QuestionList() {
               Asked Question
             </button>
           </Link>
-
         </div>
 
         <div className="w-full flex justify-between my-6 ml-6">
-          <h1 className="text-3xl">0 Questions</h1>
+          <h1 className="text-3xl">{pageInfos} Questions</h1>
           <FilteringButton />
         </div>
 
-        {/* {isData.map((el, index) => ( */}
-        <QuestionData
-        // key={index}
-        // el={el}
-        />
-        {/* ))} */}
-        <Paging setIsData={setIsData} />
+        {questionData.map((el, index) => (
+          <QuestionData key={index} el={el} />
+        ))}
+        <Paging />
       </div>
     </>
   );
