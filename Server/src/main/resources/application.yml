@@ -92,10 +92,10 @@ spring:
       client:
         registration:
             google:
-                redirect-uri: http://localhost:3000
+                redirect-uri: http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com
             github:
-                redirect-uri: http://localhost:3000
+                redirect-uri: http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com
             kakao:
-                redirect-uri: http://localhost:3000
+                redirect-uri: http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com
 url:
   frontend: http://localhost:3000
