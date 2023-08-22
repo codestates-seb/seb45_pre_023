@@ -4,8 +4,71 @@ import MemberInfo from '../../../components/Members/MemberInfo';
 import { RouteConst } from '../../../Interface/RouteConst';
 import RightSidebar from '../../../components/SideBar/RightSidebar';
 import LeftSidebar from '../../../components/SideBar/LeftSidebar';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
 
 export default function MemberEdit() {
+  const memberId = useSelector((state) => state.logininfo.myid); //member Id값 불러오기
+  const nickName = useSelector((state) => state.memberinfo.value.nickname);
+  const locations = useSelector((state) => state.memberinfo.value.location);
+  const title = useSelector((state) => state.memberinfo.value.title);
+  const myIntro = useSelector((state) => state.memberinfo.value.myIntro);
+  const account = useSelector((state) => state.memberinfo.value.account);
+  const token = useSelector((state) => state.logininfo.token);
+
+  const [name, setName] = useState(nickName);
+  const [locate, setLocate] = useState(locations);
+  const [Title, SetTitle] = useState(title);
+  const [intro, setIntro] = useState(myIntro);
+  const [myAccount, setMyAccount] = useState(account);
+
+  const handleText = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case 'nickname':
+        setName(value);
+        break;
+      case 'location':
+        setLocate(value);
+        break;
+      case 'title':
+        SetTitle(value);
+        break;
+      case 'myIntro':
+        setIntro(value);
+        break;
+      case 'account':
+        setMyAccount(value);
+        break;
+      default:
+        break;
+    }
+  };
+  const data = {
+    nickname: name,
+    myIntro: intro,
+    title: Title,
+    accounts: [myAccount],
+    location: locate,
+  };
+  const changeInfo = () => {
+    console.log(data);
+    axios
+      .patch(
+        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/members/${memberId}`,
+        data,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      )
+      .then((res) => alert('프로필이 변경 되었습니다.'))
+      .then(window.location.reload())
+      .catch((err) => console.log(err));
+  };
+
   return (
     <div className="flex min-h-[70rem]">
       <LeftSidebar />
@@ -57,7 +120,9 @@ export default function MemberEdit() {
                 <input
                   type="text"
                   className="border-[1px] border-black w-[25rem]"
-                  value="귀여운 고양이"
+                  name="nickname"
+                  value={name}
+                  onChange={handleText}
                 ></input>
               </div>
               <div className="py-1">
@@ -65,6 +130,9 @@ export default function MemberEdit() {
                 <input
                   type="text"
                   className="border-[1px] border-black w-[25rem]"
+                  name="location"
+                  value={locate}
+                  onChange={handleText}
                 ></input>
               </div>
               <div className="py-1">
@@ -72,13 +140,34 @@ export default function MemberEdit() {
                 <input
                   type="text"
                   className="border-[1px] border-black w-[25rem]"
+                  name="title"
+                  value={Title}
+                  onChange={handleText}
+                ></input>
+              </div>
+              <div className="py-1">
+                <div className=" font-bold">Account</div>
+                <input
+                  type="text"
+                  className="border-[1px] border-black w-[25rem]"
+                  name="account"
+                  value={myAccount}
+                  onChange={handleText}
                 ></input>
               </div>
               <div className="py-1">
                 <div className=" font-bold">About me</div>
-                <textarea className="border-[1px] border-black w-[42rem] h-[10rem]"></textarea>
+                <textarea
+                  className="border-[1px] border-black w-[42rem] h-[10rem]"
+                  name="myIntro"
+                  value={intro}
+                  onChange={handleText}
+                ></textarea>
               </div>
-              <button className="w-20 h-8 mx-1 px-2 bg-sky-500 hover:bg-sky-600 rounded-md text-xs text-white">
+              <button
+                className="w-20 h-8 mx-1 px-2 bg-sky-500 hover:bg-sky-600 rounded-md text-xs text-white"
+                onClick={changeInfo}
+              >
                 Save profile
               </button>
               <button className="w-16 h-8 mx-1 px-2 bg-sky-100 hover:bg-sky-200 rounded-md text-xs text-sky-600 mb-8">

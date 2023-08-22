@@ -21,4 +21,4 @@ const LoginInfoSlice = createSlice({
 });
 
 export default LoginInfoSlice;
-export const { email, password, logintoken } = LoginInfoSlice.actions;
+export const { email, password, logintoken, myid } = LoginInfoSlice.actions;

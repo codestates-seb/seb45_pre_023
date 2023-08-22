@@ -46,21 +46,17 @@ function App() {
   return (
     <BrowserRouter>
       <Header />
-      {/* <div className="flex ml-40 h-[80rem]"> */}
-      {/* <LeftSidebar /> */}
       <Routes>
         <Route path={RouteConst.Login} element={<Login />} />
         <Route path={RouteConst.SignUp} element={<SignUp />} />
+        <Route path={RouteConst.Ask} element={<Ask />} />
         <Route path={RouteConst.Main} element={<Main />} />
         <Route path={RouteConst.Question} element={<Question />} />
-        <Route path={RouteConst.Ask} element={<Ask />} />
         <Route path={RouteConst.memberMain} element={<MemberMain />} />
         <Route path={RouteConst.memberProfile} element={<MemberProfile />} />
         <Route path={RouteConst.memberEdit} element={<MemberEdit />} />
         <Route path={RouteConst.memberDelete} element={<MemberDelete />} />
       </Routes>
-      {/* <RightSidebar /> */}
-      {/* </div> */}
       <Footer />
     </BrowserRouter>
   );
