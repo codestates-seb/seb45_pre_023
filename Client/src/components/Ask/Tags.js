@@ -15,8 +15,6 @@ export default function Tags() {
   const TagsData = useSelector((state) => state.ask.value.tagNames);
   const TagsMode = useSelector((state) => state.ask.tagsdata.mode);
 
-  console.log(Next)
-
   const addTagList = (e) => {
     if (e.key === 'Enter') {
       if (e.target.value && !TagsData.includes(e.target.value)) {

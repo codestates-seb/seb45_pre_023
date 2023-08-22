@@ -48,6 +48,7 @@ export default function LoginForm() {
         } else if (err.response.data.code === 401) {
           dispatch(errmsg(`This account has been withdrawn. (${err.response.data.code})`));
           alert(`${err.response.data.message} (${err.response.data.code})`);
+          alert(`복구를 윈하면 새 비밀번호를 만들어주세요.`)
         } else {
           dispatch(errmsg(`Login is failed`));
           alert(`${err.response.data.message} (${err.response.data.code})`);
@@ -120,12 +121,12 @@ export default function LoginForm() {
             <span className="mt-2 w-58 text-left text-md font-semibold">
               Password
             </span>
-            <button
+            <div
               className="mt-2 w-58 text-right text-xs text-sky-500 hover:text-sky-600 cursor-pointer"
               onClick={() => dispatch(findmodemodal(true))}
             >
               Forget password?
-            </button>
+            </div>
           </div>
           <input
             className="my-1 w-58 h-9 pl-2 border-2 border-solid border-gray rounded-md text-sm"

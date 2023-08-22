@@ -86,7 +86,6 @@ export default function MemberEdit() {
     accounts: accounts,
     location: locate,
   };
-  console.log(data);
   const changeInfo = () => {
     console.log(data);
     return axios

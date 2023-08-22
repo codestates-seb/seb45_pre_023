@@ -1,19 +1,15 @@
 import Paging from './Pagination/Paging';
 import FilteringButton from './FilteringButton';
 import axios from 'axios';
-import { useEffect} from 'react';
+import { useEffect } from 'react';
 import QuestionData from './QuestionData';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  pageInfo,
-  setQuestions,
-} from '../../redux/createSlice/QuestionSlice';
+import { pageInfo, setQuestions } from '../../redux/createSlice/QuestionSlice';
 import { Link } from 'react-router-dom';
 
 export default function QuestionList() {
-
   const questionData = useSelector((state) => state.questions.value);
-  
+
   const pageInfos = useSelector((state) => state.questions.pageInfo.totalSize);
 
   const dispatch = useDispatch();
@@ -26,7 +22,7 @@ export default function QuestionList() {
       .then((res) => {
         dispatch(setQuestions(res.data.data));
         dispatch(pageInfo(res.data.pageInfo));
-        console.log(res);
+        console.log(res.data.data);
       })
       .catch((err) => {
         console.log(err);
