@@ -47,7 +47,6 @@ class MemberServiceTest extends ServiceTest {
     @Autowired MemberRepository memberRepository;
     @Autowired MailService mailService;
 
-
     @TestFactory
     @DisplayName("email, nickname, password 를 받아 회원가입을 한다.")
     Collection<DynamicTest> signup() {
@@ -85,7 +84,6 @@ class MemberServiceTest extends ServiceTest {
                 })
         );
     }
-
 
     @Test
     @DisplayName("회원가입 시 중복되는 email 이 있으면 MemberDuplicateException 을 발생시킨다.")

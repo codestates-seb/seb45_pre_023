@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Getter
 @Builder
-public class MemberPasswordUpdateAPiRequest {
+public class MemberPasswordUpdateApiRequest {
 
     @NotBlank(message = "{validation.member.password-notblank}")
     private String password;

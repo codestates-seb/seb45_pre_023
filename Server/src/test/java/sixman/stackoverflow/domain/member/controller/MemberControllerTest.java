@@ -447,7 +447,7 @@ class MemberControllerTest extends ControllerTest {
     void updatePassword() throws Exception {
         //given
         Long memberId = 1L;
-        MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+        MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                 .password("prevPassword123!!")
                 .newPassword("newPassword123!!")
                 .build();
@@ -472,7 +472,7 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isNoContent());
 
         //restdocs
-        setConstraintClass(MemberPasswordUpdateAPiRequest.class);
+        setConstraintClass(MemberPasswordUpdateApiRequest.class);
 
         actions.andDo(documentHandler.document(
                 pathParameters(
@@ -773,7 +773,6 @@ class MemberControllerTest extends ControllerTest {
         Long memberId = 1L;
 
         given(memberService.signup(any(MemberCreateServiceRequest.class))).willReturn(memberId);
-
 
         return List.of(
                 dynamicTest("이메일이 Null 이면 검증에 실패한다.", () -> {
@@ -1158,7 +1157,7 @@ class MemberControllerTest extends ControllerTest {
         return List.of(
                 dynamicTest("기존 비밀번호가 null 이면 검증에 실패한다.", () -> {
                     //given
-                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                    MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                             .newPassword("newPassword123!!")
                             .build();
 
@@ -1178,7 +1177,7 @@ class MemberControllerTest extends ControllerTest {
                 }),
                 dynamicTest("새로운 비밀번호가 null 이면 검증에 실패한다.", () -> {
                     //given
-                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                    MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                             .password("prevPassword123!!")
                             .build();
 
@@ -1198,7 +1197,7 @@ class MemberControllerTest extends ControllerTest {
                 }),
                 dynamicTest("새로운 비밀번호가 9자 미만이면 검증에 실패한다.", () -> {
                     //given
-                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                    MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                             .password("prevPassword123!!")
                             .newPassword("1234abc!")
                             .build();
@@ -1219,7 +1218,7 @@ class MemberControllerTest extends ControllerTest {
                 }),
                 dynamicTest("새로운 비밀번호가 20자 초과이면 검증에 실패한다.", () -> {
                     //given
-                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                    MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                             .password("prevPassword123!!")
                             .newPassword("1234abcd1234abcd1234!")
                             .build();
@@ -1241,7 +1240,7 @@ class MemberControllerTest extends ControllerTest {
                 }),
                 dynamicTest("새로운 비밀번호에 특수문자, 문자, 숫자를 포함하지 않으면 검증에 실패한다.", () -> {
                     //given
-                    MemberPasswordUpdateAPiRequest request = MemberPasswordUpdateAPiRequest.builder()
+                    MemberPasswordUpdateApiRequest request = MemberPasswordUpdateApiRequest.builder()
                             .password("prevPassword123!!")
                             .newPassword("123456789!")
                             .build();
