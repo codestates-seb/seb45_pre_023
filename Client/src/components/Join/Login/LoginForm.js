@@ -2,11 +2,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { RouteConst } from '../../../Interface/RouteConst';
-import {
-  handleGoogleLogin,
-  handleGithubLogin,
-  handleKakaoLogin,
-} from '../../../OAuth/OAuth';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { google, github, kakao } from '../../../redux/createSlice/OAuthSlice';
@@ -19,13 +14,18 @@ import {
 
 import { errmsg } from '../../../redux/createSlice/ErrMsgSlice';
 import { findmodemodal } from '../../../redux/createSlice/FindInfoSlice';
+import {
+  handleGoogleLogin,
+  handleGithubLogin,
+  handleKakaoLogin,
+} from '../../../OAuth/OAuth';
 
 export default function LoginForm() {
   const dispatch = useDispatch();
   const nevigate = useNavigate();
   const LoginInfo = useSelector((state) => state.logininfo.value);
   const ErrorMessage = useSelector((state) => state.errmsg.value);
-  
+
   const handleLogin = () => {
     if (!LoginInfo.email || !LoginInfo.password) {
       return dispatch(errmsg('Please enter all information.'));
@@ -36,7 +36,6 @@ export default function LoginForm() {
         LoginInfo
       )
       .then((res) => {
-        console.log(res);
         dispatch(logintoken(res.headers.authorization));
         dispatch(myid(res.data.memberId));
         dispatch(errmsg(''));
@@ -44,12 +43,18 @@ export default function LoginForm() {
       })
       .catch((err) => {
         if (err.response.data.code === 400) {
-          dispatch(errmsg(`Please check your information (${err.response.data.code})`));
+          dispatch(
+            errmsg(`Please check your information (${err.response.data.code})`)
+          );
           alert(`${err.response.data.message} (${err.response.data.code})`);
         } else if (err.response.data.code === 401) {
-          dispatch(errmsg(`This account has been withdrawn. (${err.response.data.code})`));
+          dispatch(
+            errmsg(
+              `This account has been withdrawn. (${err.response.data.code})`
+            )
+          );
           alert(`${err.response.data.message} (${err.response.data.code})`);
-          alert(`복구를 윈하면 새 비밀번호를 만들어주세요.`)
+          alert(`복구를 윈하면 새 비밀번호를 만들어주세요.`);
         } else {
           dispatch(errmsg(`Login is failed`));
           alert(`${err.response.data.message} (${err.response.data.code})`);
@@ -143,7 +148,7 @@ export default function LoginForm() {
           onClick={(e) => {
             e.preventDefault();
             handleLogin();
-            dispatch(errmsg(''))
+            dispatch(errmsg(''));
           }}
           type="submit"
         >

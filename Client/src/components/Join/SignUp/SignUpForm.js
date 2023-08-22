@@ -104,7 +104,7 @@ export default function SignUpForm() {
         <li
           className="flex flex-row justify-center items-center w-80 h-10 my-1 bg-white hover:bg-gray-200 border border-solid border-gray rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(github());
+            dispatch(google());
             handleGoogleLogin();
           }}
         >
@@ -118,7 +118,7 @@ export default function SignUpForm() {
         <li
           className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-gray-800 hover:bg-gray-700 border border-solid border-gray text-white rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(kakao());
+            dispatch(github());
             handleGithubLogin();
           }}
         >
@@ -128,7 +128,7 @@ export default function SignUpForm() {
         <li
           className="flex felx-row justify-center items-center w-80 h-10 my-1 bg-yellow-300 hover:bg-yellow-200 border border-solid border-gray rounded-md cursor-pointer"
           onClick={() => {
-            dispatch(google());
+            dispatch(kakao());
             handleKakaoLogin();
           }}
         >
