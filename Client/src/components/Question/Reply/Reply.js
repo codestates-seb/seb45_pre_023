@@ -23,7 +23,7 @@ export default function Reply({ answerId }) {
   const handleSubmit = () => {
     return axios
       .post(
-        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/answers/${answerId}/replies`,
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/answers/${answerId}/replies`,
         { content: inputValue },
         {
           headers: {

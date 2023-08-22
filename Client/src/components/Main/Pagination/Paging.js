@@ -13,7 +13,7 @@ const Paging = () => {
     setPage(page);
     return axios
       .get(
-        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/questions?page=${page}`
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions?page=${page}`
       )
       .then((res) => {
         dispatch(setQuestions(res.data.data));

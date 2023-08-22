@@ -12,7 +12,7 @@ export default function ReplyButton({
   const handleEdit = () => {
     return axios
       .patch(
-        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/replies/${replyId}`, 
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/replies/${replyId}`, 
         {content : replyContent},
         {
           headers: {
