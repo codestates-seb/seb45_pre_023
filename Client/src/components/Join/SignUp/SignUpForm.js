@@ -56,14 +56,16 @@ export default function SignUpForm() {
           dispatch(errmsg('이메일 인증이 완료되지 않았습니다.'));
         } else {
           dispatch(errmsg(`SignUp is failed (${err.response.data.code})`));
+          alert('회원가입에 실패했습니다.');
         }
       });
   };
 
   const handleSendEmail = () => {
     if (!SignUpInfo.email) {
+      dispatch(errmsg('Please enter your email'));
       alert('이메일을 입력해주세요.');
-      return dispatch(errmsg('Please enter your email'));
+      return;
     }
     return axios
       .post(
@@ -73,19 +75,25 @@ export default function SignUpForm() {
       .then((res) => {
         dispatch(checkedsend(true));
         dispatch(errmsg('A verification code has been sent to your email.'));
+        alert('해당 이메일로 인증 코드가 발송되었습니다.');
       })
       .catch((err) => {
         console.log(err.response.data);
         if (err.response.data.code === 400) {
-          dispatch(errmsg('유효한 이메일이 아닙니다.'));
+          dispatch(errmsg('Invalid email.'));
+          alert('유효한 이메일이 아닙니다.');
         } else if (err.response.data.code === 401) {
-          dispatch(errmsg('탈퇴한 회원입니다.'));
+          dispatch(errmsg('This account has been withdrawn.')); // 탈퇴원 회원이면 다시 비밀번호 찾기하게끔 유도하기.`
+          alert('탈퇴한 회원입니다.');
+          alert(`복구를 윈하면 새 비밀번호를 만들어주세요.`);
         } else if (err.response.data.code === 409) {
-          dispatch(errmsg('이미 회원가입 된 이메일입니다.'));
+          dispatch(errmsg('This email is already registered.'));
+          alert('이미 회원가입 된 이메일입니다. 로그인 해주세요');
         } else {
           dispatch(
-            errmsg(`이메일 전송에 실패했습니다. ${err.response.data.message}`)
+            errmsg(`Failed to send email. ${err.response.data.message}`)
           );
+          alert(`이메일 전송에 실패했습니다. ${err.response.data.message}`);
         }
       });
   };

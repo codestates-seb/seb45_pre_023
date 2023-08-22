@@ -9,15 +9,16 @@ import {
 import { Link } from 'react-router-dom';
 import { RouteConst } from '../../Interface/RouteConst';
 import Search from './Search/Search';
-
 import DropdownProducts from './Dropdown/DropdownProducts';
 import DropdownInbox from './Dropdown/DropdownInbox';
 import DropdownAchievements from './Dropdown/DropdownAchievements';
 import DropdownQuestion from './Dropdown/DropdownQuestion';
 import DropdownMenu from './Dropdown/DropdownMenu';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function HeaderAfter() {
+  const ProfileImage = useSelector((state) => state.memberinfo.profileimage);
   const [isClick, setClick] = useState(false);
 
   const handleDropdown = (el) => {
@@ -59,14 +60,15 @@ export default function HeaderAfter() {
         <button className="flex flex-row justify-center items-center h-11 px-2 hover:bg-gray-200 hover:h-11">
           <img
             className="w-6 h-6 rounded-md border border-solid border-balck"
-            src="" // 나의 프로필 url 주소 작성하기
+            // src={`${ProfileImage}`}
+            src="https://img.freepik.com/free-vector/cute-cat-sitting-cartoon-vector-icon-illustration-animal-nature-icon-concept-isolated-premium-vector-flat-cartoon-style_138676-4148.jpg?q=10&h=200"
             alt="profile"
           />
-          <span className="mx-1 font-semibold text-xs">4</span>
+          <span className="mx-1 font-semibold text-xs">1</span>
           <ul className="flex flex-row">
-            <li className="mx-1 text-yellow-400 text-xs">● 1</li>
-            <li className="mx-1 text-gray-300 text-xs">● 1</li>
-            <li className="mx-1 text-yellow-600 text-xs">● 1</li>
+            <li className="mx-1 text-yellow-400 text-xs">● 0</li>
+            <li className="mx-1 text-gray-300 text-xs">● 0</li>
+            <li className="mx-1 text-yellow-600 text-xs">● 0</li>
           </ul>
         </button>
       </Link>

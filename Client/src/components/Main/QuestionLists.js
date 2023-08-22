@@ -9,6 +9,7 @@ import { pageInfo, setQuestions } from '../../redux/createSlice/QuestionSlice';
 import { Link } from 'react-router-dom';
 
 export default function QuestionList() {
+
   const getTags = () => {
     return axios
       .get('http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/tags')
@@ -21,6 +22,7 @@ export default function QuestionList() {
   }, []);
 
   const questionData = useSelector((state) => state.questions.value);
+
   const pageInfos = useSelector((state) => state.questions.pageInfo.totalSize);
   const queryParams = useSelector((state) => state.questions.queryParams);
   const queryString = new URLSearchParams(queryParams).toString();
@@ -36,7 +38,7 @@ export default function QuestionList() {
       .then((res) => {
         dispatch(setQuestions(res.data.data));
         dispatch(pageInfo(res.data.pageInfo));
-        console.log(res);
+        console.log(res.data.data);
       })
       .catch((err) => {
         console.log(err);

@@ -14,6 +14,7 @@ const MemberSlice = createSlice({
       state.value.location = action.payload.location;
       state.value.nickname = action.payload.nickname;
       state.value.myIntro = action.payload.myIntro;
+      state.value.image = action.payload.image;
     },
   },
 });
