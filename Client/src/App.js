@@ -11,12 +11,11 @@ import MemberProfile from './pages/Member/Profile';
 import MemberEdit from './pages/Member/Settings/Edit';
 import MemberDelete from './pages/Member/Settings/Delete';
 import MemberMain from './pages/Member/memberMain';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
 import axios from 'axios';
 import { oauthtoken } from './redux/createSlice/OAuthSlice';
-import { logintoken } from './redux/createSlice/LoginInfoSlice';
 
 function App() {
   const dispatch = useDispatch();
@@ -25,16 +24,12 @@ function App() {
   const getAccessToken = async (authorizationCode) => {
     return axios
       .get(
-        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/auth/oauth?provider=${provider}&code=${authorizationCode}`
+        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/auth/oauth?provider=${provider}&code=${authorizationCode}`
       )
       .then((res) => {
-        dispatch(logintoken(res.headers.Authorization));
         dispatch(oauthtoken(res.headers.Authorization));
       })
       .catch((err) => {
-        if (err.response.data.code === 500) {
-          alert(`로그인에 실패했습니다. ${err.response.data.code}`);
-        }
         console.log(err.response.data);
       });
   };
@@ -43,7 +38,7 @@ function App() {
     const url = new URL(window.location.href);
     const authorizationCode = url.searchParams.get('code');
     if (authorizationCode) {
-      console.log('authorizationCode', authorizationCode);
+      console.log(authorizationCode);
       getAccessToken(authorizationCode); // getAccessToken 함수 호출로 바꾸기
     }
   }, []);

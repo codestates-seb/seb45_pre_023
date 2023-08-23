@@ -25,7 +25,9 @@ export default function MemberEdit() {
   const [accounts, setAccounts] = useState(account);
   const [file, setFile] = useState(null); // 추가된 file 상태값
   const [image, setImage] = useState(null);
-  console.log(image);
+  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
   const handleText = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -48,6 +50,20 @@ export default function MemberEdit() {
         break;
     }
   };
+  const handlePassword = (e) => {
+    const { id, value } = e.target;
+    switch (id) {
+      case 'password':
+        setPassword(value);
+        break;
+      case 'password2':
+        setNewPassword(value);
+        break;
+      default:
+        break;
+    }
+  };
+
   // useEffect(() => {}, [file]);
   // const handleFile = (e) => {
   //   setFile(e.target.files[0]); // 파일 정보 업데이트
@@ -235,6 +251,37 @@ export default function MemberEdit() {
               </button>
               <button className="w-16 h-8 mx-1 px-2 bg-sky-100 hover:bg-sky-200 rounded-md text-xs text-sky-600 mb-8">
                 <Link to={RouteConst.memberMain}>Cancel</Link>
+              </button>
+            </div>
+            <div className="border-slate-300 border-t-[1px] mt-6 pt-2 text-xl font-bold">
+              Private information
+            </div>
+            <div className="border-[1px] rounded-xl border-black min-h-[10rem] pl-[1rem] mt-4">
+              <div className="pt-2">
+                <label htmlFor="password" className="font-bold">
+                  Current Password :{' '}
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  className="border-[1px] border-black"
+                  onChange={handlePassword}
+                ></input>
+              </div>
+              <div className="pt-2">
+                <label htmlFor="password2" className="font-bold">
+                  Change Password :{' '}
+                </label>
+                <input
+                  id="password2"
+                  type="password"
+                  className="border-[1px] border-black"
+                  onChange={handlePassword}
+                ></input>
+              </div>
+              <br />
+              <button className="w-20 h-8 mx-1 px-2 bg-sky-500 hover:bg-sky-600 rounded-md text-xs text-white">
+                <Link to={RouteConst.memberMain}>Change</Link>
               </button>
             </div>
           </div>
