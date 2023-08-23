@@ -1,4 +1,4 @@
-import VoteButton from '../VoteButtons';
+import AnswerVoteButton from './AnswerVoteButton';
 import AnswerShareBtn from './AnswerShareBtn';
 import Reply from '../Reply/Reply';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,7 +16,6 @@ export default function AnswerList({ el, index }) {
 
   const answerObjectData = useSelector((state) => state.detail.answer);
   const answerData = Object.values(answerObjectData);
-  console.log(answerData);
 
   const dispatch = useDispatch();
 
@@ -38,7 +37,7 @@ export default function AnswerList({ el, index }) {
   return (
     <>
       <li className="flex border-t-2 mt-8">
-        <VoteButton />
+        <AnswerVoteButton answerId={el.answerId} answerRecommend={el.recommend} />
         <div>
           {!answerEditMode ? (
             <div className="h-[250px] text-xl ml-4 my-8">{el.content}</div>

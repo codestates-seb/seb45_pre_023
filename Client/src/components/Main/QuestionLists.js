@@ -9,7 +9,6 @@ import { pageInfo, setQuestions } from '../../redux/createSlice/QuestionSlice';
 import { Link } from 'react-router-dom';
 
 export default function QuestionList() {
-
   const getTags = () => {
     return axios
       .get('http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/tags')
@@ -28,7 +27,6 @@ export default function QuestionList() {
   const queryString = new URLSearchParams(queryParams).toString();
 
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     axios
@@ -60,7 +58,7 @@ export default function QuestionList() {
 
         <div className="w-full flex justify-between my-6 ml-6">
           <h1 className="text-3xl">{pageInfos} Questions</h1>
-              <FilteringButton/>
+          <FilteringButton showViews={true} />
         </div>
 
         {questionData.map((el, index) => (
@@ -71,4 +69,3 @@ export default function QuestionList() {
     </>
   );
 }
-

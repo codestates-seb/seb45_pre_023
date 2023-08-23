@@ -30,9 +30,11 @@ export default function ReplyButton({
   };
 
   const handleReplyDelete = () => {
+    const shouldDelete = window.confirm('정말 삭제하시겠습니까?');
+    if (shouldDelete) {
     return axios
       .delete(
-        `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/replies/${replyId}`,
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/replies/${replyId}`,
         {
           headers: {
             Authorization: token,
@@ -45,6 +47,7 @@ export default function ReplyButton({
       .catch((err) => {
         console.log(err);
       });
+    }
   };
 
   return (

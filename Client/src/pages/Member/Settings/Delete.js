@@ -8,6 +8,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { logintoken } from '../../../redux/createSlice/LoginInfoSlice';
+import { member } from '../../../redux/createSlice/QuestionDetailSlice';
 
 export default function MemberDelete() {
   const dispatch = useDispatch();
@@ -92,7 +93,7 @@ export default function MemberDelete() {
                 <li>
                   Your questions and answers will remain on the site, but will
                   be disassociated and anonymized <br />
-                  (the author will be listed as "user22355262") and will not
+                  (the author will be listed as "user {memberId}") and will not
                   indicate your authorship even if you later return to the site.
                   <br />
                   <br />
