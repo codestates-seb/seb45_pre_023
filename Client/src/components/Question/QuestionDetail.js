@@ -12,6 +12,7 @@ import {
   member,
   answerAdd,
   replyAdd,
+  answerSize,
 } from '../../redux/createSlice/QuestionDetailSlice';
 import Answer from './Answer/Answer';
 import getTimeDifference from './Time';
@@ -31,6 +32,9 @@ export default function QuestionDetail() {
 
   const [editMode, setEditMode] = useState(false); // 편집모드
 
+  // const queryParams = useSelector((state) => state.questions.queryParams);
+  // const queryString = new URLSearchParams(queryParams).toString();
+
   useEffect(() => {
     axios
       .get(
@@ -42,6 +46,7 @@ export default function QuestionDetail() {
         dispatch(member(res.data.data.member));
         dispatch(answerAdd(res.data.data.answer.answers));
         dispatch(replyAdd(res.data.data.answer.answers));
+        dispatch(answerSize(res.data.data.answer.pageInfo));
         console.log(res.data.data);
       })
       .catch((err) => {
@@ -84,12 +89,12 @@ export default function QuestionDetail() {
                   className="h-[300px] text-xl ml-4 mt-6"
                 ></input>
               ) : (
-                <p className="h-[300px] ml-4 mt-6 text-xl">{contents}</p>
+                <p className="h-[200px] ml-4 mt-6 text-xl">{contents}</p>
               )}
               <p className="ml-4 my-8 text-xl">{question.expect}</p>
 
               <div className="w-[1000px] flex justify-between">
-                  {/* {question.tags.map((tag, index) => (
+                {/* {question.tags.map((tag, index) => (
                     <button
                       key={index}
                       className="w-[100px] bg-[#afdcf7b4] rounded-full mr-4 text-[#95a6dd] hover:translate-x-1 hover:translate-y-1 leading-2"
@@ -111,7 +116,9 @@ export default function QuestionDetail() {
                     />
                     <p className="text-[#949292] ">{nickname.nickname}</p>
                   </div>
-                  <p className="text-[#949292] text-sm mt-2">{hoursAgo} hour Ago</p>
+                  <p className="text-[#949292] text-sm mt-2">
+                    {hoursAgo} hour Ago
+                  </p>
                 </div>
               </div>
             </div>

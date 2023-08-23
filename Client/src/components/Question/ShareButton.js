@@ -18,6 +18,8 @@ export default function ShareButton({ editMode, setEditMode }) {
   // 이 내용이 버튼에 onClick으로 들어가야함
 
   const handleDelete = () => {
+    const shouldDelete = window.confirm('정말 삭제하시겠습니까?');
+    if (shouldDelete) {
     return axios
       .delete(
         `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/questions/${questionId}`,
@@ -34,6 +36,7 @@ export default function ShareButton({ editMode, setEditMode }) {
       .catch((err) => {
         console.log(err);
       });
+    }
   };
 
   return (
