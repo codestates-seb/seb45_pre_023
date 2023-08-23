@@ -33,6 +33,8 @@ export default function ShareButton({
   };
 
   const handleAnswerDelete = () => {
+    const shouldDelete = window.confirm('정말 삭제하시겠습니까?');
+    if (shouldDelete) {
     return axios
       .delete(
         `http://ec2-43-201-249-199.ap-northeast-2.compute.amazonaws.com/answers/${answerId}`,
@@ -49,6 +51,7 @@ export default function ShareButton({
       .catch((err) => {
         console.log(err);
       });
+    }
   };
 
   return (
