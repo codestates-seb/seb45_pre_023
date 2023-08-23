@@ -10,6 +10,7 @@ const questionDetailSlice = createSlice({
     answer: {},
     reply: [],
     vote: 0,
+    answerSize: 0,
   },
   reducers: {
     detail: (state, action) => {
@@ -24,6 +25,9 @@ const questionDetailSlice = createSlice({
     vote: (state, action) => {
       state.vote = action.payload;
     },
+    answerSize: (state, action) => {
+      state.answerSize = action.payload;
+    },
     answerAdd: (state, action) => {
       state.answer = action.payload;
     },
@@ -36,5 +40,5 @@ const questionDetailSlice = createSlice({
 export default questionDetailSlice;
 
 
-export const { detail, content, member, vote, answerAdd, replyAdd } =
+export const { detail, content, member, vote, answerSize, answerAdd, replyAdd } =
   questionDetailSlice.actions;
