@@ -15,27 +15,24 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import axios from 'axios';
-import { oauthtoken } from './redux/createSlice/OAuthSlice';
 import { logintoken } from './redux/createSlice/LoginInfoSlice';
 
 function App() {
   const dispatch = useDispatch();
   const provider = useSelector((state) => state.oauth.provider);
 
-  const getAccessToken = async (authorizationCode) => {
+  const getAccessToken = (authorizationCode) => {
     return axios
       .get(
         `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/auth/oauth?provider=${provider}&code=${authorizationCode}`
       )
       .then((res) => {
-        dispatch(logintoken(res.headers.Authorization));
-        dispatch(oauthtoken(res.headers.Authorization));
+        dispatch(logintoken(res.headers.authorization));
+        alert('로그인 되었습니다.');
+        window.location.assign('http://sixman-front-s3.s3-website.ap-northeast-2.amazonaws.com/questions')
       })
       .catch((err) => {
-        if (err.response.data.code === 500) {
           alert(`로그인에 실패했습니다. ${err.response.data.code}`);
-        }
-        console.log(err.response.data);
       });
   };
 
@@ -43,8 +40,7 @@ function App() {
     const url = new URL(window.location.href);
     const authorizationCode = url.searchParams.get('code');
     if (authorizationCode) {
-      console.log('authorizationCode', authorizationCode);
-      getAccessToken(authorizationCode); // getAccessToken 함수 호출로 바꾸기
+      getAccessToken(authorizationCode);
     }
   }, []);
 
