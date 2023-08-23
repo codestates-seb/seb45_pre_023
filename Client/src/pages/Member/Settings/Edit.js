@@ -118,6 +118,24 @@ export default function MemberEdit() {
       .then(navigate(`${RouteConst.memberMain}`))
       .catch((err) => console.log(err));
   };
+
+  const changePassword = () => {
+    return axios
+      .patch(
+        `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/${memberId}/password`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+        {
+          password: password,
+          newPassword: newPassword,
+        }
+      )
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
   // window.onload = function () {
   //   const fileInput = document.getElementById('file');
   //   if (fileInput == null) {
@@ -280,7 +298,7 @@ export default function MemberEdit() {
                 ></input>
               </div>
               <br />
-              <button className="w-20 h-8 mx-1 px-2 bg-sky-500 hover:bg-sky-600 rounded-md text-xs text-white">
+              <button className="w-20 h-8 mx-1 px-2 bg-sky-500 hover:bg-sky-600 rounded-md text-xs text-white" onClick={changePassword}>
                 <Link to={RouteConst.memberMain}>Change</Link>
               </button>
             </div>
