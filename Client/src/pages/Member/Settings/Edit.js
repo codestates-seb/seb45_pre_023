@@ -134,6 +134,7 @@ export default function MemberEdit() {
         }
       )
       .then((res) => console.log(res))
+      .then(navigate(RouteConst.memberMain))
       .catch((err) => console.log(err));
   };
   // window.onload = function () {
@@ -298,8 +299,11 @@ export default function MemberEdit() {
                 ></input>
               </div>
               <br />
-              <button className="w-20 h-8 mx-1 px-2 bg-sky-500 hover:bg-sky-600 rounded-md text-xs text-white" onClick={changePassword}>
-                <Link to={RouteConst.memberMain}>Change</Link>
+              <button
+                className="w-20 h-8 mx-1 px-2 bg-sky-500 hover:bg-sky-600 rounded-md text-xs text-white"
+                onClick={changePassword}
+              >
+                Change
               </button>
             </div>
           </div>
