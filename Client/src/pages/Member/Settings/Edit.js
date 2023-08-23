@@ -124,16 +124,16 @@ export default function MemberEdit() {
       .patch(
         `http://ec2-3-39-228-109.ap-northeast-2.compute.amazonaws.com/members/${memberId}/password`,
         {
+          password: password,
+          newPassword: newPassword,
+        },
+        {
           headers: {
             Authorization: token,
           },
-        },
-        {
-          password: password,
-          newPassword: newPassword,
         }
       )
-      .then((res) => console.log(res))
+      .then(alert('비밀번호가 변경되었습니다.'))
       .then(navigate(RouteConst.memberMain))
       .catch((err) => console.log(err));
   };
