@@ -27,7 +27,7 @@ public class MemberResponse {
     private String myIntro;
     private String title;
     private String location;
-    private List<String> accounts;
+    private List<String> accounts; // 내 계정들 말하는 것
     private Authority authority;
     private MemberQuestionPageResponse question;
     private MemberAnswerPageResponse answer;

@@ -25,6 +25,7 @@ public class Answer extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+
     private Integer recommend;
 
 
